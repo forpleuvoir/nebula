@@ -20,7 +20,11 @@ interface ConfigValue<T> {
 
 	val defaultValue: T
 
-	operator fun getValue(thisRef: Any?, property: KProperty<*>): T
+	fun getValue(): T
 
-	operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T)
+	fun setValue(value: T)
+
+	operator fun getValue(thisRef: Any?, property: KProperty<*>?): T
+
+	operator fun setValue(thisRef: Any?, property: KProperty<*>?, value: T)
 }

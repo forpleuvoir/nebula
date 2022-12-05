@@ -1,0 +1,83 @@
+package com.forpleuvoir.nebula.config
+
+import java.util.function.Consumer
+import kotlin.reflect.KProperty
+
+/**
+ *
+
+ * 项目名 nebula
+
+ * 包名 com.forpleuvoir.nebula.config
+
+ * 文件名 ConfigBase
+
+ * 创建时间 2022/12/6 1:04
+
+ * @author forpleuvoir
+
+ */
+@Suppress("UNCHECKED_CAST")
+abstract class ConfigBase<V, S, C : Config<V, S, C>> : Config<V, S, C> {
+	override fun init() {}
+
+	protected abstract var value: V
+
+	override fun getValue(): V {
+		return this.value
+	}
+
+	override fun setValue(value: V) {
+		val oldValue = this.value
+		if (value != oldValue) {
+			this.value = value
+			this.onChange(this as C)
+		}
+	}
+
+	override fun getValue(thisRef: Any?, property: KProperty<*>?): V {
+		return getValue()
+	}
+
+	override fun setValue(thisRef: Any?, property: KProperty<*>?, value: V) {
+		this.setValue(value)
+	}
+
+	override fun isDefault(): Boolean {
+		return this.value == defaultValue
+	}
+
+	override fun restDefault() {
+		setValue(this, this::value, defaultValue)
+	}
+
+	protected open val subscribers: MutableList<Consumer<C>> = ArrayList()
+
+	override fun subscribe(callback: Consumer<C>) {
+		subscribers.add(callback)
+	}
+
+	override fun onChange(value: C) {
+		subscribers.forEach { it.accept(this as C) }
+	}
+
+	override fun matched(regex: Regex): Boolean {
+		return regex.run {
+			containsMatchIn(key) || containsMatchIn(getValue().toString())
+		}
+	}
+
+	override fun serialization(): S {
+		throw NotImplementedError()
+	}
+
+	override fun deserialization(serializeObject: S) {
+		throw NotImplementedError()
+	}
+
+	override fun toString(): String {
+		return "${this.javaClass.simpleName}(${key} : ${value.toString()})"
+	}
+
+
+}
