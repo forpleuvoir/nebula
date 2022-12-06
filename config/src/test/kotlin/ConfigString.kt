@@ -14,12 +14,12 @@ import com.forpleuvoir.nebula.config.ConfigBase
  * @author forpleuvoir
 
  */
-class ConfigString<S : Any>(
+class ConfigString<S>(
 	override val key: String,
 	override val defaultValue: String
 ) : ConfigBase<String, S, ConfigString<S>>() {
 
-	override var value: String = defaultValue
+	override var configValue: String = defaultValue
 
 
 }

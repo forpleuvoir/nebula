@@ -21,16 +21,16 @@ import kotlin.reflect.KProperty
 abstract class ConfigBase<V, S, C : Config<V, S, C>> : Config<V, S, C> {
 	override fun init() {}
 
-	protected abstract var value: V
+	protected abstract var configValue: V
 
 	override fun getValue(): V {
-		return this.value
+		return this.configValue
 	}
 
 	override fun setValue(value: V) {
-		val oldValue = this.value
+		val oldValue = this.configValue
 		if (value != oldValue) {
-			this.value = value
+			this.configValue = value
 			this.onChange(this as C)
 		}
 	}
@@ -44,11 +44,11 @@ abstract class ConfigBase<V, S, C : Config<V, S, C>> : Config<V, S, C> {
 	}
 
 	override fun isDefault(): Boolean {
-		return this.value == defaultValue
+		return this.configValue == defaultValue
 	}
 
 	override fun restDefault() {
-		setValue(this, this::value, defaultValue)
+		setValue(this, this::configValue, defaultValue)
 	}
 
 	protected open val subscribers: MutableList<Consumer<C>> = ArrayList()
@@ -76,7 +76,7 @@ abstract class ConfigBase<V, S, C : Config<V, S, C>> : Config<V, S, C> {
 	}
 
 	override fun toString(): String {
-		return "${this.javaClass.simpleName}(${key} : ${value.toString()})"
+		return "${this.javaClass.simpleName}(${key} : ${configValue.toString()})"
 	}
 
 
