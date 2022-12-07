@@ -21,5 +21,8 @@ class ConfigString<S>(
 
 	override var configValue: String = defaultValue
 
+	override fun matched(regex: Regex): Boolean {
+		return super.matched(regex)
+	}
 
 }

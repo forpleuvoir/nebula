@@ -4,8 +4,8 @@ import com.forpleuvoir.nebula.common.api.Initializable
 import com.forpleuvoir.nebula.common.api.Matchable
 import com.forpleuvoir.nebula.common.api.Notifiable
 import com.forpleuvoir.nebula.common.api.Resettable
-import com.forpleuvoir.nebula.common.serialize.Deserializable
-import com.forpleuvoir.nebula.common.serialize.Serializable
+import com.forpleuvoir.nebula.serialization.Deserializable
+import com.forpleuvoir.nebula.serialization.Serializable
 
 /**
  * 最基础的配置

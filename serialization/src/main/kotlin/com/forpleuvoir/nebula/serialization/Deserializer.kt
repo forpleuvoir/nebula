@@ -1,11 +1,11 @@
-package com.forpleuvoir.nebula.common.serialize
+package com.forpleuvoir.nebula.serialization
 
 /**
  *
 
  * 项目名 nebula
 
- * 包名 com.forpleuvoir.nebula.common.serialize
+ * 包名 com.forpleuvoir.nebula.serialization
 
  * 文件名 Deserializer
 
