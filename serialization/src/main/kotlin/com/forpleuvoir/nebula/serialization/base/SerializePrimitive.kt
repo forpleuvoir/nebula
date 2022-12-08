@@ -88,7 +88,7 @@ class SerializePrimitive private constructor(private val value: Any) : Serialize
 
 	override val asBigInteger: BigInteger
 		get() {
-			return if (this.isBigDecimal) value as BigInteger else BigInteger(asString)
+			return if (this.isBigInteger) value as BigInteger else BigInteger(asString)
 		}
 
 	override val asBigDecimal: BigDecimal

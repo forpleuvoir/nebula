@@ -1,4 +1,5 @@
 import com.forpleuvoir.nebula.config.ConfigBase
+import com.forpleuvoir.nebula.config.item.ConfigStringValue
 
 /**
  *
@@ -17,7 +18,7 @@ import com.forpleuvoir.nebula.config.ConfigBase
 class ConfigString<S>(
 	override val key: String,
 	override val defaultValue: String
-) : ConfigBase<String, S, ConfigString<S>>() {
+) : ConfigBase<String, S, ConfigString<S>>(),ConfigStringValue {
 
 	override var configValue: String = defaultValue
 
