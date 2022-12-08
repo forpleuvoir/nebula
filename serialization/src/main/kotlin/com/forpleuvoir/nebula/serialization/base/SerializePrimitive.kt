@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED", "MemberVisibilityCanBePrivate")
+
 package com.forpleuvoir.nebula.serialization.base
 
 import com.forpleuvoir.nebula.serialization.base.internal.LazilyParsedNumber
@@ -29,6 +31,8 @@ class SerializePrimitive private constructor(private val value: Any) : Serialize
 	constructor(bigInteger: BigInteger) : this(bigInteger as Any)
 
 	constructor(bigDecimal: BigDecimal) : this(bigDecimal as Any)
+
+	constructor(char: Char) : this(char.toString())
 
 	override val deepCopy: SerializePrimitive get() = this
 
@@ -95,4 +99,10 @@ class SerializePrimitive private constructor(private val value: Any) : Serialize
 		get() {
 			return if (this.isBigDecimal) value as BigDecimal else BigDecimal(asString)
 		}
+
+	override fun toString(): String {
+		return value.toString()
+	}
+
+
 }

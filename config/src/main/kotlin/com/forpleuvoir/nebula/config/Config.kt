@@ -21,8 +21,8 @@ import com.forpleuvoir.nebula.serialization.Serializable
  * @author forpleuvoir
 
  */
-interface Config<V, S, C : Config<V, S, C>> : Initializable, ConfigValue<V>, Resettable, Notifiable<C>, Matchable, Serializable<S>,
-	Deserializable<S> {
+interface Config<V, C : Config<V, C>> : Initializable, ConfigValue<V>, Resettable, Notifiable<C>, Matchable, Serializable,
+	Deserializable {
 
 	/**
 	 * 配置的键

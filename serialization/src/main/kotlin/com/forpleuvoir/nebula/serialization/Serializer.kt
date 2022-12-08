@@ -1,5 +1,7 @@
 package com.forpleuvoir.nebula.serialization
 
+import com.forpleuvoir.nebula.serialization.base.SerializeElement
+
 /**
  *
 
@@ -14,6 +16,7 @@ package com.forpleuvoir.nebula.serialization
  * @author forpleuvoir
 
  */
-interface Serializer<T, S> {
-	fun serialization(target: T): S
+@Suppress("unused")
+interface Serializer<T> {
+	fun serialization(target: T): SerializeElement
 }

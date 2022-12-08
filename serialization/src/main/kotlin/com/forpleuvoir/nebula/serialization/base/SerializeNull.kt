@@ -16,7 +16,7 @@ package com.forpleuvoir.nebula.serialization.base
  */
 object SerializeNull : SerializeElement {
 
-	override val deepCopy: SerializeElement get() = this
+	override val deepCopy: SerializeNull get() = this
 
 	override fun equals(other: Any?): Boolean {
 		return other == this || other is SerializeNull

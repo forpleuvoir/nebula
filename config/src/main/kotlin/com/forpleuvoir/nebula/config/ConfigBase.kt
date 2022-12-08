@@ -1,5 +1,6 @@
 package com.forpleuvoir.nebula.config
 
+import com.forpleuvoir.nebula.serialization.base.SerializeElement
 import java.util.function.Consumer
 import kotlin.reflect.KProperty
 
@@ -18,7 +19,7 @@ import kotlin.reflect.KProperty
 
  */
 @Suppress("UNCHECKED_CAST")
-abstract class ConfigBase<V, S, C : Config<V, S, C>> : Config<V, S, C> {
+abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
 	override fun init() {}
 
 	protected abstract var configValue: V
@@ -67,11 +68,11 @@ abstract class ConfigBase<V, S, C : Config<V, S, C>> : Config<V, S, C> {
 		}
 	}
 
-	override fun serialization(): S {
+	override fun serialization(): SerializeElement {
 		throw NotImplementedError()
 	}
 
-	override fun deserialization(serializeObject: S) {
+	override fun deserialization(serializeElement: SerializeElement) {
 		throw NotImplementedError()
 	}
 

@@ -1,3 +1,4 @@
+@file:Suppress("UNUSED")
 package com.forpleuvoir.nebula.serialization.base
 
 import com.google.gson.internal.LinkedTreeMap
@@ -23,7 +24,7 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
 	private val members: LinkedTreeMap<String, SerializeElement> = LinkedTreeMap()
 
-	override val deepCopy: SerializeElement
+	override val deepCopy: SerializeObject
 		get() {
 			val result = SerializeObject()
 			for (entry in entries) {
@@ -42,6 +43,10 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
 	operator fun set(key: String, value: String): String? {
 		return this.put(key, SerializePrimitive(value))?.asString
+	}
+
+	operator fun set(key: String, value: Char): Char? {
+		return this.put(key, SerializePrimitive(value))?.asString?.get(0)
 	}
 
 	operator fun set(key: String, value: Boolean): Boolean? {
@@ -117,6 +122,10 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
 	override fun hashCode(): Int {
 		return members.hashCode()
+	}
+
+	override fun toString(): String {
+		return members.toString()
 	}
 
 

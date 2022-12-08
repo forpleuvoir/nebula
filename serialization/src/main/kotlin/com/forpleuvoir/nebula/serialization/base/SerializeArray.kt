@@ -1,3 +1,4 @@
+@file:Suppress("UNUSED")
 package com.forpleuvoir.nebula.serialization.base
 
 import java.math.BigDecimal
@@ -21,6 +22,13 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
 	MutableCollection<SerializeElement> {
 
 	constructor(capacity: Int? = null) : this(if (capacity != null) ArrayList(capacity) else ArrayList())
+
+	constructor(vararg elements: SerializeElement) : this(
+		if (elements.isNotEmpty())
+			ArrayList<SerializeElement>(elements.size).apply {
+				addAll(elements)
+			}
+		else ArrayList())
 
 	override val size: Int
 		get() = this.elements.size
@@ -150,6 +158,10 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
 		return this.elements.add(SerializePrimitive(string))
 	}
 
+	fun add(char: Char): Boolean {
+		return this.elements.add(SerializePrimitive(char.toString()))
+	}
+
 	fun add(boolean: Boolean): Boolean {
 		return this.elements.add(SerializePrimitive(boolean))
 	}
@@ -215,6 +227,8 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
 		return this.elements.removeAll(elements)
 	}
 
+
+
 	override fun hashCode(): Int {
 		return elements.hashCode()
 	}
@@ -228,5 +242,9 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
 		if (elements != other.elements) return false
 
 		return true
+	}
+
+	override fun toString(): String {
+		return elements.toString()
 	}
 }

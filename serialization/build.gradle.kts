@@ -11,4 +11,5 @@ dependencies {
 	implementation("com.google.guava:guava:$guavaVersion")
 	implementation("com.google.code.gson:gson:$gsonVersion")
 	implementation("org.tomlj:tomlj:$tomljVersion")
+	implementation(kotlin("reflect"))
 }

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.forpleuvoir.nebula.common
 
 /**
@@ -15,3 +17,14 @@ package com.forpleuvoir.nebula.common
 
  */
 
+inline fun Boolean?.ifc(action: () -> Unit) {
+	if (this == true) {
+		action.invoke()
+	}
+}
+
+inline fun Boolean?.notc(action: () -> Unit) = if (this != null) {
+	if (!this) action() else Unit
+} else Unit
+
+fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
