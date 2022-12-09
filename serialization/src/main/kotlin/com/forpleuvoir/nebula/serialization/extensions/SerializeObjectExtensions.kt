@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED")
+
 package com.forpleuvoir.nebula.serialization.extensions
 
 import com.forpleuvoir.nebula.common.ifc
@@ -65,14 +66,20 @@ fun serializeObject(scope: SerializeObjectScope.() -> Unit): SerializeObject {
 
 
 fun serializeObject(map: Map<String, Any>): SerializeObject {
+	return serializeObject(map.entries)
+}
+
+fun serializeObject(entries: Iterable<Map.Entry<String, Any>>): SerializeObject {
 	return serializeObject {
-		for (entry in map) {
+		for (entry in entries) {
 			when (val element = entry.value) {
 				is Boolean          -> entry.key - element
 				is Number           -> entry.key - element
 				is String           -> entry.key - element
 				is Char             -> entry.key - element
 				is SerializeElement -> entry.key - element
+				is Iterable<*>      -> entry.key - serializeArray(element)
+				is Map<*, *>        -> entry.key - serializeObject(element.mapKeys { it.key.toString() }.mapValues { it.value!! })
 				else                -> entry.key - element.toSerializeObject()
 			}
 		}

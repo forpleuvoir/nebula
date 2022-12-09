@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED")
+
 package com.forpleuvoir.nebula.serialization.extensions
 
 import com.forpleuvoir.nebula.serialization.base.SerializeArray
@@ -20,8 +21,8 @@ import com.forpleuvoir.nebula.serialization.base.SerializeElement
 
  */
 
-fun serializeArray(vararg elements: Any) {
-	serializeArray(elements.toList())
+fun serializeArray(vararg elements: Any): SerializeArray {
+	return serializeArray(elements.toList())
 }
 
 inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> SerializeArray): SerializeArray {
