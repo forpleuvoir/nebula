@@ -18,7 +18,7 @@ import java.math.BigInteger
  * @author forpleuvoir
 
  */
-class SerializeArray private constructor(private val elements: MutableList<SerializeElement>) : SerializeElement,
+class SerializeArray private constructor(internal val elements: MutableList<SerializeElement>) : SerializeElement,
 	MutableCollection<SerializeElement> {
 
 	constructor(capacity: Int? = null) : this(if (capacity != null) ArrayList(capacity) else ArrayList())

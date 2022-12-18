@@ -20,7 +20,7 @@ import java.math.BigInteger
  * @author forpleuvoir
 
  */
-class SerializePrimitive private constructor(private val value: Any) : SerializeElement {
+class SerializePrimitive private constructor(internal val value: Any) : SerializeElement {
 
 	constructor(boolean: Boolean) : this(boolean as Any)
 
@@ -101,6 +101,7 @@ class SerializePrimitive private constructor(private val value: Any) : Serialize
 		}
 
 	override fun toString(): String {
+		if (isString) return "\"${asString}\""
 		return value.toString()
 	}
 

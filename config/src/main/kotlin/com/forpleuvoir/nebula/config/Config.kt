@@ -29,5 +29,4 @@ interface Config<V, C : Config<V, C>> : Initializable, ConfigValue<V>, Resettabl
 	 */
 	val key: String
 
-
 }

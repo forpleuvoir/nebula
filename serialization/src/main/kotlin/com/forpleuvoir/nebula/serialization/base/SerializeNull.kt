@@ -19,7 +19,7 @@ object SerializeNull : SerializeElement {
 	override val deepCopy: SerializeNull get() = this
 
 	override fun equals(other: Any?): Boolean {
-		return other == this || other is SerializeNull
+		return other == this
 	}
 
 	override fun hashCode(): Int {

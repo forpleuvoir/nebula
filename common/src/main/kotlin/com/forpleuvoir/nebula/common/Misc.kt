@@ -28,3 +28,9 @@ inline fun Boolean?.notc(action: () -> Unit) = if (this != null) {
 } else Unit
 
 fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
+
+inline fun times(timeConsuming: (Long) -> Unit = { println("耗时 : ${it / 1000000.0}ms") }, action: () -> Unit) {
+	val timeStart = System.nanoTime()
+	action.invoke()
+	timeConsuming(System.nanoTime() - timeStart)
+}

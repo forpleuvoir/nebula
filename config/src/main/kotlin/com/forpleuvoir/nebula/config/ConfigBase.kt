@@ -1,6 +1,5 @@
 package com.forpleuvoir.nebula.config
 
-import com.forpleuvoir.nebula.serialization.base.SerializeElement
 import java.util.function.Consumer
 import kotlin.reflect.KProperty
 
@@ -66,14 +65,6 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
 		return regex.run {
 			containsMatchIn(key) || containsMatchIn(getValue().toString())
 		}
-	}
-
-	override fun serialization(): SerializeElement {
-		throw NotImplementedError()
-	}
-
-	override fun deserialization(serializeElement: SerializeElement) {
-		throw NotImplementedError()
 	}
 
 	override fun toString(): String {

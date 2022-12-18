@@ -8,6 +8,7 @@ plugins {
 repositories {
 	mavenCentral()
 	mavenLocal()
+	maven { url = uri("https://www.jitpack.io") }
 }
 
 subprojects {
@@ -27,6 +28,7 @@ subprojects {
 	repositories {
 		mavenCentral()
 		mavenLocal()
+		maven { url = uri("https://www.jitpack.io") }
 	}
 
 	dependencies {

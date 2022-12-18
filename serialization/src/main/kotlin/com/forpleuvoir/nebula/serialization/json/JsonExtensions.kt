@@ -4,6 +4,7 @@ package com.forpleuvoir.nebula.serialization.json
 
 import com.forpleuvoir.nebula.common.ifc
 import com.forpleuvoir.nebula.serialization.base.*
+import com.forpleuvoir.nebula.serialization.extensions.toMap
 import com.google.gson.*
 
 /**
@@ -32,7 +33,7 @@ internal fun JsonObject.toObject(): SerializeObject {
 
 internal fun JsonElement.toElement(): SerializeElement {
 	return when {
-		isJsonPrimitive -> this.toElement()
+		isJsonPrimitive -> this.asJsonPrimitive.toPrimitive()
 		isJsonArray     -> this.asJsonArray.toArray()
 		isJsonObject    -> this.asJsonObject.toObject()
 		else            -> SerializeNull
@@ -89,6 +90,10 @@ fun JsonObject.getNestedObject(key: String, create: Boolean = false): JsonObject
  */
 fun Any.toJsonStr(): String {
 	return gson.toJson(this)
+}
+
+fun SerializeObject.toJsonString(): String {
+	return gson.toJson(this.toMap())
 }
 
 fun jsonArray(vararg elements: Any): JsonArray {

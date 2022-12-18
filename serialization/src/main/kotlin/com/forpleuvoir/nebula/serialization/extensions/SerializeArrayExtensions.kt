@@ -1,8 +1,8 @@
 @file:Suppress("UNUSED")
+
 package com.forpleuvoir.nebula.serialization.extensions
 
-import com.forpleuvoir.nebula.serialization.base.SerializeArray
-import com.forpleuvoir.nebula.serialization.base.SerializeElement
+import com.forpleuvoir.nebula.serialization.base.*
 
 
 /**
@@ -20,8 +20,8 @@ import com.forpleuvoir.nebula.serialization.base.SerializeElement
 
  */
 
-fun serializeArray(vararg elements: Any) {
-	serializeArray(elements.toList())
+fun serializeArray(vararg elements: Any): SerializeArray {
+	return serializeArray(elements.toList())
 }
 
 inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> SerializeArray): SerializeArray {
@@ -42,8 +42,21 @@ fun serializeArray(elements: Iterable<Any>): SerializeArray {
 				is String           -> add(element)
 				is Char             -> add(element)
 				is SerializeElement -> add(element)
+
 				else                -> add(element.toSerializeObject())
 			}
+		}
+	}
+}
+
+fun SerializeArray.toList(): List<Any> {
+	return map { e ->
+		when (e) {
+			is SerializePrimitive -> e.toObj()
+			is SerializeObject    -> e.toMap()
+			is SerializeArray     -> e.toList()
+			is SerializeNull      -> "null"
+			else                  -> e.toString()
 		}
 	}
 }
