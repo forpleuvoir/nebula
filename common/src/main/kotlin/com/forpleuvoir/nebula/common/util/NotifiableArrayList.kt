@@ -7,6 +7,14 @@ import java.util.function.UnaryOperator
 
 class NotifiableArrayList<T>() : ArrayList<T>(), Notifiable<NotifiableArrayList<T>> {
 
+	constructor(callback: Consumer<NotifiableArrayList<T>>) : this() {
+		this.subscribers.add(callback)
+	}
+
+	constructor(list: Collection<T>) : this() {
+		super.addAll(list)
+	}
+
 	private val subscribers: MutableList<Consumer<NotifiableArrayList<T>>> = ArrayList()
 
 	override fun onChange(value: NotifiableArrayList<T>) {

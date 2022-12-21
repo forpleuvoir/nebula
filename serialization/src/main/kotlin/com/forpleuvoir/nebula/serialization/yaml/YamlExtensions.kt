@@ -11,5 +11,5 @@ fun String.yamlStringToObject(): SerializeObject {
 }
 
 fun SerializeObject.toYamlString(): String {
-	return Yaml().dump(this.toMap())
+	return Yaml().dumpAsMap(this.toMap())
 }
