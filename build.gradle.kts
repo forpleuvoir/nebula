@@ -32,8 +32,8 @@ subprojects {
 	}
 
 	dependencies {
-
-
+		implementation(kotlin("reflect"))
+		implementation(kotlin("stdlib"))
 	}
 
 	tasks.withType<JavaCompile>().configureEach {

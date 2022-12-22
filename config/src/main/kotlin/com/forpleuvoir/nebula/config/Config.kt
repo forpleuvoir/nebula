@@ -4,8 +4,6 @@ import com.forpleuvoir.nebula.common.api.Initializable
 import com.forpleuvoir.nebula.common.api.Matchable
 import com.forpleuvoir.nebula.common.api.Notifiable
 import com.forpleuvoir.nebula.common.api.Resettable
-import com.forpleuvoir.nebula.serialization.Deserializable
-import com.forpleuvoir.nebula.serialization.Serializable
 
 /**
  * 最基础的配置
@@ -21,12 +19,4 @@ import com.forpleuvoir.nebula.serialization.Serializable
  * @author forpleuvoir
 
  */
-interface Config<V, C : Config<V, C>> : Initializable, ConfigValue<V>, Resettable, Notifiable<C>, Matchable, Serializable,
-	Deserializable {
-
-	/**
-	 * 配置的键
-	 */
-	val key: String
-
-}
+interface Config<V, C : Config<V, C>> : ConfigSerializable, Initializable, ConfigValue<V>, Resettable, Notifiable<C>, Matchable

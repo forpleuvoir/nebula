@@ -58,13 +58,7 @@ class SerializeArray private constructor(internal val elements: MutableList<Seri
 			}
 			throw IllegalAccessException()
 		}
-	override val asArray: SerializeArray
-		get() {
-			if (this.size == 1) {
-				return this[0].asArray
-			}
-			throw IllegalAccessException()
-		}
+
 	override val asNull: SerializeNull
 		get() {
 			if (this.size == 1) {

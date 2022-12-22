@@ -2,6 +2,8 @@
 
 package com.forpleuvoir.nebula.common
 
+import java.util.concurrent.CompletableFuture
+
 /**
  *
 
@@ -33,4 +35,8 @@ inline fun times(timeConsuming: (Long) -> Unit = { println("耗时 : ${it / 1000
 	val timeStart = System.nanoTime()
 	action.invoke()
 	timeConsuming(System.nanoTime() - timeStart)
+}
+
+fun runAsync(runnable: Runnable): CompletableFuture<Void> {
+	return CompletableFuture.runAsync(runnable)
 }

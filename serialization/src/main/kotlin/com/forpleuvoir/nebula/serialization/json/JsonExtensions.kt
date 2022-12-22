@@ -96,6 +96,10 @@ fun SerializeObject.toJsonString(): String {
 	return gson.toJson(this.toMap())
 }
 
+fun String.jsonStringToObject(): SerializeObject {
+	return parseToJsonObject.toObject()
+}
+
 fun jsonArray(vararg elements: Any): JsonArray {
 	return jsonArray(elements.toList())
 }

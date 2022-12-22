@@ -4,8 +4,10 @@ import com.forpleuvoir.nebula.serialization.extensions.serializeObject
 import com.forpleuvoir.nebula.serialization.json.toJsonString
 
 fun main() {
-	test1()
-
+	TestConfigs.init()
+	TestConfigs.save()
+	TestConfigs.load()
+	println(TestConfigs.Tag1.test2.getValue())
 }
 
 

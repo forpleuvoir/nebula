@@ -64,3 +64,17 @@ fun String.replace(origin: Array<String>, new: String): String {
 	}
 	return temp
 }
+
+fun Iterable<String>.format(length: Long, ellipsis: String = "...", separator: String = ", ", prefix: String = "", suffix: String = ""): String {
+	val sb = StringBuffer(prefix)
+	for ((index, s) in this.withIndex()) {
+		if (index > length) {
+			sb.append(ellipsis)
+			break
+		}
+		sb.append(s)
+		if (this.last() != s) sb.append(separator)
+	}
+	sb.append(suffix)
+	return sb.toString()
+}
