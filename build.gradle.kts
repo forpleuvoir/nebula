@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+
 plugins {
 	java
 	signing
@@ -70,9 +72,9 @@ subprojects {
 			}
 		}
 		publications {
-			create<MavenPublication>("maven") {
+			create<MavenPublication>(project.name) {
 				groupId = project.group.toString()
-				artifactId = project.artifacts.toString()
+				artifactId = project.archivesName.get()
 				version = project.version.toString()
 				from(components["java"])
 			}
