@@ -2,22 +2,11 @@
 
 package com.forpleuvoir.nebula.common
 
+import com.forpleuvoir.nebula.common.util.ClassScanner.getClassesForPackage
+import java.util.*
 import java.util.concurrent.CompletableFuture
-
-/**
- *
-
- * 项目名 nebula
-
- * 包名 com.forpleuvoir.nebula.common
-
- * 文件名 Misc
-
- * 创建时间 2022/11/30 13:52
-
- * @author forpleuvoir
-
- */
+import java.util.function.Predicate
+import kotlin.reflect.KClass
 
 inline fun Boolean?.ifc(action: () -> Unit) {
 	if (this == true) {
@@ -40,3 +29,14 @@ inline fun times(timeConsuming: (Long) -> Unit = { println("耗时 : ${it / 1000
 fun runAsync(runnable: Runnable): CompletableFuture<Void> {
 	return CompletableFuture.runAsync(runnable)
 }
+
+fun scanPackage(packageName: String, predicate: Predicate<KClass<*>>): Set<KClass<*>> {
+	return buildSet {
+		for (clazz in getClassesForPackage(packageName)) {
+			if (predicate.test(clazz.kotlin)) {
+				add(clazz.kotlin)
+			}
+		}
+	}
+}
+

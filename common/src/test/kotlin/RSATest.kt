@@ -1,8 +1,14 @@
+import com.forpleuvoir.nebula.common.scanPackage
 import com.forpleuvoir.nebula.common.times
 import com.forpleuvoir.nebula.common.util.RSAUtil
 
 fun main() {
-	test1()
+	for (clazz in scanPackage("com.forpleuvoir.nebula.common") {
+		true
+	}) {
+		println("${clazz.qualifiedName} : ${clazz.java.name}")
+	}
+//	test1()
 }
 
 

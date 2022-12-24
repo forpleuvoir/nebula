@@ -7,13 +7,12 @@ import com.forpleuvoir.nebula.common.util.second
 import com.forpleuvoir.nebula.config.impl.AutoSaveConfigManager
 import com.forpleuvoir.nebula.config.impl.ConfigCategoryImpl
 import com.forpleuvoir.nebula.config.impl.LocalConfigManager
+import com.forpleuvoir.nebula.config.impl.YamlConfigManagerSerializer
 import com.forpleuvoir.nebula.config.item.impl.*
-import com.forpleuvoir.nebula.serialization.yaml.toYamlString
-import com.forpleuvoir.nebula.serialization.yaml.yamlStringToObject
 import java.nio.file.Path
 import java.util.*
 
-object TestConfigs : LocalConfigManager("test.yaml", { it.toYamlString() }, { it.yamlStringToObject() }), AutoSaveConfigManager {
+object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, YamlConfigManagerSerializer {
 	override val configPath: Path = Path.of("./config/build/config")
 	override val starTime: Date = Date() + 30.second
 	override val period: Long = 30.second
@@ -42,12 +41,16 @@ object TestConfigs : LocalConfigManager("test.yaml", { it.toYamlString() }, { it
 
 		val test3 = ConfigColor("test3", Colors.AQUA)
 
-		var test4 by ConfigDouble("date", 0.5)
+		var test4 by ConfigDouble("test4", 0.5)
+		val test8 = ConfigStringMap("test8", mapOf("k1" to "v1", "k2" to "v2"))
 
+		object Tag1_1 : ConfigCategoryImpl("tag1_1") {
 
-		object Tag1_1 : ConfigCategoryImpl("tag1-1") {
+			val test5 = ConfigStringList("test5", listOf("element1", "element2"))
 
-			val test4 = ConfigStringList("test4", listOf("element1", "element2"))
+			val test6 = ConfigStringList("test6", listOf("element3", "element4"))
+
+			val test7 = ConfigStringMap("test7", mapOf("k1" to "v1", "k2" to "v2"))
 		}
 
 	}

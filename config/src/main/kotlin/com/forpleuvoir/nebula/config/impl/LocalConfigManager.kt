@@ -1,27 +1,24 @@
 package com.forpleuvoir.nebula.config.impl
 
 import com.forpleuvoir.nebula.config.ConfigUtil
-import com.forpleuvoir.nebula.serialization.base.SerializeObject
 import java.nio.file.Path
 
 abstract class LocalConfigManager(
 	key: String,
-	serializerFunction: (SerializeObject) -> String,
-	deserializerFunction: (String) -> SerializeObject
-) : AbstractConfigManager(key, serializerFunction, deserializerFunction) {
+) : AbstractConfigManager(key) {
 
 	abstract val configPath: Path
 	override fun save() {
 		ConfigUtil.run {
-			val file = configFile(key, configPath)
-			writeStringToFile(serializerFunction(serialization().asObject), file)
+			val file = configFile(fileName(key), configPath)
+			writeStringToFile(serializeObjectToString(serialization().asObject), file)
 		}
 	}
 
 	override fun load() {
 		ConfigUtil.run {
-			val file = configFile(key, configPath)
-			deserializerFunction(readFileToString(file)).apply {
+			val file = configFile(fileName(key), configPath)
+			stringToSerializeObject(readFileToString(file)).apply {
 				deserialization(this)
 			}
 		}
