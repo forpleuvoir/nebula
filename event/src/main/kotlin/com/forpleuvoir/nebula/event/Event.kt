@@ -1,8 +1,9 @@
+@file:Suppress("UNUSED")
+
 package com.forpleuvoir.nebula.event
 
 import kotlin.reflect.KClass
 
-@Suppress("UNUSED")
 interface Event {
 
 	/**
@@ -24,6 +25,6 @@ interface Event {
 
 }
 
-val KClass<out Event>.eventName: String get() = this.qualifiedName ?: "Anonymous Event"
+val KClass<out Event>.eventName: String get() = this.qualifiedName ?: this.java.name
 
-val KClass<out Event>.eventSimpleName: String get() = this.simpleName ?: "Anonymous Event"
+val KClass<out Event>.eventSimpleName: String get() = this.simpleName ?: this.java.simpleName
