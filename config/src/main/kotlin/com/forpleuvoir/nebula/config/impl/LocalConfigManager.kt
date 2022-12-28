@@ -9,9 +9,11 @@ abstract class LocalConfigManager(
 
 	abstract val configPath: Path
 	override fun save() {
+		if (!needSave) return
 		ConfigUtil.run {
 			val file = configFile(fileName(key), configPath)
 			writeStringToFile(serializeObjectToString(serialization().asObject), file)
+			needSave = false
 		}
 	}
 

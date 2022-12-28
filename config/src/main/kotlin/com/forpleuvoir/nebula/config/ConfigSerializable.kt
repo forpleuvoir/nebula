@@ -10,4 +10,5 @@ interface ConfigSerializable : Initializable, Serializable, Deserializable {
 	 * 配置的键
 	 */
 	val key: String
+
 }

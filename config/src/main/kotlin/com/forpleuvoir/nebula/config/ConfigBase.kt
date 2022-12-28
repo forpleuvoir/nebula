@@ -19,7 +19,10 @@ import kotlin.reflect.KProperty
  */
 @Suppress("UNCHECKED_CAST")
 abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
-	override fun init() {}
+	override fun init() {
+		subscribers.clear()
+		restDefault()
+	}
 
 	protected abstract var configValue: V
 
@@ -28,8 +31,7 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
 	}
 
 	override fun setValue(value: V) {
-		val oldValue = this.configValue
-		if (value != oldValue) {
+		if (value != this.configValue) {
 			this.configValue = value
 			this.onChange(this as C)
 		}

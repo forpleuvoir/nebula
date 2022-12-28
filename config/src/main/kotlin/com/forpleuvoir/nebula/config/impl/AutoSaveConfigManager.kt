@@ -16,7 +16,8 @@ interface AutoSaveConfigManager : ConfigManager {
 		Timer().schedule(
 			object : TimerTask() {
 				override fun run() {
-					saveAction()
+					if (needSave)
+						saveAction()
 				}
 			}, starTime, period
 		)

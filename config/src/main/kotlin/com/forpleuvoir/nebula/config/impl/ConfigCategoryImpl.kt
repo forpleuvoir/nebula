@@ -1,5 +1,6 @@
 package com.forpleuvoir.nebula.config.impl
 
+import com.forpleuvoir.nebula.common.api.Notifiable
 import com.forpleuvoir.nebula.config.Config
 import com.forpleuvoir.nebula.config.ConfigCategory
 import com.forpleuvoir.nebula.config.ConfigSerializable
@@ -14,13 +15,17 @@ open class ConfigCategoryImpl(override val key: String) : ConfigCategory {
 
 	private val configSerializes: MutableList<ConfigSerializable> = ArrayList()
 
+	override var needSave: Boolean = false
+
 	@Suppress("UNCHECKED_CAST")
 	override fun init() {
 		configSerializes.clear()
 
 		for (nestedClass in this::class.nestedClasses) {
-			if (nestedClass.objectInstance != null && nestedClass.isSubclassOf(ConfigSerializable::class))
+			if (nestedClass.objectInstance != null && nestedClass.isSubclassOf(ConfigSerializable::class)) {
 				addConfigSerializable(nestedClass.objectInstance as ConfigSerializable)
+
+			}
 		}
 
 		for (memberProperty in this::class.declaredMemberProperties) {
@@ -49,6 +54,11 @@ open class ConfigCategoryImpl(override val key: String) : ConfigCategory {
 
 		for (config in configSerializes()) {
 			config.init()
+			if (config::class.isSubclassOf(Notifiable::class)) {
+				(config as Notifiable<Any>).subscribe {
+					needSave = true
+				}
+			}
 		}
 	}
 
