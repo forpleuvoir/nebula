@@ -17,6 +17,14 @@ abstract class LocalConfigManager(
 		}
 	}
 
+	override fun forceSave() {
+		ConfigUtil.run {
+			val file = configFile(fileName(key), configPath)
+			writeStringToFile(serializeObjectToString(serialization().asObject), file)
+			needSave = false
+		}
+	}
+
 	override fun load() {
 		ConfigUtil.run {
 			val file = configFile(fileName(key), configPath)

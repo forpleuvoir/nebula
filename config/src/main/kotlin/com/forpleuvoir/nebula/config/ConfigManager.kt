@@ -6,6 +6,10 @@ interface ConfigManager : ConfigCategory {
 
 	fun saveAsync()
 
+	fun forceSave()
+
+	fun forceSaveAsync()
+
 	fun load()
 
 	fun loadAsync()

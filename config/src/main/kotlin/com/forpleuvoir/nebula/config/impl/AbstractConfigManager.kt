@@ -36,6 +36,10 @@ abstract class AbstractConfigManager(
 		ConfigThreadPool.execute(::save)
 	}
 
+	override fun forceSaveAsync() {
+		ConfigThreadPool.execute(::forceSave)
+	}
+
 	override fun loadAsync() {
 		ConfigThreadPool.execute(::load)
 	}
