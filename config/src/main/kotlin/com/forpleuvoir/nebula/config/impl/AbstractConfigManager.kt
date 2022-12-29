@@ -1,6 +1,5 @@
 package com.forpleuvoir.nebula.config.impl
 
-import com.forpleuvoir.nebula.common.runAsync
 import com.forpleuvoir.nebula.config.ConfigCategory
 import com.forpleuvoir.nebula.config.ConfigManager
 import kotlin.reflect.full.isSubclassOf
@@ -34,11 +33,11 @@ abstract class AbstractConfigManager(
 		}
 
 	override fun saveAsync() {
-		runAsync { save() }
+		ConfigThreadPool.execute(::save)
 	}
 
 	override fun loadAsync() {
-		runAsync { load() }
+		ConfigThreadPool.execute(::load)
 	}
 
 }
