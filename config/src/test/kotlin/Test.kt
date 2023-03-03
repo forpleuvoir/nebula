@@ -1,17 +1,20 @@
+import com.forpleuvoir.nebula.common.runAsync
 import com.forpleuvoir.nebula.config.Config
 import com.forpleuvoir.nebula.config.item.impl.ConfigString
 import com.forpleuvoir.nebula.config.item.impl.ConfigStringList
 import com.forpleuvoir.nebula.config.item.impl.ConfigStringMap
 import com.forpleuvoir.nebula.serialization.extensions.serializeObject
 import com.forpleuvoir.nebula.serialization.json.toJsonString
-import jdk.incubator.vector.VectorOperators.Test
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
 
 fun main() {
+	runAsync{
+		Thread.sleep(5000)
+		println("睡了5000")
+	}
 	TestConfigs.init()
-	TestConfigs.load()
 	TestConfigs.save()
 	println(TestConfigs.needSave)
 	TestConfigs.Tag1.test.setValue("sdasdasdsadsa")

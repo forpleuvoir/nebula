@@ -6,13 +6,13 @@ import com.forpleuvoir.nebula.common.util.plus
 import com.forpleuvoir.nebula.common.util.second
 import com.forpleuvoir.nebula.config.impl.AutoSaveConfigManager
 import com.forpleuvoir.nebula.config.impl.ConfigCategoryImpl
+import com.forpleuvoir.nebula.config.impl.HoconConfigManagerSerializer
 import com.forpleuvoir.nebula.config.impl.LocalConfigManager
-import com.forpleuvoir.nebula.config.impl.YamlConfigManagerSerializer
 import com.forpleuvoir.nebula.config.item.impl.*
 import java.nio.file.Path
 import java.util.*
 
-object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, YamlConfigManagerSerializer {
+object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, HoconConfigManagerSerializer {
 	override val configPath: Path = Path.of("./config/build/config")
 	override val starTime: Date = Date() + 30.second
 	override val period: Long = 30.second
@@ -32,6 +32,7 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, YamlConf
 		super<AutoSaveConfigManager>.init()
 	}
 
+	val a_test by ConfigString("test", "外部测试")
 
 	object Tag1 : ConfigCategoryImpl("tag1") {
 

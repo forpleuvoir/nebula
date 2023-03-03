@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	java
@@ -25,7 +26,7 @@ subprojects {
 	}
 
 	group = "com.forpleuvoir.nebula"
-	version = "0.1.0"
+	version = "0.2.0"
 
 	repositories {
 		mavenCentral()
@@ -41,9 +42,17 @@ subprojects {
 	tasks.withType<JavaCompile>().configureEach {
 		this.options.release
 		this.options.encoding = "UTF-8"
+		targetCompatibility = JavaVersion.VERSION_17.toString()
+		sourceCompatibility = JavaVersion.VERSION_17.toString()
+	}
+
+	tasks.withType<KotlinCompile>().configureEach {
+		kotlinOptions.suppressWarnings = true
+		kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
 	}
 
 	kotlin {
+
 	}
 
 	java {
@@ -56,7 +65,7 @@ subprojects {
 		repositories {
 			maven {
 				name = "releases"
-				url = uri("https://maven.forpleuvoir.com/releases")
+				url = uri("https://maven.forpleuvoir.com:11443/releases")
 				credentials(PasswordCredentials::class)
 				authentication {
 					create<BasicAuthentication>("basic")
@@ -64,7 +73,7 @@ subprojects {
 			}
 			maven {
 				name = "snapshots"
-				url = uri("https://maven.forpleuvoir.com/snapshots")
+				url = uri("https://maven.forpleuvoir.com:11443/snapshots")
 				credentials(PasswordCredentials::class)
 				authentication {
 					create<BasicAuthentication>("basic")
