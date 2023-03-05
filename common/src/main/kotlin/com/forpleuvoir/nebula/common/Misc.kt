@@ -33,6 +33,11 @@ fun runAsync(runnable: Runnable): CompletableFuture<Void> {
 fun scanPackage(packageName: String, predicate: Predicate<KClass<*>>): Set<KClass<*>> {
 	return buildSet {
 		for (clazz in getClassesForPackage(packageName)) {
+			clazz.declaredClasses.forEach {
+				if (predicate.test(it.kotlin)) {
+					add(it.kotlin)
+				}
+			}
 			if (predicate.test(clazz.kotlin)) {
 				add(clazz.kotlin)
 			}

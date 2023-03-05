@@ -85,6 +85,24 @@ subprojects {
 				groupId = project.group.toString()
 				artifactId = project.archivesName.get()
 				version = project.version.toString()
+				pom {
+					name.set(project.name)
+					description.set("forpleuvoir的基础代码库")
+					url.set("https://github.com/forpleuvoir/nebula")
+					licenses {
+						license {
+							name.set("GNU General Public License, version 3 (GPLv3)")
+							url.set("https://www.gnu.org/licenses/gpl-3.0.txt")
+						}
+					}
+					developers {
+						developer {
+							id.set("forpleuvoir")
+							name.set("forpleuvoir")
+							email.set("forpleuvoir@gmail.com")
+						}
+					}
+				}
 				from(components["java"])
 			}
 		}
