@@ -7,6 +7,8 @@ import com.forpleuvoir.nebula.serialization.Serializable
 import com.forpleuvoir.nebula.serialization.base.*
 import com.forpleuvoir.nebula.serialization.json.toJsonObject
 import com.forpleuvoir.nebula.serialization.json.toObject
+import kotlin.reflect.KVisibility.PUBLIC
+import kotlin.reflect.full.memberProperties
 
 /**
  *
@@ -24,6 +26,7 @@ import com.forpleuvoir.nebula.serialization.json.toObject
  */
 
 fun Any.toSerializeObject(): SerializeObject {
+	//todo后期修改为反射转换 不依赖gson
 	if (this is Serializable) {
 		return this.serialization().asObject
 	}
@@ -37,10 +40,32 @@ fun SerializeObject.toMap(): Map<String, Any> {
 				is SerializePrimitive -> this[entry.key] = value.toObj()
 				is SerializeArray     -> this[entry.key] = value.toList()
 				is SerializeObject    -> this[entry.key] = value.toMap()
-				is SerializeNull      -> this[entry.key] = "null"
+				is SerializeNull      -> this[entry.key] = SerializeNull.toString()
 			}
 		}
 	}
+}
+
+interface SObj {
+	fun serialize(): SerializeObject {
+		val clazz = this::class
+		return SerializeObject().apply {
+			clazz.memberProperties.forEach {
+				if (it.visibility == PUBLIC) {
+					val key = it.name
+					when (val value = it.call(this@SObj)) {
+						is Boolean          -> this[key] = value
+						is Number           -> this[key] = value
+						is String           -> this[key] = value
+						is Char             -> this[key] = value
+						is SerializeElement -> this[key] = value
+						else                -> if (value != null) this[key] = value.toSerializeObject() else this[key] = SerializeNull
+					}
+				}
+			}
+		}
+	}
+
 }
 
 class SerializeObjectScope {

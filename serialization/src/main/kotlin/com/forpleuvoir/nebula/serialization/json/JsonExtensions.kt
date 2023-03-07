@@ -6,6 +6,8 @@ import com.forpleuvoir.nebula.common.ifc
 import com.forpleuvoir.nebula.serialization.base.*
 import com.forpleuvoir.nebula.serialization.extensions.toMap
 import com.google.gson.*
+import kotlin.reflect.KVisibility.PUBLIC
+import kotlin.reflect.full.memberProperties
 
 /**
  *
@@ -125,6 +127,28 @@ fun jsonArray(elements: Iterable<Any>): JsonArray {
 			}
 		}
 	}
+}
+
+interface Json {
+	fun serialize(): JsonObject {
+		val clazz = this::class
+		return JsonObject().apply {
+			clazz.memberProperties.forEach {
+				if (it.visibility == PUBLIC) {
+					val key = it.name
+					when (val value = it.call(this@Json)) {
+						is Boolean     -> this.addProperty(key, value)
+						is Number      -> this.addProperty(key, value)
+						is String      -> this.addProperty(key, value)
+						is Char        -> this.addProperty(key, value)
+						is JsonElement -> this.add(key, value)
+						else           -> if (value != null) this.add(key, value.toJsonObject()) else this.add(key, JsonNull.INSTANCE)
+					}
+				}
+			}
+		}
+	}
+
 }
 
 class JsonObjectScope {

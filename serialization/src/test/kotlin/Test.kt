@@ -1,4 +1,6 @@
 import com.forpleuvoir.nebula.common.times
+import com.forpleuvoir.nebula.serialization.extensions.SObj
+import com.forpleuvoir.nebula.serialization.json.Json
 import com.forpleuvoir.nebula.serialization.json.parseToJsonObject
 import com.forpleuvoir.nebula.serialization.json.toJsonString
 import com.forpleuvoir.nebula.serialization.json.toObject
@@ -6,7 +8,7 @@ import com.forpleuvoir.nebula.serialization.toml.toTomlString
 import com.forpleuvoir.nebula.serialization.yaml.toYamlString
 
 fun main() {
-	test1()
+	test2()
 }
 
 fun test1() {
@@ -64,8 +66,23 @@ fun test1() {
 		println(obj.toJsonString())
 	}
 
-//	println(jsonObject)
-//	println(jsonObject.toObject())
-//	println(jsonObject.toObject().toYamlString())
-//	println(yaml.yamlStringToObject())
+	val a = object : Json {
+		val test = ""
+	}
+
 }
+
+fun test2() {
+	val a = object : SObj {
+		private val test = "aaa"
+		val tes2 = 6
+		var tes3 = true
+		val test4 = 'a'
+	}
+	println(a.serialize())
+	a.tes3 = false
+	println(a.serialize())
+}
+
+
+

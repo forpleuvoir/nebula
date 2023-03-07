@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -5,6 +6,7 @@ plugins {
 	java
 	signing
 	kotlin("jvm") version "1.7.22"
+	id("com.github.johnrengelman.shadow") version "7.1.2"
 	id("maven-publish")
 }
 
@@ -17,16 +19,19 @@ repositories {
 subprojects {
 
 	val isTest = this.name.contains("test")
+	val isCommon = this.name == "common"
 
 	apply(plugin = "java")
 	apply(plugin = "kotlin")
 	apply(plugin = "signing")
 	if (!isTest) {
+		if (!isCommon)
+			apply(plugin = "com.github.johnrengelman.shadow")
 		apply(plugin = "maven-publish")
 	}
 
 	group = "com.forpleuvoir.nebula"
-	version = "0.2.0"
+	version = "0.2.1"
 
 	repositories {
 		mavenCentral()
@@ -39,21 +44,29 @@ subprojects {
 		implementation(kotlin("stdlib"))
 	}
 
-	tasks.withType<JavaCompile>().configureEach {
-		this.options.release
-		this.options.encoding = "UTF-8"
-		targetCompatibility = JavaVersion.VERSION_17.toString()
-		sourceCompatibility = JavaVersion.VERSION_17.toString()
+	tasks.apply {
+		withType<JavaCompile>().configureEach {
+			this.options.release
+			this.options.encoding = "UTF-8"
+			targetCompatibility = JavaVersion.VERSION_17.toString()
+			sourceCompatibility = JavaVersion.VERSION_17.toString()
+		}
+		withType<KotlinCompile>().configureEach {
+			kotlinOptions.suppressWarnings = true
+			kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+		}
+		if (!isCommon) {
+			withType<ShadowJar>().configureEach {
+				archivesName.set("${project.name}-shadow")
+				archiveClassifier.set("shadow")
+				dependencies {
+					exclude(dependency("org.jetbrains.kotlin:"))
+					exclude(dependency("org.jetbrains:"))
+				}
+			}
+		}
 	}
 
-	tasks.withType<KotlinCompile>().configureEach {
-		kotlinOptions.suppressWarnings = true
-		kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
-	}
-
-	kotlin {
-
-	}
 
 	java {
 		withSourcesJar()
@@ -85,6 +98,7 @@ subprojects {
 				groupId = project.group.toString()
 				artifactId = project.archivesName.get()
 				version = project.version.toString()
+				from(components["java"])
 				pom {
 					name.set(project.name)
 					description.set("forpleuvoir的基础代码库")
@@ -103,7 +117,6 @@ subprojects {
 						}
 					}
 				}
-				from(components["java"])
 			}
 		}
 	}
