@@ -2,7 +2,6 @@
 
 package com.forpleuvoir.nebula.serialization.extensions
 
-import com.forpleuvoir.nebula.common.ifc
 import com.forpleuvoir.nebula.serialization.Serializable
 import com.forpleuvoir.nebula.serialization.base.*
 import com.forpleuvoir.nebula.serialization.json.toJsonObject
@@ -130,63 +129,59 @@ fun <T> serializeObject(map: Map<String, T>, converter: (T) -> SerializeElement)
 	}
 }
 
-fun SerializeObject.getOr(key: String, or: Number): Number {
-	this.containsKey(key).ifc {
-		try {
-			return this[key]!!.asNumber
-		} catch (_: Exception) {
-		}
+fun <T> SerializeObject.getOr(key: String, or: T, converter: (SerializeElement) -> T): T {
+	return try {
+		converter(this[key]!!)
+	} catch (_: Exception) {
+		or
 	}
-	return or
+}
+
+fun SerializeObject.getOr(key: String, or: Number): Number {
+	return try {
+		this[key]!!.asNumber
+	} catch (_: Exception) {
+		or
+	}
 }
 
 fun SerializeObject.getOr(key: String, or: Boolean): Boolean {
-	this.containsKey(key).ifc {
-		try {
-			return this[key]!!.asBoolean
-		} catch (_: Exception) {
-		}
+	return try {
+		this[key]!!.asBoolean
+	} catch (_: Exception) {
+		or
 	}
-	return or
 }
 
 fun SerializeObject.getOr(key: String, or: String): String {
-	this.containsKey(key).ifc {
-		try {
-			return this[key]!!.asString
-		} catch (_: Exception) {
-		}
+	return try {
+		this[key]!!.asString
+	} catch (_: Exception) {
+		or
 	}
-	return or
 }
 
 fun SerializeObject.getOr(key: String, or: Char): Char {
-	this.containsKey(key).ifc {
-		try {
-			return this[key]!!.asString[0]
-		} catch (_: Exception) {
-		}
+	return try {
+		this[key]!!.asString[0]
+	} catch (_: Exception) {
+		or
 	}
-	return or
 }
 
 fun SerializeObject.getOr(key: String, or: SerializeObject): SerializeObject {
-	this.containsKey(key).ifc {
-		try {
-			return this[key]!!.asObject
-		} catch (_: Exception) {
-		}
+	return try {
+		this[key]!!.asObject
+	} catch (_: Exception) {
+		or
 	}
-	return or
 }
 
 fun SerializeObject.getOr(key: String, or: SerializeArray): SerializeArray {
-	this.containsKey(key).ifc {
-		try {
-			return this[key]!!.asArray
-		} catch (_: Exception) {
-		}
+	return try {
+		this[key]!!.asArray
+	} catch (_: Exception) {
+		or
 	}
-	return or
 }
 

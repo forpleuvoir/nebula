@@ -3,15 +3,12 @@
 package com.forpleuvoir.nebula.common
 
 import com.forpleuvoir.nebula.common.util.ClassScanner.getClassesForPackage
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.function.Predicate
 import kotlin.reflect.KClass
 
 inline fun Boolean?.ifc(action: () -> Unit) {
-	if (this == true) {
-		action.invoke()
-	}
+	if (this == true) action.invoke()
 }
 
 inline fun Boolean?.notc(action: () -> Unit) = if (this != null) {
