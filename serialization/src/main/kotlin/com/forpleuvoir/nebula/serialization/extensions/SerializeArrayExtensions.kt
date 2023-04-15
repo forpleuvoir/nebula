@@ -55,8 +55,8 @@ fun SerializeArray.toList(): List<Any> {
 			is SerializePrimitive -> e.toObj()
 			is SerializeObject    -> e.toMap()
 			is SerializeArray     -> e.toList()
-			is SerializeNull      -> "null"
-			else                  -> e.toString()
+            is SerializeNull      -> SerializeNull.toString()
+            else                  -> e.toString()
 		}
 	}
 }
