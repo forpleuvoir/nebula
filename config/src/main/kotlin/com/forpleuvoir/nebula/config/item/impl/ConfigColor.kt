@@ -14,7 +14,7 @@ class ConfigColor(
 	override var configValue: Color = defaultValue.copy()
 
 	override fun setValue(value: Color) {
-		if (configValue == value) return
+		if (configValue isEquals value) return
 		configValue = value.copy()
 		onChange(this)
 	}
