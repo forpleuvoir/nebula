@@ -28,12 +28,14 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
 
     protected infix fun V.isEquals(other: V): Boolean = this == other
 
+    protected infix fun V.notEquals(other: V): Boolean = this != other
+
     override fun getValue(): V {
         return this.configValue
     }
 
     override fun setValue(value: V) {
-        if (value != this.configValue) {
+        if (value notEquals this.configValue) {
             this.configValue isEquals value
             this.onChange(this as C)
         }
