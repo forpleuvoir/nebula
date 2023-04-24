@@ -17,61 +17,63 @@ import kotlin.reflect.KProperty
  * @author forpleuvoir
 
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
-	override fun init() {
-		subscribers.clear()
-		restDefault()
-	}
+    override fun init() {
+        subscribers.clear()
+        restDefault()
+    }
 
-	protected abstract var configValue: V
+    protected abstract var configValue: V
 
-	override fun getValue(): V {
-		return this.configValue
-	}
+    protected infix fun V.isEquals(other: V): Boolean = this == other
 
-	override fun setValue(value: V) {
-		if (value != this.configValue) {
-			this.configValue = value
-			this.onChange(this as C)
-		}
-	}
+    override fun getValue(): V {
+        return this.configValue
+    }
 
-	override fun getValue(thisRef: Any?, property: KProperty<*>?): V {
-		return getValue()
-	}
+    override fun setValue(value: V) {
+        if (value != this.configValue) {
+            this.configValue isEquals value
+            this.onChange(this as C)
+        }
+    }
 
-	override fun setValue(thisRef: Any?, property: KProperty<*>?, value: V) {
-		this.setValue(value)
-	}
+    override fun getValue(thisRef: Any?, property: KProperty<*>?): V {
+        return getValue()
+    }
 
-	override fun isDefault(): Boolean {
-		return this.configValue == defaultValue
-	}
+    override fun setValue(thisRef: Any?, property: KProperty<*>?, value: V) {
+        this.setValue(value)
+    }
 
-	override fun restDefault() {
-		setValue(this, this::configValue, defaultValue)
-	}
+    override fun isDefault(): Boolean {
+        return this.configValue isEquals defaultValue
+    }
 
-	protected open val subscribers: MutableList<Consumer<C>> = ArrayList()
+    override fun restDefault() {
+        setValue(this, this::configValue, defaultValue)
+    }
 
-	override fun subscribe(callback: Consumer<C>) {
-		subscribers.add(callback)
-	}
+    protected open val subscribers: MutableList<Consumer<C>> = ArrayList()
 
-	override fun onChange(value: C) {
-		subscribers.forEach { it.accept(this as C) }
-	}
+    override fun subscribe(callback: Consumer<C>) {
+        subscribers.add(callback)
+    }
 
-	override fun matched(regex: Regex): Boolean {
-		return regex.run {
-			containsMatchIn(key) || containsMatchIn(getValue().toString())
-		}
-	}
+    override fun onChange(value: C) {
+        subscribers.forEach { it.accept(this as C) }
+    }
 
-	override fun toString(): String {
-		return "${this.javaClass.simpleName}(${key} : ${configValue.toString()})"
-	}
+    override fun matched(regex: Regex): Boolean {
+        return regex.run {
+            containsMatchIn(key) || containsMatchIn(getValue().toString())
+        }
+    }
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(${key} : ${configValue.toString()})"
+    }
 
 
 }

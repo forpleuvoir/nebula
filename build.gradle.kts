@@ -31,7 +31,7 @@ subprojects {
 	}
 
 	group = "com.forpleuvoir.nebula"
-	version = "0.2.2a"
+	version = "0.2.2b"
 
 	repositories {
 		mavenCentral()
