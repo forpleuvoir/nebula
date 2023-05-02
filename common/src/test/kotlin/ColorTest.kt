@@ -1,14 +1,21 @@
 import com.forpleuvoir.nebula.common.color.Color
+import com.forpleuvoir.nebula.common.color.HSVColor
 import com.forpleuvoir.nebula.common.times
 import java.io.File
 import java.io.FileWriter
 import java.util.*
 
 fun main() {
-    map()
+    hsv()
 
 }
 
+fun hsv() {
+    val c = HSVColor(hue = 360f)
+    println(c)
+    c.alpha(0.5f)
+    println(c)
+}
 
 fun test() {
     val randomColor: UInt = ((Math.random() * 0xFFFFFFFFu.toDouble()).toUInt())
