@@ -5,11 +5,13 @@ package com.forpleuvoir.nebula.common.color
 import com.forpleuvoir.nebula.common.color.Color.Companion.fixValue
 import com.forpleuvoir.nebula.common.util.clamp
 import com.forpleuvoir.nebula.common.util.fillBefore
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class HSVColor(
     hue: Float = 360f,
-    saturation: Float = 100f,
-    value: Float = 100f,
+    saturation: Float = 1f,
+    value: Float = 1f,
     alpha: Float = 1f,
     private val checkRange: Boolean = true
 ) : ARGBColor, Cloneable {
@@ -22,52 +24,109 @@ class HSVColor(
 
     override var argb: Int
         get() {
-            val saturation = this.saturation / 100
-            val brightness = this.value / 100
-            val i = ((this.hue / 60) % 6).toInt()
-            val f = hue / 60 - i
-            val p = brightness * (1F - saturation)
-            val q = brightness * (1F - f * saturation)
-            val t = brightness * (1F - (1F - f) * saturation)
-            val rgb: Array<Float> = when (i) {
-                0    -> arrayOf(brightness, t, p)
-                1    -> arrayOf(q, brightness, p)
-                2    -> arrayOf(p, brightness, t)
-                3    -> arrayOf(p, q, brightness)
-                4    -> arrayOf(t, p, brightness)
-                5    -> arrayOf(brightness, p, q)
-                else -> arrayOf(0F, 0F, 0F)
-            }.apply {
-                for (j in this.indices) {
-                    this[j] *= 255F
+            val h: Float = hue
+            val s: Float = saturation
+            val l: Float = value
+
+            val c = (1f - abs(2 * l - 1f)) * s
+            val m = l - 0.5f * c
+            val x = c * (1f - abs(h / 60f % 2f - 1f))
+
+            val hueSegment = h.toInt() / 60
+
+            var r = 0
+            var g = 0
+            var b = 0
+
+            when (hueSegment) {
+                0    -> {
+                    r = (255 * (c + m)).roundToInt()
+                    g = (255 * (x + m)).roundToInt()
+                    b = (255 * m).roundToInt()
+                }
+
+                1    -> {
+                    r = (255 * (x + m)).roundToInt()
+                    g = (255 * (c + m)).roundToInt()
+                    b = (255 * m).roundToInt()
+                }
+
+                2    -> {
+                    r = (255 * m).roundToInt()
+                    g = (255 * (c + m)).roundToInt()
+                    b = (255 * (x + m)).roundToInt()
+                }
+
+                3    -> {
+                    r = (255 * m).roundToInt()
+                    g = (255 * (x + m)).roundToInt()
+                    b = (255 * (c + m)).roundToInt()
+                }
+
+                4    -> {
+                    r = (255 * (x + m)).roundToInt()
+                    g = (255 * m).roundToInt()
+                    b = (255 * (c + m)).roundToInt()
+                }
+
+                5, 6 -> {
+                    r = (255 * (c + m)).roundToInt()
+                    g = (255 * m).roundToInt()
+                    b = (255 * (x + m)).roundToInt()
                 }
             }
-            return ((alphaF * 255).toInt() shl 24) or (rgb[0].toInt() shl 16) or (rgb[1].toInt() shl 8) or (rgb[2].toInt() shl 0)
+            r = r.clamp(0, 255)
+            g = g.clamp(0, 255)
+            b = b.clamp(0, 255)
+            return ((alphaF * 255).toInt() shl 24) or (r shl 16) or (g shl 8) or (b shl 0)
         }
         set(value) {
             val r = value shr 16 and 0xFF
             val g = value shr 8 and 0xFF
             val b = value and 0xFF
-            val rgb = arrayOf(r, g, b).apply { sort() }
-            val max = rgb[2]
-            val min = rgb[0]
-            val brightness = max.toFloat() / 255
-            val saturation = if (max == 0) 0.0f else 1.0f - (min.toFloat() / max)
-            val hue = if (max == min) {
-                0.0f
-            } else if (max == r && g >= b) {
-                60f * ((g - b).toFloat() / (max - min)) + 0.0f
-            } else if (max == r) {
-                60f * ((g - b).toFloat() / (max - min)) + 360.0f
-            } else if (max == g) {
-                60f * ((b - r).toFloat() / (max - min)) + 120.0f
-            } else if (max == b) {
-                60f * ((r - g).toFloat() / (max - min)) + 240.0f
-            } else 0.0f
-            this.hue = hue.clamp(0, 360)
-            this.saturation = saturation * 100.clamp(0, 100)
-            this.value = brightness * 100.clamp(0, 100)
-            this.alphaF = (value shr 24 and 0xFF).toFloat() / 255
+
+            val rf: Float = r / 255f
+            val gf: Float = g / 255f
+            val bf: Float = b / 255f
+
+            val max = rf.coerceAtLeast(gf.coerceAtLeast(bf))
+            val min = rf.coerceAtMost(gf.coerceAtMost(bf))
+            val deltaMaxMin = max - min
+
+            var h: Float
+            val s: Float
+            val l = (max + min) / 2f
+
+            if (max == min) {
+                // Monochromatic
+                s = 0f
+                h = s
+            } else {
+                h = when (max) {
+                    rf   -> {
+                        (gf - bf) / deltaMaxMin % 6f
+                    }
+
+                    gf   -> {
+                        (bf - rf) / deltaMaxMin + 2f
+                    }
+
+                    else -> {
+                        (rf - gf) / deltaMaxMin + 4f
+                    }
+                }
+                s = deltaMaxMin / (1f - abs(2f * l - 1f))
+            }
+
+            h = h * 60f % 360f
+            if (h < 0) {
+                h += 360f
+            }
+
+            hue = h.clamp(0f, 360f)
+            saturation = s.clamp(0f, 1f)
+            this.value = l.clamp(0f, 1f)
+            this.alphaF = ((value shr 24 and 0xFF) / 255f).clamp(alphaFRange)
         }
 
     override var rgb: Int
@@ -81,29 +140,29 @@ class HSVColor(
     /**
      * 色相 Range(0.0F ~ 360.0F)
      */
-    var hue: Float = hue.fixValue(checkRange, "Hue", maxValue = 360F)
+    var hue: Float = hue.fixValue(checkRange, "Hue", maxValue = 360f)
         set(value) {
-            field = value.fixValue(checkRange, "Hue", maxValue = 360F)
+            field = value.fixValue(checkRange, "Hue", maxValue = 360f)
         }
 
     fun hue(hue: Float): HSVColor = this.apply { this.hue = hue }
 
     /**
-     * 饱和度 Range(0.0F ~ 100.0F)
+     * 饱和度 Range(0.0f ~ 1.0f)
      */
-    var saturation: Float = saturation.fixValue(checkRange, "Saturation", maxValue = 100F)
+    var saturation: Float = saturation.fixValue(checkRange, "Saturation", maxValue = 1f)
         set(value) {
-            field = value.fixValue(checkRange, "Saturation", maxValue = 100F)
+            field = value.fixValue(checkRange, "Saturation", maxValue = 1f)
         }
 
     fun saturation(saturation: Float): HSVColor = this.apply { this.saturation = saturation }
 
     /**
-     * 明度 Range(0.0F ~ 100.0F)
+     * 明度 Range(0.0f ~ 1.0f)
      */
-    var value: Float = value.fixValue(checkRange, "Value", maxValue = 100F)
+    var value: Float = value.fixValue(checkRange, "Value", maxValue = 1f)
         set(value) {
-            field = value.fixValue(checkRange, "Value", maxValue = 100F)
+            field = value.fixValue(checkRange, "Value", maxValue = 1f)
         }
 
     fun value(value: Float): HSVColor = this.apply { this.value = value }
