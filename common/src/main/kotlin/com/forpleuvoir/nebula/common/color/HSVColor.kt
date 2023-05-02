@@ -5,7 +5,6 @@ package com.forpleuvoir.nebula.common.color
 import com.forpleuvoir.nebula.common.color.Color.Companion.fixValue
 import com.forpleuvoir.nebula.common.util.clamp
 import com.forpleuvoir.nebula.common.util.fillBefore
-import kotlin.math.floor
 
 class HSVColor(
     hue: Float = 360f,
@@ -23,86 +22,17 @@ class HSVColor(
 
     override var argb: Int
         get() {
-            var r = 0
-            var g = 0
-            var b = 0
-            if (saturation == 0f) {
-                b = (value * 255.0f + 0.5f).toInt()
-                g = b
-                r = g
-            } else {
-                val h = (hue - floor(hue.toDouble()).toFloat()) * 6.0f
-                val f = h - floor(h.toDouble()).toFloat()
-                val p: Float = value * (1.0f - saturation)
-                val q: Float = value * (1.0f - saturation * f)
-                val t: Float = value * (1.0f - saturation * (1.0f - f))
-                when (h.toInt()) {
-                    0 -> {
-                        r = (value * 255.0f + 0.5f).toInt()
-                        g = (t * 255.0f + 0.5f).toInt()
-                        b = (p * 255.0f + 0.5f).toInt()
-                    }
-
-                    1 -> {
-                        r = (q * 255.0f + 0.5f).toInt()
-                        g = (value * 255.0f + 0.5f).toInt()
-                        b = (p * 255.0f + 0.5f).toInt()
-                    }
-
-                    2 -> {
-                        r = (p * 255.0f + 0.5f).toInt()
-                        g = (value * 255.0f + 0.5f).toInt()
-                        b = (t * 255.0f + 0.5f).toInt()
-                    }
-
-                    3 -> {
-                        r = (p * 255.0f + 0.5f).toInt()
-                        g = (q * 255.0f + 0.5f).toInt()
-                        b = (value * 255.0f + 0.5f).toInt()
-                    }
-
-                    4 -> {
-                        r = (t * 255.0f + 0.5f).toInt()
-                        g = (p * 255.0f + 0.5f).toInt()
-                        b = (value * 255.0f + 0.5f).toInt()
-                    }
-
-                    5 -> {
-                        r = (value * 255.0f + 0.5f).toInt()
-                        g = (p * 255.0f + 0.5f).toInt()
-                        b = (q * 255.0f + 0.5f).toInt()
-                    }
-                }
-            }
-            return ((alphaF * 255).toInt() shl 24) or (r shl 16) or (g shl 8) or (b shl 0)
+            return ((alphaF * 255).toInt() shl 24) or java.awt.Color.HSBtoRGB(hue / 360f, saturation, value)
         }
         set(value) {
             val r = value shr 16 and 0xFF
             val g = value shr 8 and 0xFF
             val b = value and 0xFF
-
-            var hue: Float
-            val saturation: Float
-            val brightness: Float
-            var cmax: Int = if (r > g) r else g
-            if (b > cmax) cmax = b
-            var cmin: Int = if (r < g) r else g
-            if (b < cmin) cmin = b
-
-            brightness = cmax.toFloat() / 255.0f
-            saturation = if (cmax != 0) (cmax - cmin).toFloat() / cmax.toFloat() else 0f
-            if (saturation == 0f) hue = 0f else {
-                val redc: Float = (cmax - r).toFloat() / (cmax - cmin).toFloat()
-                val greenc: Float = (cmax - g).toFloat() / (cmax - cmin).toFloat()
-                val bluec: Float = (cmax - b).toFloat() / (cmax - cmin).toFloat()
-                hue = if (r == cmax) bluec - greenc else if (g == cmax) 2.0f + redc - bluec else 4.0f + greenc - redc
-                hue /= 6.0f
-                if (hue < 0) hue += 1.0f
-            }
-
-            this.hue = hue.clamp(0f, 360f)
-            this.saturation = saturation.clamp(0f, 1f)
-            this.value = brightness.clamp(0f, 1f)
+            val arr = FloatArray(3)
+            java.awt.Color.RGBtoHSB(r, g, b, arr)
+            this.hue = (arr[0] * 360).clamp(0f, 360f)
+            this.saturation = arr[1].clamp(0f, 1f)
+            this.value = arr[2].clamp(0f, 1f)
             this.alphaF = ((value shr 24 and 0xFF) / 255f).clamp(alphaFRange)
         }
 

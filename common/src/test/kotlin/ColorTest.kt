@@ -11,9 +11,9 @@ fun main() {
 }
 
 fun hsv() {
-    val c = HSVColor(hue = 360f)
+    val c = HSVColor(hue = 123f, saturation = 0.23f, value = 0.66f)
     println(c)
-    c.alpha(0.5f)
+    c.argb = 0xfffff
     println(c)
 }
 
