@@ -5,7 +5,7 @@ package com.forpleuvoir.nebula.common.color
 import com.forpleuvoir.nebula.common.util.clamp
 import com.forpleuvoir.nebula.common.util.fillBefore
 
-class Color {
+class Color : ARGBColor, Cloneable {
 
     companion object {
 
@@ -183,20 +183,20 @@ class Color {
      *
      * Alpha 24-31 bit
      */
-    var argb: Int
+    override var argb: Int
 
-    var rgb: Int
+    override var rgb: Int
         get() = argb and 0xFFFFFF
         set(value) {
             argb = argb and 0xFF000000.toInt() or value
         }
 
-    val hexStr: String get() = "#${argb.toUInt().toString(16).fillBefore(8, '0').uppercase()}"
+    override val hexStr: String get() = "#${argb.toUInt().toString(16).fillBefore(8, '0').uppercase()}"
 
     /**
      * 红色值 Range(0 ~ 255)
      */
-    var red: Int
+    override var red: Int
         get() = argb shr 16 and 0xFF
         set(value) {
             argb = (alpha and 0xFF shl 24) or (value.fixValue(
@@ -208,7 +208,7 @@ class Color {
     /**
      * 红色值 Range(0.0F ~ 1.0F)
      */
-    var redF: Float
+    override var redF: Float
         get() = red.toFloat() / 255
         set(value) {
             red = (value.fixValue(checkRange, "Red") * 255).toInt()
@@ -232,7 +232,7 @@ class Color {
     /**
      * 绿色值 Range(0 ~ 255)
      */
-    var green: Int
+    override var green: Int
         get() = argb shr 8 and 0xFF
         set(value) {
             argb = (alpha and 0xFF shl 24) or (red and 0xFF shl 16) or (value.fixValue(
@@ -244,7 +244,7 @@ class Color {
     /**
      * 绿色值 Range(0.0F ~ 1.0F)
      */
-    var greenF: Float
+    override var greenF: Float
         get() = green.toFloat() / 255
         set(value) {
             green = (value.fixValue(checkRange, "Green") * 255).toInt()
@@ -267,7 +267,7 @@ class Color {
     /**
      * 蓝色值 Range(0 ~ 255)
      */
-    var blue: Int
+    override var blue: Int
         get() = argb shr 0 and 0xFF
         set(value) {
             argb = (alpha and 0xFF shl 24) or (red and 0xFF shl 16) or (green and 0xFF shl 8) or (value.fixValue(
@@ -279,7 +279,7 @@ class Color {
     /**
      * 蓝色值 Range(0.0F ~ 1.0F)
      */
-    var blueF: Float
+    override var blueF: Float
         get() = blue.toFloat() / 255
         set(value) {
             blue = (value.fixValue(checkRange, "Blue") * 255).toInt()
@@ -302,7 +302,7 @@ class Color {
     /**
      * 不透明度 Range(0 ~ 255)
      */
-    var alpha: Int
+    override var alpha: Int
         get() = argb shr 24 and 0xFF
         set(value) {
             argb = (value.fixValue(
@@ -314,7 +314,7 @@ class Color {
     /**
      * 不透明度 Range(0.0F ~ 1.0F)
      */
-    var alphaF: Float
+    override var alphaF: Float
         get() = alpha.toFloat() / 255
         set(value) {
             alpha = (value.fixValue(checkRange, "Alpha") * 255).toInt()
@@ -338,7 +338,10 @@ class Color {
      * 获取当前颜色的副本
      * @return [Color] 复制对象
      */
-    fun copy(): Color = Color(argb)
+    override fun clone(): Color {
+        return Color(argb)
+    }
+
 
     /**
      * 获取调整不透明度之后的颜色复制对象
@@ -348,7 +351,7 @@ class Color {
      * @param opacity [Float] Range(0.0F ~ 1.0F)
      * @return [Color] 复制对象
      */
-    fun opacity(opacity: Float): Color = this.copy().apply { alphaF *= opacity.fixValue(checkRange, "Opacity") }
+    fun opacity(opacity: Float): Color = this.clone().apply { alphaF *= opacity.fixValue(checkRange, "Opacity") }
 
     /**
      * 获取调整不透明度之后的颜色复制对象
@@ -358,7 +361,7 @@ class Color {
      * @param opacity [Float] Range(0 ~ 255)
      * @return [Color] 复制对象
      */
-    fun opacity(opacity: Int): Color = this.copy().apply { alpha *= opacity.fixValue(checkRange, "Opacity") }
+    fun opacity(opacity: Int): Color = this.clone().apply { alpha *= opacity.fixValue(checkRange, "Opacity") }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
