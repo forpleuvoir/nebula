@@ -42,3 +42,11 @@ fun scanPackage(packageName: String, predicate: Predicate<KClass<*>>): Set<KClas
 	}
 }
 
+@JvmName("sumOfFloat")
+inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
+	var sum: Float = 0.toFloat()
+	for (element in this) {
+		sum += selector(element)
+	}
+	return sum
+}

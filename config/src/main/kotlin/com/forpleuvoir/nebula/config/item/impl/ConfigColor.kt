@@ -11,16 +11,16 @@ class ConfigColor(
 	override val defaultValue: Color
 ) : ConfigBase<Color, ConfigColor>() {
 
-	override var configValue: Color = defaultValue.copy()
+	override var configValue: Color = defaultValue.clone()
 
 	override fun setValue(value: Color) {
 		if (configValue isEquals value) return
-		configValue = value.copy()
+		configValue = value.clone()
 		onChange(this)
 	}
 
 	override fun getValue(): Color {
-		return configValue.copy()
+		return configValue.clone()
 	}
 
 	override fun serialization(): SerializeElement =

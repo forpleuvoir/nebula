@@ -4,22 +4,6 @@ package com.forpleuvoir.nebula.serialization.extensions
 
 import com.forpleuvoir.nebula.serialization.base.*
 
-
-/**
- *
-
- * 项目名 nebula
-
- * 包名 com.forpleuvoir.nebula.serialization.extensions
-
- * 文件名 SerializeArrayExtensions
-
- * 创建时间 2022/12/8 22:57
-
- * @author forpleuvoir
-
- */
-
 fun serializeArray(vararg elements: Any): SerializeArray {
 	return serializeArray(elements.toList())
 }

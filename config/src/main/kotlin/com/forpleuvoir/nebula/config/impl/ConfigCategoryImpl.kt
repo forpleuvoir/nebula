@@ -76,6 +76,7 @@ open class ConfigCategoryImpl(override val key: String) : ConfigCategory {
         serializeElement: SerializeElement,
         e: Exception
     ) {
+        needSave = true
         println("${configSerializable.key}:{${serializeElement}} deserialization failed")
         e.printStackTrace()
     }
