@@ -18,13 +18,17 @@ import kotlin.reflect.KProperty
  */
 interface ConfigValue<T> {
 
-	val defaultValue: T
+    val defaultValue: T
 
-	fun getValue(): T
+    fun getValue(): T
 
-	fun setValue(value: T)
+    fun setValue(value: T)
 
-	operator fun getValue(thisRef: Any?, property: KProperty<*>?): T
+    fun asString(): String {
+        return getValue().toString()
+    }
 
-	operator fun setValue(thisRef: Any?, property: KProperty<*>?, value: T)
+    operator fun getValue(thisRef: Any?, property: KProperty<*>?): T
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>?, value: T)
 }
