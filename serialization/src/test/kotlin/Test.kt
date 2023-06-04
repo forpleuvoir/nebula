@@ -1,11 +1,11 @@
-import com.forpleuvoir.nebula.common.times
-import com.forpleuvoir.nebula.serialization.extensions.SObj
-import com.forpleuvoir.nebula.serialization.json.Json
-import com.forpleuvoir.nebula.serialization.json.parseToJsonObject
-import com.forpleuvoir.nebula.serialization.json.toJsonString
-import com.forpleuvoir.nebula.serialization.json.toObject
-import com.forpleuvoir.nebula.serialization.toml.toTomlString
-import com.forpleuvoir.nebula.serialization.yaml.toYamlString
+import moe.forpleuvoir.nebula.common.times
+import moe.forpleuvoir.nebula.serialization.extensions.SObj
+import moe.forpleuvoir.nebula.serialization.json.Json
+import moe.forpleuvoir.nebula.serialization.json.parseToJsonObject
+import moe.forpleuvoir.nebula.serialization.json.toJsonString
+import moe.forpleuvoir.nebula.serialization.json.toObject
+import moe.forpleuvoir.nebula.serialization.toml.toTomlString
+import moe.forpleuvoir.nebula.serialization.yaml.toYamlString
 
 fun main() {
 	test2()

@@ -1,14 +1,14 @@
 import TestConfigs.Tag1.test4
-import com.forpleuvoir.nebula.common.color.Colors
-import com.forpleuvoir.nebula.common.times
-import com.forpleuvoir.nebula.common.util.format
-import com.forpleuvoir.nebula.common.util.plus
-import com.forpleuvoir.nebula.common.util.second
-import com.forpleuvoir.nebula.config.impl.AutoSaveConfigManager
-import com.forpleuvoir.nebula.config.impl.ConfigCategoryImpl
-import com.forpleuvoir.nebula.config.impl.HoconConfigManagerSerializer
-import com.forpleuvoir.nebula.config.impl.LocalConfigManager
-import com.forpleuvoir.nebula.config.item.impl.*
+import moe.forpleuvoir.nebula.common.color.Colors
+import moe.forpleuvoir.nebula.common.times
+import moe.forpleuvoir.nebula.common.util.format
+import moe.forpleuvoir.nebula.common.util.plus
+import moe.forpleuvoir.nebula.common.util.second
+import moe.forpleuvoir.nebula.config.impl.AutoSaveConfigManager
+import moe.forpleuvoir.nebula.config.impl.ConfigCategoryImpl
+import moe.forpleuvoir.nebula.config.impl.HoconConfigManagerSerializer
+import moe.forpleuvoir.nebula.config.impl.LocalConfigManager
+import moe.forpleuvoir.nebula.config.item.impl.*
 import java.nio.file.Path
 import java.util.*
 

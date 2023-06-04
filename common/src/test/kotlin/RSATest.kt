@@ -1,13 +1,13 @@
-import com.forpleuvoir.nebula.common.scanPackage
-import com.forpleuvoir.nebula.common.times
-import com.forpleuvoir.nebula.common.util.RSAUtil
+import moe.forpleuvoir.nebula.common.scanPackage
+import moe.forpleuvoir.nebula.common.times
+import moe.forpleuvoir.nebula.common.util.RSAUtil
 
 fun main() {
-	for (clazz in scanPackage("com.forpleuvoir.nebula.common") {
-		true
-	}) {
-		println("${clazz.qualifiedName} : ${clazz.java.name}")
-	}
+    for (clazz in scanPackage("moe.forpleuvoir.nebula.common") {
+        true
+    }) {
+        println("${clazz.qualifiedName} : ${clazz.java.name}")
+    }
 //	test1()
 }
 

@@ -1,6 +1,6 @@
-import com.forpleuvoir.nebula.common.color.Color
-import com.forpleuvoir.nebula.common.color.HSVColor
-import com.forpleuvoir.nebula.common.times
+import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.color.HSVColor
+import moe.forpleuvoir.nebula.common.times
 import java.io.File
 import java.io.FileWriter
 import java.util.*

@@ -30,8 +30,8 @@ subprojects {
 		apply(plugin = "maven-publish")
 	}
 
-	group = "com.forpleuvoir.nebula"
-	version = "0.2.3a"
+	group = "moe.forpleuvoir.nebula"
+	version = "0.2.4a"
 
 	repositories {
 		mavenCentral()
@@ -84,7 +84,7 @@ subprojects {
 		repositories {
 			maven {
 				name = "releases"
-				url = uri("https://maven.forpleuvoir.com:11443/releases")
+				url = uri("https://maven.forpleuvoir.moe/releases")
 				credentials(PasswordCredentials::class)
 				authentication {
 					create<BasicAuthentication>("basic")
@@ -92,7 +92,7 @@ subprojects {
 			}
 			maven {
 				name = "snapshots"
-				url = uri("https://maven.forpleuvoir.com:11443/snapshots")
+				url = uri("https://maven.forpleuvoir.moe/snapshots")
 				credentials(PasswordCredentials::class)
 				authentication {
 					create<BasicAuthentication>("basic")

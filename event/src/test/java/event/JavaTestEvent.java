@@ -1,7 +1,7 @@
 package event;
 
-import com.forpleuvoir.nebula.event.EventSubscriber;
-import com.forpleuvoir.nebula.event.Subscriber;
+import moe.forpleuvoir.nebula.event.EventSubscriber;
+import moe.forpleuvoir.nebula.event.Subscriber;
 
 @EventSubscriber
 public class JavaTestEvent {

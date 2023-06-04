@@ -1,6 +1,6 @@
 package event
 
-import com.forpleuvoir.nebula.event.*
+import moe.forpleuvoir.nebula.event.*
 import kotlin.reflect.KClass
 
 fun main() {
