@@ -4,8 +4,24 @@ package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.base.*
 
-fun serializeArray(vararg elements: Any): SerializeArray {
+fun serializeArray(vararg elements: Any?): SerializeArray {
 	return serializeArray(elements.toList())
+}
+
+fun serializeArray(iterator: Iterator<*>): SerializeArray {
+	return SerializeArray().apply {
+		for (element in iterator) {
+			when (element) {
+				is Boolean          -> add(element)
+				is Number           -> add(element)
+				is String           -> add(element)
+				is Char             -> add(element)
+				is SerializeElement -> add(element)
+				null                -> add(SerializeNull)
+				else                -> add(element.toSerializeObject())
+			}
+		}
+	}
 }
 
 inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> SerializeArray): SerializeArray {
@@ -17,20 +33,8 @@ inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> Serialize
 }
 
 
-fun serializeArray(elements: Iterable<Any>): SerializeArray {
-	return SerializeArray().apply {
-		for (element in elements) {
-			when (element) {
-				is Boolean          -> add(element)
-				is Number           -> add(element)
-				is String           -> add(element)
-				is Char             -> add(element)
-				is SerializeElement -> add(element)
-
-				else                -> add(element.toSerializeObject())
-			}
-		}
-	}
+fun serializeArray(elements: Iterable<*>): SerializeArray {
+	return serializeArray(elements.iterator())
 }
 
 fun SerializeArray.toList(): List<Any> {

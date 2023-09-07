@@ -2,7 +2,6 @@
 
 package moe.forpleuvoir.nebula.serialization.base
 
-import com.google.gson.internal.LinkedTreeMap
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.collections.MutableMap.MutableEntry
@@ -23,7 +22,7 @@ import kotlin.collections.MutableMap.MutableEntry
  */
 class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
-    private val members: LinkedTreeMap<String, SerializeElement> = LinkedTreeMap()
+    private val members: LinkedHashMap<String, SerializeElement> = LinkedHashMap()
 
     override val deepCopy: SerializeObject
         get() {

@@ -1,18 +1,14 @@
-import moe.forpleuvoir.nebula.common.times
 import moe.forpleuvoir.nebula.serialization.extensions.SObj
-import moe.forpleuvoir.nebula.serialization.json.Json
-import moe.forpleuvoir.nebula.serialization.json.parseToJsonObject
-import moe.forpleuvoir.nebula.serialization.json.toJsonString
-import moe.forpleuvoir.nebula.serialization.json.toObject
-import moe.forpleuvoir.nebula.serialization.toml.toTomlString
-import moe.forpleuvoir.nebula.serialization.yaml.toYamlString
+import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
+import java.math.BigDecimal
+import java.math.BigInteger
 
 fun main() {
-	test2()
+    test1()
 }
 
 fun test1() {
-	val json = """
+    val json = """
 		{
 		  "test": "a",
 		  "b": true,
@@ -35,53 +31,41 @@ fun test1() {
 		  }
 		}
 	""".trimIndent()
-	val yaml = """
-		test: a
-		b: true
-		c: 123
-		aa:
-		  - saa
-		  - dd
-		  - dd
-		asd:
-		  asdd: dasdas
-	""".trimIndent()
-	val toml = """
-		test = "a"
-		b = true
-		c = 123
-		aa = [ "as", "dd", "dd" ]
 
-		[asd]
-		asdd = "dasdas"
-	""".trimIndent()
-	val jsonObject = json.parseToJsonObject
-	val obj = jsonObject.toObject()
-	times {
-		println("************toml*************")
-		println(obj.toTomlString())
-		println("************yaml*************")
-		println(obj.toYamlString())
-		println("************json*************")
-		println(obj.toJsonString())
-	}
+    val o = object {
+        var aa = 65
+        var bb = "bb"
 
-	val a = object : Json {
-		val test = ""
-	}
+        override fun toString(): String {
+            return "(aa=$aa, bb='$bb')"
+        }
 
+    }
+
+    val obj = object {
+        val a = 65
+        val b = 'b'
+        val c = "ccc"
+        val d = true
+        val e = BigInteger.valueOf(4544)
+        val f = BigDecimal.valueOf(45.11145)
+        val g = null
+        val h = arrayOf(6,"c","asdas",o)
+        val j = o
+    }
+    println(obj.toSerializeObject().toString())
 }
 
 fun test2() {
-	val a = object : SObj {
-		private val test = "aaa"
-		val tes2 = 6
-		var tes3 = true
-		val test4 = 'a'
-	}
-	println(a.serialize())
-	a.tes3 = false
-	println(a.serialize())
+    val a = object : SObj {
+        private val test = "aaa"
+        val tes2 = 6
+        var tes3 = true
+        val test4 = 'a'
+    }
+    println(a.serialize())
+    a.tes3 = false
+    println(a.serialize())
 }
 
 

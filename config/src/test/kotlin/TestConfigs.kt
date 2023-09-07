@@ -4,56 +4,70 @@ import moe.forpleuvoir.nebula.common.times
 import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.common.util.plus
 import moe.forpleuvoir.nebula.common.util.second
-import moe.forpleuvoir.nebula.config.impl.AutoSaveConfigManager
-import moe.forpleuvoir.nebula.config.impl.ConfigCategoryImpl
-import moe.forpleuvoir.nebula.config.impl.HoconConfigManagerSerializer
-import moe.forpleuvoir.nebula.config.impl.LocalConfigManager
+import moe.forpleuvoir.nebula.config.impl.*
 import moe.forpleuvoir.nebula.config.item.impl.*
+import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
+import moe.forpleuvoir.nebula.serialization.json.jsonStringToObject
+import moe.forpleuvoir.nebula.serialization.json.parseToJsonObject
+import moe.forpleuvoir.nebula.serialization.json.toJsonString
 import java.nio.file.Path
 import java.util.*
 
-object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, HoconConfigManagerSerializer {
-	override val configPath: Path = Path.of("./config/build/config")
-	override val starTime: Date = Date() + 30.second
-	override val period: Long = 30.second
+object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager {
+    override val configPath: Path = Path.of("./config/build/config")
+    override val starTime: Date = Date() + 30.second
+    override val period: Long = 30.second
 
-	override val saveAction: () -> Unit
-		get() = {
-			times {
-				println("开始保存：${Date().format("HH:mm:ss")}")
-				test4++
-				saveAsync()
-			}
-		}
+    override val saveAction: () -> Unit
+        get() = {
+            times {
+                println("开始保存：${Date().format("HH:mm:ss")}")
+                test4++
+                saveAsync()
+            }
+        }
 
 
-	override fun init() {
-		super<LocalConfigManager>.init()
-		super<AutoSaveConfigManager>.init()
-	}
+    override fun init() {
+        super<LocalConfigManager>.init()
+        super<AutoSaveConfigManager>.init()
+    }
 
-	val a_test by ConfigString("test", "外部测试")
+    override fun fileName(key: String): String {
+        return "$key.json"
+    }
 
-	object Tag1 : ConfigCategoryImpl("tag1") {
+    override fun serializeObjectToString(serializeObject: SerializeObject): String {
+        return serializeObject.toJsonString()
+    }
 
-		val test = ConfigString("test", "defaultValue")
+    override fun stringToSerializeObject(str: String): SerializeObject {
+        return str.jsonStringToObject()
+    }
 
-		val test2 = ConfigInt("test2", 10)
+    val a_test by ConfigString("test", "外部测试")
 
-		val test3 = ConfigColor("test3", Colors.AQUA)
+    object Tag1 : ConfigCategoryImpl("tag1") {
 
-		var test4 by ConfigDouble("test4", 0.5)
-		val test8 = ConfigStringMap("test8", mapOf("k1" to "v1", "k2" to "v2"))
+        val test = ConfigString("test", "defaultValue")
 
-		object Tag1_1 : ConfigCategoryImpl("tag1_1") {
+        val test2 = ConfigInt("test2", 10)
 
-			val test5 = ConfigStringList("test5", listOf("element1", "element2"))
+        val test3 = ConfigColor("test3", Colors.AQUA)
 
-			val test6 = ConfigStringList("test6", listOf("element3", "element4"))
+        var test4 by ConfigDouble("test4", 0.5)
+        val test8 = ConfigStringMap("test8", mapOf("k1" to "v1", "k2" to "v2"))
 
-			val test7 = ConfigStringMap("test7", mapOf("k1" to "v1", "k2" to "v2"))
-		}
+        object Tag1_1 : ConfigCategoryImpl("tag1_1") {
 
-	}
+            val test5 = ConfigStringList("test5", listOf("element1", "element2"))
+
+            val test6 = ConfigStringList("test6", listOf("element3", "element4"))
+
+            val test7 = ConfigStringMap("test7", mapOf("k1" to "v1", "k2" to "v2"))
+        }
+
+    }
 
 }

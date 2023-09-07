@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.config.impl
+package moe.forpleuvoir.nebula.config.util
 
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger

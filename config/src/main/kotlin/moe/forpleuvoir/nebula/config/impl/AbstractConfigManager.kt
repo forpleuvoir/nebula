@@ -2,6 +2,7 @@ package moe.forpleuvoir.nebula.config.impl
 
 import moe.forpleuvoir.nebula.config.ConfigCategory
 import moe.forpleuvoir.nebula.config.ConfigManager
+import moe.forpleuvoir.nebula.config.util.ConfigThreadPool
 import kotlin.reflect.full.isSubclassOf
 
 abstract class AbstractConfigManager(

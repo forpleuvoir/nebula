@@ -1,6 +1,6 @@
 package moe.forpleuvoir.nebula.config.impl
 
-import moe.forpleuvoir.nebula.config.ConfigUtil
+import moe.forpleuvoir.nebula.config.util.ConfigUtil
 import java.nio.file.Path
 
 abstract class LocalConfigManager(
