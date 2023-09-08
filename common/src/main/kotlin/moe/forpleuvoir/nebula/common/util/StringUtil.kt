@@ -41,10 +41,10 @@ fun String.fillAfter(length: Int, fillChar: Char): String {
 	return fill(length, fillChar, false)
 }
 
-fun String.replace(map: Map<String, String>): String {
+fun String.replace(map: Map<String, Any>): String {
 	var temp: String = this
 	map.forEach { (k, v) ->
-		temp = temp.replace(k, v)
+		temp = temp.replace(k, v.toString())
 	}
 	return temp
 }

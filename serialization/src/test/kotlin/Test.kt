@@ -1,5 +1,8 @@
+import moe.forpleuvoir.nebula.common.times
+import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.SObj
 import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
+import moe.forpleuvoir.nebula.serialization.json.JsonParse
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -10,28 +13,39 @@ fun main() {
 fun test1() {
     val json = """
 		{
-		  "test": "a",
-		  "b": true,
-		  "asdas": 2,
-		  "c": "1234165.0f",
-		  "aa": [
-		    {
-		      "type":"aa"
-		    },
-		    {
-		      "type":"bb",
-		      "cc":"dd"
-		    },
-		    {
-		      "type":"cc"
-		    }
-		  ],
-		  "asd": {
-		    "asdd": "dasdas"
-		  }
-		}
+          "name": "John Doe",
+          "age": 30,
+          "address": {
+            "street": "123 Main St",
+            "city": "Cityville"
+          },
+          "contacts": [
+            {
+              "type": "email",
+              "value": "john.doe@example.com"
+            },
+            {
+              "type": "phone",
+              "value": "+1234567890"
+            }
+          ],
+          "notes": " {\"nestedKey\":\"nested\\"Value\"}",
+          "nestedJson": {
+            "key1": "value1?§aa",
+            "key2": "value2"
+          },
+          "url": "https://maven.forpleuvoir.moe"
+        }
 	""".trimIndent()
+    val obj: SerializeObject
+    times {
+        obj = JsonParse.parse(json).asObject
+    }
+    println(obj)
+    println(obj["url"]?.asString)
+}
 
+fun test3() {
     val o = object {
         var aa = 65
         var bb = "bb"
@@ -50,7 +64,7 @@ fun test1() {
         val e = BigInteger.valueOf(4544)
         val f = BigDecimal.valueOf(45.11145)
         val g = null
-        val h = arrayOf(6,"c","asdas",o)
+        val h = arrayOf(6, "c", "asdas", o)
         val j = o
     }
     println(obj.toSerializeObject().toString())

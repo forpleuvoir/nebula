@@ -105,7 +105,7 @@ interface SObj {
 
 class SerializeObjectScope {
 
-    internal val obj: SerializeObject = SerializeObject()
+    internal  val obj: SerializeObject = SerializeObject()
 
     infix operator fun String.minus(value: String) {
         obj[this] = value
@@ -129,9 +129,7 @@ class SerializeObjectScope {
 }
 
 fun serializeObject(scope: SerializeObjectScope.() -> Unit): SerializeObject {
-    val objectScope = SerializeObjectScope()
-    objectScope.scope()
-    return objectScope.obj
+    return SerializeObjectScope().apply(scope).obj
 }
 
 

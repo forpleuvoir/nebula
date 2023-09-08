@@ -10,6 +10,10 @@ fun serializeArray(vararg elements: Any?): SerializeArray {
     return serializeArray(elements.toList())
 }
 
+inline fun serializeArray(scope: SerializeArray.() -> Unit): SerializeArray {
+    return SerializeArray().apply(scope)
+}
+
 fun serializeArray(iterator: Iterator<*>): SerializeArray {
     return SerializeArray().apply {
         for (element in iterator) {

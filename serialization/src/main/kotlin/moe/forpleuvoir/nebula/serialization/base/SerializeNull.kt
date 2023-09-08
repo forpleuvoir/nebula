@@ -27,6 +27,6 @@ object SerializeNull : SerializeElement {
 	}
 
 	override fun toString(): String {
-		return "SerializeNull"
+		return "null"
 	}
 }

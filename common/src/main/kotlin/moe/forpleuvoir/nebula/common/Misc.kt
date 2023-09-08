@@ -5,6 +5,9 @@ package moe.forpleuvoir.nebula.common
 import moe.forpleuvoir.nebula.common.util.ClassScanner.getClassesForPackage
 import java.util.concurrent.CompletableFuture
 import java.util.function.Predicate
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.reflect.KClass
 
 inline fun Boolean?.ifc(action: () -> Unit) {
@@ -17,7 +20,11 @@ inline fun Boolean?.notc(action: () -> Unit) = if (this != null) {
 
 fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
 
+@OptIn(ExperimentalContracts::class)
 inline fun times(timeConsuming: (Long) -> Unit = { println("耗时 : ${it / 1000000.0}ms") }, action: () -> Unit) {
+	contract {
+		callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+	}
 	val timeStart = System.nanoTime()
 	action.invoke()
 	timeConsuming(System.nanoTime() - timeStart)
