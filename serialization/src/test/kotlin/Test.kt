@@ -43,7 +43,7 @@ fun test1() {
     }
 
     val obj = object {
-        val a = 65
+        private val a = 65
         val b = 'b'
         val c = "ccc"
         val d = true

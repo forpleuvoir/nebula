@@ -1,6 +1,6 @@
 @file:Suppress("UNUSED")
 
-package moe.forpleuvoir.nebula.serialization.json
+package moe.forpleuvoir.nebula.serialization.gson
 
 import com.google.gson.*
 import moe.forpleuvoir.nebula.serialization.base.*

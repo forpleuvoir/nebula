@@ -4,7 +4,7 @@ import moe.forpleuvoir.nebula.config.item.impl.ConfigString
 import moe.forpleuvoir.nebula.config.item.impl.ConfigStringList
 import moe.forpleuvoir.nebula.config.item.impl.ConfigStringMap
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
-import moe.forpleuvoir.nebula.serialization.json.toJsonString
+import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible

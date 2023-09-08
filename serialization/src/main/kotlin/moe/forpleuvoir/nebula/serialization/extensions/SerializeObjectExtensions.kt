@@ -4,11 +4,9 @@ package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
-import java.lang.reflect.Array
 import java.lang.reflect.Modifier
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility.INTERNAL
 import kotlin.reflect.KVisibility.PUBLIC
@@ -39,33 +37,29 @@ fun Any.toSerializeObject(): SerializeObject {
     }
     val obj = SerializeObject()
     this::class.apply {
-        memberProperties
-            .filter {
-                it.visibility != INTERNAL
-                && it.findAnnotation<Transient>() == null
-                && it.javaField?.let { field -> !Modifier.isTransient(field.modifiers) } ?: true
-            }
-            .forEach { property ->
-                property as KProperty1<Any, Any?>
-                property.isAccessible = true
-                //不能是委托属性
-                if (property.getDelegate(this@toSerializeObject) == null) {
-                    val value = property.getter.call(this@toSerializeObject)
-                    val name = property.name
-                    when (value) {
-                        null               -> obj[name] = SerializeNull
-                        is String          -> obj[name] = value
-                        is Char            -> obj[name] = value
-                        is Boolean         -> obj[name] = value
-                        is BigInteger      -> obj[name] = value
-                        is BigDecimal      -> obj[name] = value
-                        is Number          -> obj[name] = value
-                        is kotlin.Array<*> -> obj[name] = serializeArray(value.iterator())
-                        is Collection<*>   -> obj[name] = serializeArray(value)
-                        else               -> obj[name] = value.toSerializeObject()
-                    }
+        memberProperties.filter {
+            it.visibility != INTERNAL && it.findAnnotation<Transient>() == null && it.javaField?.let { field -> !Modifier.isTransient(field.modifiers) } ?: true
+        }.forEach { property ->
+            property as KProperty1<Any, Any?>
+            property.isAccessible = true
+            //不能是委托属性
+            if (property.getDelegate(this@toSerializeObject) == null) {
+                val value = property.getter.call(this@toSerializeObject)
+                val name = property.name
+                when (value) {
+                    null               -> obj[name] = SerializeNull
+                    is String          -> obj[name] = value
+                    is Char            -> obj[name] = value
+                    is Boolean         -> obj[name] = value
+                    is BigInteger      -> obj[name] = value
+                    is BigDecimal      -> obj[name] = value
+                    is Number          -> obj[name] = value
+                    is kotlin.Array<*> -> obj[name] = serializeArray(value.iterator())
+                    is Collection<*>   -> obj[name] = serializeArray(value)
+                    else               -> obj[name] = value.toSerializeObject()
                 }
             }
+        }
 
     }
     return obj
@@ -92,12 +86,15 @@ interface SObj {
                 if (it.visibility == PUBLIC) {
                     val key = it.name
                     when (val value = it.call(this@SObj)) {
+                        null                -> this[key] = SerializeNull
                         is Boolean          -> this[key] = value
+                        is BigInteger       -> this[key] = value
+                        is BigDecimal       -> this[key] = value
                         is Number           -> this[key] = value
                         is String           -> this[key] = value
                         is Char             -> this[key] = value
                         is SerializeElement -> this[key] = value
-                        else                -> if (value != null) this[key] = value.toSerializeObject() else this[key] = SerializeNull
+                        else                -> this[key] = value.toSerializeObject()
                     }
                 }
             }
@@ -143,11 +140,14 @@ fun serializeObject(map: Map<String, Any>): SerializeObject {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun serializeObject(entries: Iterable<Map.Entry<String, Any>>): SerializeObject {
+fun serializeObject(entries: Iterable<Map.Entry<String, *>>): SerializeObject {
     return serializeObject {
         for (entry in entries) {
             when (val element = entry.value) {
+                null                -> entry.key - SerializeNull
                 is Boolean          -> entry.key - element
+                is BigInteger       -> entry.key - element
+                is BigDecimal       -> entry.key - element
                 is Number           -> entry.key - element
                 is String           -> entry.key - element
                 is Char             -> entry.key - element
