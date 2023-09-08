@@ -4,6 +4,7 @@ package moe.forpleuvoir.nebula.serialization.gson
 
 import com.google.gson.*
 import moe.forpleuvoir.nebula.serialization.base.*
+import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.toMap
 import kotlin.reflect.KVisibility.PUBLIC
 import kotlin.reflect.full.memberProperties
@@ -24,24 +25,22 @@ import kotlin.reflect.full.memberProperties
  */
 val gson: Gson by lazy { GsonBuilder().setPrettyPrinting().create() }
 
-internal fun JsonObject.toObject(): SerializeObject {
-    val result = SerializeObject()
-    for (entry in this.entrySet()) {
-        result[entry.key] = entry.value.toElement()
+internal fun JsonObject.toSerializeObject(): SerializeObject {
+    return serializeObject(this.entrySet()) { key, value ->
+        key to value.toSerializeElement()
     }
-    return result
 }
 
-internal fun JsonElement.toElement(): SerializeElement {
+internal fun JsonElement.toSerializeElement(): SerializeElement {
     return when {
-        isJsonPrimitive -> this.asJsonPrimitive.toPrimitive()
+        isJsonPrimitive -> this.asJsonPrimitive.toSerializePrimitive()
         isJsonArray     -> this.asJsonArray.toArray()
-        isJsonObject    -> this.asJsonObject.toObject()
+        isJsonObject    -> this.asJsonObject.toSerializeObject()
         else            -> SerializeNull
     }
 }
 
-internal fun JsonPrimitive.toPrimitive(): SerializePrimitive {
+internal fun JsonPrimitive.toSerializePrimitive(): SerializePrimitive {
     return when {
         isBoolean -> SerializePrimitive(this.asBoolean)
         isNumber  -> SerializePrimitive(this.asNumber)
@@ -53,7 +52,7 @@ internal fun JsonPrimitive.toPrimitive(): SerializePrimitive {
 internal fun JsonArray.toArray(): SerializeArray {
     val result = SerializeArray(this.size())
     for (element in this) {
-        result.add(element.toElement())
+        result.add(element.toSerializeElement())
     }
     return result
 }
@@ -98,7 +97,7 @@ fun SerializeObject.toJsonString(): String {
 }
 
 fun String.jsonStringToObject(): SerializeObject {
-    return parseToJsonObject.toObject()
+    return parseToJsonObject.toSerializeObject()
 }
 
 fun jsonArray(vararg elements: Any): JsonArray {
@@ -208,59 +207,31 @@ fun <T> jsonObject(map: Map<String, T>, converter: (T) -> JsonElement): JsonObje
 }
 
 fun <T> JsonObject.getOr(key: String, or: T, converter: (JsonElement) -> T): T {
-    return try {
-        converter(this[key]!!)
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { converter(this[key]!!) }.getOrDefault(or)
 }
 
 
 inline fun <reified T> JsonObject.getOr(key: String, or: T): T {
-    return try {
-        gson.fromJson(this.get(key), T::class.java)
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { gson.fromJson(this.get(key), T::class.java) }.getOrDefault(or)
 }
 
 fun JsonObject.getOr(key: String, or: Number): Number {
-    return try {
-        this.get(key).asNumber
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this.get(key).asNumber }.getOrDefault(or)
 }
 
 fun JsonObject.getOr(key: String, or: Boolean): Boolean {
-    return try {
-        this.get(key).asBoolean
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this.get(key).asBoolean }.getOrDefault(or)
 }
 
 fun JsonObject.getOr(key: String, or: String): String {
-    return try {
-        this.get(key).asString
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this.get(key).asString }.getOrDefault(or)
 }
 
 fun JsonObject.getOr(key: String, or: JsonObject): JsonObject {
-    return try {
-        this.get(key).asJsonObject
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this.get(key).asJsonObject }.getOrDefault(or)
 }
 
 fun JsonObject.getOr(key: String, or: JsonArray): JsonArray {
-    return try {
-        this.get(key).asJsonArray
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this.get(key).asJsonArray }.getOrDefault(or)
 }
 

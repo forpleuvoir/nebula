@@ -10,13 +10,23 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
 
+@OptIn(ExperimentalContracts::class)
 inline fun Boolean?.ifc(action: () -> Unit) {
+	contract {
+		callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+	}
 	if (this == true) action.invoke()
 }
 
-inline fun Boolean?.notc(action: () -> Unit) = if (this != null) {
-	if (!this) action() else Unit
-} else Unit
+@OptIn(ExperimentalContracts::class)
+inline fun Boolean?.notc(action: () -> Unit) {
+	contract {
+		callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+	}
+	if (this != null) {
+		if (!this) action() else Unit
+	}
+}
 
 fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
 
@@ -49,8 +59,12 @@ fun scanPackage(packageName: String, predicate: Predicate<KClass<*>>): Set<KClas
 	}
 }
 
+@OptIn(ExperimentalContracts::class)
 @JvmName("sumOfFloat")
 inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
+	contract {
+		callsInPlace(selector, InvocationKind.UNKNOWN)
+	}
 	var sum: Float = 0.toFloat()
 	for (element in this) {
 		sum += selector(element)

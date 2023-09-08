@@ -1,3 +1,4 @@
+import moe.forpleuvoir.nebula.common.api.BetaApi
 import moe.forpleuvoir.nebula.common.times
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.SObj
@@ -10,6 +11,7 @@ fun main() {
     test1()
 }
 
+@OptIn(BetaApi::class)
 fun test1() {
     val json = """
 		{

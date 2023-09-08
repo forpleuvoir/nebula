@@ -5,11 +5,8 @@ package moe.forpleuvoir.nebula.serialization.extensions
 import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.lang.reflect.Modifier
-import java.math.BigDecimal
-import java.math.BigInteger
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility.INTERNAL
-import kotlin.reflect.KVisibility.PUBLIC
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
@@ -46,23 +43,21 @@ fun Any.toSerializeObject(): SerializeObject {
             if (property.getDelegate(this@toSerializeObject) == null) {
                 val value = property.getter.call(this@toSerializeObject)
                 val name = property.name
-                when (value) {
-                    null               -> obj[name] = SerializeNull
-                    is String          -> obj[name] = value
-                    is Char            -> obj[name] = value
-                    is Boolean         -> obj[name] = value
-                    is BigInteger      -> obj[name] = value
-                    is BigDecimal      -> obj[name] = value
-                    is Number          -> obj[name] = value
-                    is kotlin.Array<*> -> obj[name] = serializeArray(value.iterator())
-                    is Collection<*>   -> obj[name] = serializeArray(value)
-                    else               -> obj[name] = value.toSerializeObject()
-                }
+                obj.putAny(name, value)
             }
         }
 
     }
     return obj
+}
+
+fun Map<*, *>.toSerializeObject(): SerializeObject {
+    return serializeObject(this.mapKeys { it.toString() })
+
+}
+
+fun SerializeObject.putAny(key: String, value: Any?) {
+    this[key] = value.toSerializeElement()
 }
 
 fun SerializeObject.toMap(): Map<String, Any?> {
@@ -80,80 +75,41 @@ fun SerializeObject.toMap(): Map<String, Any?> {
 
 interface SObj {
     fun serialize(): SerializeObject {
-        val clazz = this::class
-        return SerializeObject().apply {
-            clazz.memberProperties.forEach {
-                if (it.visibility == PUBLIC) {
-                    val key = it.name
-                    when (val value = it.call(this@SObj)) {
-                        null                -> this[key] = SerializeNull
-                        is Boolean          -> this[key] = value
-                        is BigInteger       -> this[key] = value
-                        is BigDecimal       -> this[key] = value
-                        is Number           -> this[key] = value
-                        is String           -> this[key] = value
-                        is Char             -> this[key] = value
-                        is SerializeElement -> this[key] = value
-                        else                -> this[key] = value.toSerializeObject()
-                    }
-                }
-            }
-        }
+        return this.toSerializeObject()
     }
 
 }
 
 class SerializeObjectScope {
 
-    internal  val obj: SerializeObject = SerializeObject()
+    internal val obj: SerializeObject = SerializeObject()
 
-    infix operator fun String.minus(value: String) {
-        obj[this] = value
+    fun put(entry: Map.Entry<String, Any?>) {
+        obj.putAny(entry.key, entry.value)
     }
 
-    infix operator fun String.minus(value: Number) {
-        obj[this] = value
+    fun put(entry: Pair<String, Any?>) {
+        obj.putAny(entry.first, entry.second)
     }
 
-    infix operator fun String.minus(value: Boolean) {
-        obj[this] = value
+    infix operator fun String.minus(value: Any?) {
+        obj.putAny(this, value)
     }
 
-    infix operator fun String.minus(value: Char) {
-        obj[this] = value
-    }
-
-    infix operator fun String.minus(value: SerializeElement) {
-        obj[this] = value
-    }
 }
 
 fun serializeObject(scope: SerializeObjectScope.() -> Unit): SerializeObject {
     return SerializeObjectScope().apply(scope).obj
 }
 
-
-fun serializeObject(map: Map<String, Any>): SerializeObject {
+fun serializeObject(map: Map<String, Any?>): SerializeObject {
     return serializeObject(map.entries)
 }
 
-@Suppress("UNCHECKED_CAST")
 fun serializeObject(entries: Iterable<Map.Entry<String, *>>): SerializeObject {
     return serializeObject {
         for (entry in entries) {
-            when (val element = entry.value) {
-                null                -> entry.key - SerializeNull
-                is Boolean          -> entry.key - element
-                is BigInteger       -> entry.key - element
-                is BigDecimal       -> entry.key - element
-                is Number           -> entry.key - element
-                is String           -> entry.key - element
-                is Char             -> entry.key - element
-                is SerializeElement -> entry.key - element
-                is Map<*, *>        -> entry.key - serializeObject(element.mapKeys { it.key.toString() }.mapValues { it.value!! })
-                is Iterable<*>      -> entry.key - serializeArray(element as List<Any>)
-                else                -> entry.key - element.toSerializeObject()
-            }
+            put(entry)
         }
     }
 }
@@ -166,59 +122,40 @@ fun <T> serializeObject(map: Map<String, T>, converter: (T) -> SerializeElement)
     }
 }
 
-fun <T> SerializeObject.getOr(key: String, or: T, converter: (SerializeElement) -> T): T {
-    return try {
-        converter(this[key]!!)
-    } catch (_: Exception) {
-        or
+fun <T> serializeObject(entries: Set<Map.Entry<String, T>>, entryConverter: (String, T) -> Pair<String, SerializeElement>): SerializeObject {
+    return serializeObject {
+        for (entry in entries) {
+            put(entryConverter(entry.key, entry.value))
+        }
     }
+}
+
+
+fun <T> SerializeObject.getOr(key: String, or: T, converter: (SerializeElement) -> T): T {
+    return runCatching { converter(this[key]!!) }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: Number): Number {
-    return try {
-        this[key]!!.asNumber
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this[key]!!.asNumber }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: Boolean): Boolean {
-    return try {
-        this[key]!!.asBoolean
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this[key]!!.asBoolean }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: String): String {
-    return try {
-        this[key]!!.asString
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this[key]!!.asString }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: Char): Char {
-    return try {
-        this[key]!!.asString[0]
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this[key]!!.asString[0] }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: SerializeObject): SerializeObject {
-    return try {
-        this[key]!!.asObject
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this[key]!!.asObject }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: SerializeArray): SerializeArray {
-    return try {
-        this[key]!!.asArray
-    } catch (_: Exception) {
-        or
-    }
+    return runCatching { this[key]!!.asArray }.getOrDefault(or)
 }
 

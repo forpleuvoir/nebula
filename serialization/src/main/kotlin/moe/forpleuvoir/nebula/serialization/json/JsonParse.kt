@@ -1,10 +1,12 @@
 package moe.forpleuvoir.nebula.serialization.json
 
+import moe.forpleuvoir.nebula.common.api.BetaApi
 import moe.forpleuvoir.nebula.common.util.replace
 import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.extensions.serializeArray
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 
+@BetaApi
 class JsonParse private constructor(private val charArray:CharArray) {
     companion object {
 
