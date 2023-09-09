@@ -1,7 +1,7 @@
 rootProject.name = "nebula"
 
-include(":common")
-include(":config")
-include(":serialization")
-include(":serialization-gson")
-include(":event")
+include(":nebula-common")
+include(":nebula-config")
+include(":nebula-serialization")
+include(":nebula-serialization-gson")
+include(":nebula-event")

@@ -1,0 +1,24 @@
+{
+  "name": "John Doe",
+  "age": 30,
+  "address": {
+    "street": "123 Main St",
+    "city": "Cityville"
+  },
+  "contacts": [
+    {
+      "type": "email",
+      "value": "john.do\"e@example.com"
+    },
+    {
+      "type": "phone",
+      "value": "+1234567890"
+    }
+  ],
+  "notes": " {\"nestedKey\":\"nested\\\"Value\"}",
+  "nestedJson": {
+    "key1": "value1?§aa",
+    "key2": "value2"
+  },
+  "url": "https://maven.forpleuvoir.moe"
+}

@@ -10,10 +10,12 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="common:publishCommonPublicationToReleasesRepository" />
-          <option value="config:publishConfigPublicationToReleasesRepository" />
-          <option value="serialization:publishSerializationPublicationToReleasesRepository" />
-          <option value="event:publishEventPublicationToReleasesRepository" />
+            <option value="nebula-common:publishNebula-commonPublicationToReleasesRepository"/>
+            <option value="nebula-config:publishNebula-configPublicationToReleasesRepository"/>
+            <option value="nebula-event:publishNebula-eventPublicationToReleasesRepository"/>
+            <option value="nebula-serialization:publishNebula-serializationPublicationToReleasesRepository"/>
+            <option value="nebula-serialization-gson:publishNebula-serialization-gsonPublicationToReleasesRepository"/>
+            <option value="publishNebulaPublicationToReleasesRepository"/>
         </list>
       </option>
       <option name="vmOptions" />
@@ -21,6 +23,7 @@
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
     <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
     <method v="2" />
   </configuration>
 </component>
