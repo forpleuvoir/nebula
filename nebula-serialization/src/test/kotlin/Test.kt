@@ -6,11 +6,12 @@ import moe.forpleuvoir.nebula.serialization.extensions.SObj
 import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
+import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 import java.math.BigDecimal
 import java.math.BigInteger
 
 fun main() {
-    test1()
+    test3()
 }
 
 @OptIn(ExperimentalApi::class)
@@ -48,8 +49,11 @@ fun test1() {
     println(obj)
     println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
     println(json.parseToJsonObject.get("notes").asString)
+    println(obj.dumpAsJson(true))
+    println(obj["contacts"]?.dumpAsJson(true))
 }
 
+@OptIn(ExperimentalApi::class)
 fun test3() {
     val o = object {
         var aa = 65
@@ -72,7 +76,7 @@ fun test3() {
         val h = arrayOf(6, "c", "asdas", o)
         val j = o
     }
-    println(obj.toSerializeObject().toString())
+    println(obj.toSerializeObject().dumpAsJson(true))
 }
 
 fun test2() {

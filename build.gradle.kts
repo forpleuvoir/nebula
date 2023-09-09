@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     signing
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
 }
@@ -16,7 +16,6 @@ version = "0.2.5a"
 repositories {
     mavenCentral()
     mavenLocal()
-    maven { url = uri("https://www.jitpack.io") }
 }
 
 dependencies {
@@ -127,7 +126,6 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven { url = uri("https://www.jitpack.io") }
     }
 
     dependencies {

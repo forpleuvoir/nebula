@@ -123,8 +123,6 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
         other as SerializeObject
 
-        if (members != other.members) return false
-
         return true
     }
 

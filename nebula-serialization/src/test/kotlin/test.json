@@ -20,5 +20,28 @@
     "key1": "value1?§aa",
     "key2": "value2"
   },
-  "url": "https://maven.forpleuvoir.moe"
+  "url": "https://maven.forpleuvoir.moe",
+  "a": {
+    "a": 65,
+    "b": "b",
+    "c": "ccc",
+    "d": true,
+    "e": 4544,
+    "f": 45.11145,
+    "g": null,
+    "h": [
+      6,
+      "c",
+      "asdas",
+      {
+        "aa": 65,
+        "bb": "bb"
+      }
+    ],
+    "j": {
+      "aa": 65,
+      "bb": "bb"
+    }
+  }
 }
+

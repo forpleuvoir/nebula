@@ -1,53 +1,116 @@
 package moe.forpleuvoir.nebula.serialization.json
 
+import moe.forpleuvoir.nebula.common.api.ExperimentalApi
 import moe.forpleuvoir.nebula.serialization.base.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * 将序列化元素[moe.forpleuvoir.nebula.serialization.base.SerializeElement]转换为json字符串
- * @param element SerializeElement
+ * @param humanReadable 是否为人类能阅读的json字符串
+ * @param indentationSize 缩进空格数 默认为2
+ * @constructor
  */
+@ExperimentalApi
 class JsonSerializer(
-    private val element: SerializeElement,
     private val humanReadable: Boolean = false,
-    private val indentationCharacter: String = "  "
+    private val indentationSize: Int = 2
 ) {
 
     companion object {
 
-
+        fun SerializeElement.dumpAsJson(humanReadable: Boolean = false, indentationSize: Int = 2): String {
+            return JsonSerializer(humanReadable, indentationSize).elementDumpAsString(this)
+        }
     }
 
     private var indentationLevel = 0
 
+    private val indentation: String
+        get() =
+            buildString { for (index in 1..indentationLevel * indentationSize) append(' ') }
 
-    fun dumpAsString(): String {
-        return buildString {
+    @OptIn(ExperimentalContracts::class)
+    private fun humanReadable(action: () -> Unit) {
+        contract { callsInPlace(action, InvocationKind.AT_MOST_ONCE) }
+        if (humanReadable) action()
+    }
 
+
+    private fun elementDumpAsString(serializeElement: SerializeElement): String {
+        return when (serializeElement) {
+            is SerializeObject    -> objectDumpAsString(serializeElement)
+            is SerializeArray     -> arrayDumpAsString(serializeElement)
+            is SerializeNull      -> nullDumpAsString(serializeElement)
+            is SerializePrimitive -> primitiveDumpAsString(serializeElement)
+            else                  -> throw Exception("expect SerializeElement but found ${serializeElement::class}")
         }
     }
 
-    fun objectDumpAsString(serializeObject: SerializeObject): String {
+    private fun objectDumpAsString(serializeObject: SerializeObject): String {
         return buildString {
-
-        }
-    }
-
-    fun arrayDumpAsString(serializeArray: SerializeArray): String {
-        return buildString {
-            append("[")
-            if (humanReadable) {
-                append("\n")
-
+            append('{')
+            indentationLevel++
+            humanReadable {
+                append('\n')
+                append(indentation)
             }
-            append("]")
+            serializeObject.apply {
+                entries.forEachIndexed { index, mutableEntry ->
+                    append("\"${mutableEntry.key}\"")
+                    append(':')
+                    humanReadable { append(' ') }
+                    append(elementDumpAsString(mutableEntry.value))
+                    if (index != this.size - 1) {
+                        append(',')
+                        humanReadable {
+                            append('\n')
+                            append(indentation)
+                        }
+                    }
+                }
+            }
+            indentationLevel--
+            humanReadable {
+                append('\n')
+                append(indentation)
+            }
+            append('}')
         }
     }
 
-    fun primitiveDumpAsString(serializePrimitive: SerializePrimitive): String {
+    private fun arrayDumpAsString(serializeArray: SerializeArray): String {
+        return buildString {
+            append('[')
+            indentationLevel++
+            serializeArray.forEachIndexed { index, value ->
+                humanReadable {
+                    append('\n')
+                    append(indentation)
+                }
+                append(elementDumpAsString(value))
+                if (index != serializeArray.size - 1) {
+                    append(',')
+                    humanReadable {
+                        append(indentation)
+                    }
+                }
+            }
+            indentationLevel--
+            humanReadable {
+                append('\n')
+                append(indentation)
+            }
+            append(']')
+        }
+    }
+
+    private fun primitiveDumpAsString(serializePrimitive: SerializePrimitive): String {
         return serializePrimitive.toString()
     }
 
-    fun nullDumpAsString(serializeNull: SerializeNull): String {
+    private fun nullDumpAsString(serializeNull: SerializeNull): String {
         return serializeNull.toString()
     }
 

@@ -233,8 +233,6 @@ class SerializeArray private constructor(internal val elements: MutableList<Seri
 
 		other as SerializeArray
 
-		if (elements != other.elements) return false
-
 		return true
 	}
 
