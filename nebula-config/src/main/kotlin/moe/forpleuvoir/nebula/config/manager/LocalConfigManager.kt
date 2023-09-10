@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.config.impl
+package moe.forpleuvoir.nebula.config.manager
 
 import moe.forpleuvoir.nebula.config.util.ConfigUtil
 import java.nio.file.Path

@@ -1,6 +1,5 @@
-package moe.forpleuvoir.nebula.config.impl
+package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.config.ConfigManager
 import java.util.*
 
 interface AutoSaveConfigManager : ConfigManager {

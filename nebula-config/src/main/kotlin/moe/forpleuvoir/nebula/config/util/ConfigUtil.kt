@@ -13,7 +13,11 @@ object ConfigUtil {
             if (!path.toFile().exists()) {
                 path.toFile().mkdir()
             }
-            file.createNewFile()
+            runCatching {
+                file.createNewFile()
+            }.onFailure {
+                throw IOException("${it.message},${file.absolutePath}")
+            }
         }
         return file
     }

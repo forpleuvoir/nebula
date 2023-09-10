@@ -4,18 +4,16 @@ import moe.forpleuvoir.nebula.common.times
 import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.common.util.plus
 import moe.forpleuvoir.nebula.common.util.second
-import moe.forpleuvoir.nebula.config.impl.AutoSaveConfigManager
-import moe.forpleuvoir.nebula.config.impl.ConfigCategoryImpl
-import moe.forpleuvoir.nebula.config.impl.LocalConfigManager
+import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
-import moe.forpleuvoir.nebula.serialization.gson.jsonStringToObject
-import moe.forpleuvoir.nebula.serialization.gson.toJsonString
+import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
+import moe.forpleuvoir.nebula.config.manager.LocalConfigManager
+import moe.forpleuvoir.nebula.config.persistence.JsonConfigManagerPersistence
 import java.nio.file.Path
 import java.util.*
 
-object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager {
-    override val configPath: Path = Path.of("./config/build/config")
+object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConfigManagerPersistence {
+    override val configPath: Path = Path.of("./nebula-config/build/config")
     override val starTime: Date = Date() + 30.second
     override val period: Long = 30.second
 
@@ -32,18 +30,6 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager {
     override fun init() {
         super<LocalConfigManager>.init()
         super<AutoSaveConfigManager>.init()
-    }
-
-    override fun fileName(key: String): String {
-        return "$key.json"
-    }
-
-    override fun serializeObjectToString(serializeObject: SerializeObject): String {
-        return serializeObject.toJsonString()
-    }
-
-    override fun stringToSerializeObject(str: String): SerializeObject {
-        return str.jsonStringToObject()
     }
 
     val a_test by ConfigString("test", "外部测试")

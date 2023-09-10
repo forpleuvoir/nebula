@@ -1,18 +1,19 @@
-package moe.forpleuvoir.nebula.config.impl
+package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.config.ConfigCategory
-import moe.forpleuvoir.nebula.config.ConfigManager
+import moe.forpleuvoir.nebula.config.category.ConfigCategory
+import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
+import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
 import moe.forpleuvoir.nebula.config.util.ConfigThreadPool
 import kotlin.reflect.full.isSubclassOf
 
 abstract class AbstractConfigManager(
 	key: String,
-) : ConfigManager, ConfigCategoryImpl(key), ConfigManagerSerializer {
+) : ConfigManager, ConfigCategoryImpl(key), ConfigManagerPersistence {
 
 	override var needSave: Boolean = false
 		get() {
 			var ret = false
-			configSerializes().filter {
+			allConfigSerializable().filter {
 				it::class.isSubclassOf(ConfigCategory::class)
 			}.forEach {
 				it as ConfigCategory
@@ -24,7 +25,7 @@ abstract class AbstractConfigManager(
 		set(value) {
 			field = value
 			if (!value) {
-				configSerializes().filter {
+				allConfigSerializable().filter {
 					it::class.isSubclassOf(ConfigCategory::class)
 				}.forEach {
 					it as ConfigCategory

@@ -1,4 +1,6 @@
-package moe.forpleuvoir.nebula.config
+package moe.forpleuvoir.nebula.config.manager
+
+import moe.forpleuvoir.nebula.config.category.ConfigCategory
 
 interface ConfigManager : ConfigCategory {
 

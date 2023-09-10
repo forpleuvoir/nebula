@@ -20,6 +20,7 @@ class JsonSerializer(
 
     companion object {
 
+        @ExperimentalApi
         fun SerializeElement.dumpAsJson(humanReadable: Boolean = false, indentationSize: Int = 2): String {
             return JsonSerializer(humanReadable, indentationSize).elementDumpAsString(this)
         }
@@ -28,8 +29,7 @@ class JsonSerializer(
     private var indentationLevel = 0
 
     private val indentation: String
-        get() =
-            buildString { for (index in 1..indentationLevel * indentationSize) append(' ') }
+        get() = buildString { for (index in 1..indentationLevel * indentationSize) append(' ') }
 
     @OptIn(ExperimentalContracts::class)
     private fun humanReadable(action: () -> Unit) {

@@ -1,8 +1,8 @@
-package moe.forpleuvoir.nebula.config.impl
+package moe.forpleuvoir.nebula.config.persistence
 
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 
-interface ConfigManagerSerializer {
+interface ConfigManagerPersistence {
 
 	fun fileName(key: String): String
 
