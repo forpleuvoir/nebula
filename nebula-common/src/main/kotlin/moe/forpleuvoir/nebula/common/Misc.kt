@@ -34,6 +34,7 @@ fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
 inline fun times(timeConsuming: (Long) -> Unit = { println("耗时 : ${it / 1000000.0}ms") }, action: () -> Unit) {
 	contract {
 		callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+		callsInPlace(timeConsuming, InvocationKind.EXACTLY_ONCE)
 	}
 	val timeStart = System.nanoTime()
 	action.invoke()

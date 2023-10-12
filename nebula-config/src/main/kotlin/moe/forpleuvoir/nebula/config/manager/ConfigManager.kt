@@ -4,16 +4,28 @@ import moe.forpleuvoir.nebula.config.category.ConfigCategory
 
 interface ConfigManager : ConfigCategory {
 
-	fun save()
+    fun save()
 
-	fun saveAsync()
+    /**
+     * 在配置保存完成后执行
+     * time为保存时间,单位ns
+     */
+    fun onSaved(callback: (time: Long) -> Unit)
 
-	fun forceSave()
+    fun saveAsync()
 
-	fun forceSaveAsync()
+    fun forceSave()
 
-	fun load()
+    fun forceSaveAsync()
 
-	fun loadAsync()
+    fun load()
+
+    /**
+     * 在配置加载完成后执行
+     * time为保存时间,单位ns
+     */
+    fun onLoaded(callback: (time: Long) -> Unit)
+
+    fun loadAsync()
 
 }

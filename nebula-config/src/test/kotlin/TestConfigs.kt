@@ -14,13 +14,13 @@ import java.util.*
 
 object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConfigManagerPersistence {
     override val configPath: Path = Path.of("./nebula-config/build/config")
-    override val starTime: Date = Date() + 30.second
-    override val period: Long = 30.second
+    override val starTime: Date = Date() + 5.second
+    override val period: Long = 5.second
 
     override val saveAction: () -> Unit
         get() = {
             times {
-                println("开始保存：${Date().format("HH:mm:ss")}")
+                println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
                 test4++
                 saveAsync()
             }

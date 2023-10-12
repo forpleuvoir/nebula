@@ -38,4 +38,16 @@ abstract class AbstractConfigManager(key: String) : ConfigManager, ConfigCategor
         ConfigThreadPool.execute(::load)
     }
 
+    override fun onSaved(callback: (time: Long) -> Unit) {
+        onSaved = callback
+    }
+
+    override fun onLoaded(callback: (time: Long) -> Unit) {
+        onLoaded = callback
+    }
+
+    protected var onSaved: (time: Long) -> Unit = {}
+
+    protected var onLoaded: (time: Long) -> Unit = {}
+
 }

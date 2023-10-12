@@ -12,7 +12,7 @@ interface AutoSaveConfigManager : ConfigManager {
 		get() = this::saveAsync
 
 	override fun init() {
-		Timer().schedule(
+		Timer("AutoSaveConfigManager[${this.key}]").schedule(
 			object : TimerTask() {
 				override fun run() {
 					if (needSave)

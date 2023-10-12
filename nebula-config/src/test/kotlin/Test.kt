@@ -14,12 +14,18 @@ fun main() {
 		Thread.sleep(5000)
 		println("睡了5000")
 	}
+	TestConfigs.onSaved {
+		println("${Thread.currentThread().name} ${TestConfigs.needSave}")
+		println("保存耗时${it / 1000000.0}ms")
+	}
+	TestConfigs.onLoaded {
+		println("加载耗时${it / 1000000.0}ms")
+	}
 	TestConfigs.init()
+	TestConfigs.load()
 	TestConfigs.save()
+//	TestConfigs.Tag1.test.setValue("sdasdasdsadsa")
 	println(TestConfigs.needSave)
-	TestConfigs.Tag1.test.setValue("sdasdasdsadsa")
-	println(TestConfigs.needSave)
-	TestConfigs.save()
 	println(TestConfigs.needSave)
 }
 
