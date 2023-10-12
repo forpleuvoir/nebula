@@ -50,7 +50,7 @@ interface SerializeElement {
 			if (this.isPrimitive) {
 				return this as SerializePrimitive
 			}
-			throw IllegalStateException("Not a serialization Primitive")
+			throw IllegalStateException("Not a serialization Primitive,type: ${this::class.simpleName}, '${toString()}' ")
 		}
 
 	val asObject: SerializeObject
@@ -58,7 +58,7 @@ interface SerializeElement {
 			if (this.isObject) {
 				return this as SerializeObject
 			}
-			throw IllegalStateException("Not a serialization Object")
+			throw IllegalStateException("Not a serialization Object,type: ${this::class.simpleName}, '${toString()}' ")
 		}
 
 	val asArray: SerializeArray
@@ -66,7 +66,7 @@ interface SerializeElement {
 			if (this.isArray) {
 				return this as SerializeArray
 			}
-			throw IllegalStateException("Not a serialization Array")
+			throw IllegalStateException("Not a serialization Array,type: ${this::class.simpleName}, '${toString()}' ")
 		}
 
 	val asNull: SerializeNull
@@ -74,7 +74,7 @@ interface SerializeElement {
 			if (this.isNull) {
 				return this as SerializeNull
 			}
-			throw IllegalStateException("Not a serialization Null")
+			throw IllegalStateException("Not a serialization Null,type: ${this::class.simpleName}, '${toString()}' ")
 		}
 
 	val asString: String

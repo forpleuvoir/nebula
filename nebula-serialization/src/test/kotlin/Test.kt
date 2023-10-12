@@ -11,7 +11,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 fun main() {
-    test3()
+    test1()
 }
 
 @OptIn(ExperimentalApi::class)
@@ -44,7 +44,7 @@ fun test1() {
 	""".trimIndent()
     val obj: SerializeObject
     times {
-        obj = JsonParser.parse(json).asObject
+        obj = JsonParser.parse("{}").asObject
     }
     println(obj)
     println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
