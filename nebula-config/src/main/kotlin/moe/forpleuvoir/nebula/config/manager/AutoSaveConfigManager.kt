@@ -4,21 +4,20 @@ import java.util.*
 
 interface AutoSaveConfigManager : ConfigManager {
 
-	val starTime: Date
+    val starTime: Date
 
-	val period: Long
+    val period: Long
 
-	val saveAction: () -> Unit
-		get() = this::saveAsync
+    val saveAction: (needSave:()-> Boolean) -> Unit
+        get() = { if (it()) saveAsync() }
 
-	override fun init() {
-		Timer("AutoSaveConfigManager[${this.key}]").schedule(
-			object : TimerTask() {
-				override fun run() {
-					if (needSave)
-						saveAction()
-				}
-			}, starTime, period
-		)
-	}
+    override fun init() {
+        Timer("AutoSaveConfigManager[${this.key}]").schedule(
+            object : TimerTask() {
+                override fun run() {
+                    saveAction { needSave }
+                }
+            }, starTime, period
+        )
+    }
 }

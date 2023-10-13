@@ -17,12 +17,16 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConf
     override val starTime: Date = Date() + 5.second
     override val period: Long = 5.second
 
-    override val saveAction: () -> Unit
+    override val saveAction: (() -> Boolean) -> Unit
         get() = {
-            times {
-                println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
+            times({ println() }) {
                 test4++
-                saveAsync()
+                println(test4)
+                println("当前是否需要保存 ${this.needSave}")
+
+                println("是否需要保存 ${if (it()) "是" else "否"}")
+                if (it()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
+                if (it()) saveAsync()
             }
         }
 
@@ -43,6 +47,7 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConf
         val test3 = ConfigColor("test3", Colors.AQUA)
 
         var test4 by ConfigDouble("test4", 0.5)
+
         val test8 = ConfigStringMap("test8", mapOf("k1" to "v1", "k2" to "v2"))
 
         object Tag1_1 : ConfigCategoryImpl("tag1_1") {

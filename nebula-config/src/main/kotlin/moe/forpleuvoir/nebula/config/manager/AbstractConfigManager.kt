@@ -10,9 +10,8 @@ abstract class AbstractConfigManager(key: String) : ConfigManager, ConfigCategor
 
     override var needSave: Boolean = false
         get() {
-            return allConfigSerializable().none {
-                it::class.isSubclassOf(ConfigCategory::class) && (it as ConfigCategory).needSave
-            }
+            return if (!allConfigSerializable().none { it::class.isSubclassOf(ConfigCategory::class) && (it as ConfigCategory).needSave }) true
+            else field
         }
         set(value) {
             field = value
