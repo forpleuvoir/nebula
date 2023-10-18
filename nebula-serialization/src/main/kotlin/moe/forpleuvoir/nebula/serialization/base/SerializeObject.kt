@@ -123,7 +123,7 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
         other as SerializeObject
 
-        return true
+        return this.members == other.members
     }
 
     override fun hashCode(): Int {

@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED")
+@file:OptIn(ExperimentalContracts::class)
 
 package moe.forpleuvoir.nebula.serialization.gson
 
@@ -6,6 +7,9 @@ import com.google.gson.*
 import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.toMap
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.reflect.KVisibility.PUBLIC
 import kotlin.reflect.full.memberProperties
 
@@ -156,6 +160,10 @@ class JsonObjectScope {
 
     internal val jsonObject: JsonObject = JsonObject()
 
+    fun scope(scope: JsonObject.() -> Unit) {
+        jsonObject.apply(scope)
+    }
+
     infix operator fun String.minus(value: String) {
         jsonObject.addProperty(this, value)
     }
@@ -178,9 +186,7 @@ class JsonObjectScope {
 }
 
 fun jsonObject(scope: JsonObjectScope.() -> Unit): JsonObject {
-    val jsonObjectScope = JsonObjectScope()
-    jsonObjectScope.scope()
-    return jsonObjectScope.jsonObject
+    return JsonObjectScope().apply(scope).jsonObject
 }
 
 fun jsonObject(map: Map<String, Any>): JsonObject {
@@ -199,6 +205,9 @@ fun jsonObject(map: Map<String, Any>): JsonObject {
 }
 
 fun <T> jsonObject(map: Map<String, T>, converter: (T) -> JsonElement): JsonObject {
+    contract {
+        callsInPlace(converter, InvocationKind.UNKNOWN)
+    }
     return jsonObject {
         for (entry in map) {
             entry.key - converter(entry.value)
@@ -207,6 +216,9 @@ fun <T> jsonObject(map: Map<String, T>, converter: (T) -> JsonElement): JsonObje
 }
 
 fun <T> JsonObject.getOr(key: String, or: T, converter: (JsonElement) -> T): T {
+    contract {
+        callsInPlace(converter, InvocationKind.AT_MOST_ONCE)
+    }
     return runCatching { converter(this[key]!!) }.getOrDefault(or)
 }
 

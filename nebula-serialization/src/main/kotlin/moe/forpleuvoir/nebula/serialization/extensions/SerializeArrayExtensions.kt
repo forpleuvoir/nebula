@@ -1,16 +1,23 @@
 @file:Suppress("UNUSED")
+@file:OptIn(ExperimentalContracts::class)
 
 package moe.forpleuvoir.nebula.serialization.extensions
-
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 fun serializeArray(vararg elements: Any?): SerializeArray {
     return serializeArray(elements.toList())
 }
 
+
 inline fun serializeArray(scope: SerializeArray.() -> Unit): SerializeArray {
+    contract {
+        callsInPlace(scope, InvocationKind.EXACTLY_ONCE)
+    }
     return SerializeArray().apply(scope)
 }
 
@@ -33,6 +40,9 @@ fun serializeArray(iterator: Iterator<*>): SerializeArray {
 }
 
 inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> SerializeArray): SerializeArray {
+    contract {
+        callsInPlace(converter, InvocationKind.UNKNOWN)
+    }
     return SerializeArray().apply {
         for (t in iterable) {
             add(converter(t))

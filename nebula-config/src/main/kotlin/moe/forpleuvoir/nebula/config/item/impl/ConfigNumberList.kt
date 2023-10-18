@@ -6,25 +6,26 @@ import moe.forpleuvoir.nebula.config.item.ConfigMutableListValue
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.extensions.serializeArray
 
-class ConfigIntDouble(
+abstract class ConfigNumberList<T>(
     override val key: String,
-    defaultValue: List<Double>
-) : ConfigBase<MutableList<Double>, ConfigIntDouble>(), ConfigMutableListValue<Double> {
+    defaultValue: List<T>
+) : ConfigBase<MutableList<T>, ConfigNumberList<T>>(), ConfigMutableListValue<T> where T : Number, T : Comparable<T> {
 
-    override val defaultValue: MutableList<Double> = ArrayList(defaultValue)
+    final override val defaultValue: MutableList<T> = ArrayList(defaultValue)
 
-    override var configValue: MutableList<Double> = list(this.defaultValue)
+    override var configValue: MutableList<T> = list(this.defaultValue)
 
+    protected abstract val mapping: Number.() -> T
     override fun restDefault() {
         if (isDefault()) return
         configValue = list(defaultValue)
         onChange(this)
     }
 
-    private fun list(list: List<Double>): NotifiableArrayList<Double> {
+    private fun list(list: List<T>): NotifiableArrayList<T> {
         return NotifiableArrayList(list).apply {
             subscribe {
-                this@ConfigIntDouble.onChange(this@ConfigIntDouble)
+                this@ConfigNumberList.onChange(this@ConfigNumberList)
             }
         }
     }
@@ -33,7 +34,8 @@ class ConfigIntDouble(
         serializeArray(configValue)
 
     override fun deserialization(serializeElement: SerializeElement) {
-        val list = serializeElement.asArray.map { it.asDouble }
+        val list = serializeElement.asArray.map { it.asNumber.mapping() }
         configValue = list(list)
     }
+
 }

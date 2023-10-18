@@ -1,10 +1,15 @@
 @file:Suppress("UNUSED")
+@file:OptIn(ExperimentalContracts::class)
 
 package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.lang.reflect.Modifier
+import kotlin.contracts.CallsInPlace
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility.INTERNAL
 import kotlin.reflect.full.findAnnotation
@@ -84,6 +89,11 @@ class SerializeObjectScope {
 
     internal val obj: SerializeObject = SerializeObject()
 
+
+    fun scope(scope: SerializeObject.() -> Unit) {
+        obj.apply(scope)
+    }
+
     fun put(entry: Map.Entry<String, Any?>) {
         obj.putAny(entry.key, entry.value)
     }
@@ -93,6 +103,15 @@ class SerializeObjectScope {
     }
 
     infix operator fun String.minus(value: Any?) {
+        obj.putAny(this, value)
+    }
+
+    operator fun set(key: String, value: Any?) {
+        obj["a"] = SerializeObject()
+        obj.putAny(key, value)
+    }
+
+    infix fun String.to(value: Any?) {
         obj.putAny(this, value)
     }
 
@@ -115,6 +134,9 @@ fun serializeObject(entries: Iterable<Map.Entry<String, *>>): SerializeObject {
 }
 
 fun <T> serializeObject(map: Map<String, T>, converter: (T) -> SerializeElement): SerializeObject {
+    contract {
+        callsInPlace(converter, InvocationKind.UNKNOWN)
+    }
     return serializeObject {
         for (entry in map) {
             entry.key - converter(entry.value)
@@ -123,6 +145,9 @@ fun <T> serializeObject(map: Map<String, T>, converter: (T) -> SerializeElement)
 }
 
 fun <T> serializeObject(entries: Set<Map.Entry<String, T>>, entryConverter: (String, T) -> Pair<String, SerializeElement>): SerializeObject {
+    contract {
+        callsInPlace(entryConverter, InvocationKind.UNKNOWN)
+    }
     return serializeObject {
         for (entry in entries) {
             put(entryConverter(entry.key, entry.value))

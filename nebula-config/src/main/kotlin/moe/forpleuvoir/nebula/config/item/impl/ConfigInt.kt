@@ -7,23 +7,12 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 
 class ConfigInt(
-	override val key: String,
-	override val defaultValue: Int,
-	override val minValue: Int = Int.MIN_VALUE,
-	override val maxValue: Int = Int.MAX_VALUE
-) : ConfigBase<Int, ConfigInt>(), ConfigNumberValue<Int> {
+	key: String,
+	defaultValue: Int,
+	minValue: Int = Int.MIN_VALUE,
+	maxValue: Int = Int.MAX_VALUE
+) : ConfigNumber<Int>(key, defaultValue, minValue, maxValue) {
 
-	override var configValue: Int = defaultValue.clamp(minValue, maxValue)
-
-	override fun setValue(value: Int) {
-		super.setValue(value.clamp(minValue, maxValue))
-	}
-
-	override fun serialization(): SerializeElement =
-		SerializePrimitive(configValue)
-
-	override fun deserialization(serializeElement: SerializeElement) {
-		configValue = serializeElement.asInt.clamp(minValue, maxValue)
-	}
+	override val mapping: Number.() -> Int get() = Number::toInt
 
 }

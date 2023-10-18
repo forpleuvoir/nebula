@@ -11,6 +11,7 @@ class ConfigDate(
 ) : ConfigBase<Date, ConfigDate>() {
 
 	override var configValue: Date = Date(defaultValue.time)
+
 	override fun serialization(): SerializeElement =
 		SerializePrimitive(configValue.time)
 

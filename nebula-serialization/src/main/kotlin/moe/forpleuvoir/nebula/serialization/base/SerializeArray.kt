@@ -32,6 +32,7 @@ class SerializeArray private constructor(internal val elements: MutableList<Seri
 
 	override val size: Int
 		get() = this.elements.size
+
 	override val deepCopy: SerializeArray
 		get() {
 			if (this.isNotEmpty()) {
