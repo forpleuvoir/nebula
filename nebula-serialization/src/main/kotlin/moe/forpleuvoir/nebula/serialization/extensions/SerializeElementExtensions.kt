@@ -42,27 +42,25 @@ infix fun SerializeElement.completeEquals(target: SerializeElement): Boolean {
     } else return false
 }
 
-infix fun SerializeElement.contains(target: SerializeArray): Boolean {
-    if (target.contains(this)) return true
-    return if (this is SerializeArray) {
-        target.containsAll(this)
+infix fun SerializeArray.contains(target: SerializeElement): Boolean {
+    if (contains(target)) return true
+    return if (target is SerializeArray) {
+        this.containsAll(target)
     } else {
         false
     }
 }
 
-infix fun SerializeElement.contains(target: SerializeObject): Boolean {
-    if(this !is SerializeObject) return false
-    return if (target.keys.containsAll(this.keys)) {
+infix fun SerializeObject.contains(target: SerializeElement): Boolean {
+    if (target !is SerializeObject) return false
+    return if (keys.containsAll(target.keys)) {
         var result = false
-        forEach { k, v ->
-            result = if(target[k] is SerializeArray){
-                v contains target[k] as SerializeArray
-            }else if(target[k] is SerializeObject){
-                v contains target[k]!! as SerializeObject
-            }else {
-                v == target[k]
-            }
+        target.forEach { k, v ->
+            result = if (this[k] is SerializeArray) {
+                (this[k] as SerializeArray) contains v
+            } else if (this[k] is SerializeObject) {
+                (this[k] as SerializeObject) contains v
+            } else this[k] == v
         }
         result
     } else {
