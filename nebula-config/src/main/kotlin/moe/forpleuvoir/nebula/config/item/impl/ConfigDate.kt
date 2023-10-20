@@ -3,20 +3,21 @@ package moe.forpleuvoir.nebula.config.item.impl
 import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import moe.forpleuvoir.nebula.serialization.extensions.deserialization
+import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.util.*
 
 class ConfigDate(
-	override val key: String,
-	override val defaultValue: Date
+    override val key: String,
+    override val defaultValue: Date
 ) : ConfigBase<Date, ConfigDate>() {
 
-	override var configValue: Date = Date(defaultValue.time)
+    override var configValue: Date = Date(defaultValue.time)
 
-	override fun serialization(): SerializeElement =
-		SerializePrimitive(configValue.time)
+    override fun serialization(): SerializeElement = configValue.serialization()
 
-	override fun deserialization(serializeElement: SerializeElement) {
-		configValue.time = serializeElement.asLong
-	}
+    override fun deserialization(serializeElement: SerializeElement) {
+        configValue.deserialization(serializeElement)
+    }
 
 }

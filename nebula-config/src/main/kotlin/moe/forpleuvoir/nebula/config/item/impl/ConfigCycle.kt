@@ -9,8 +9,8 @@ class ConfigCycle<T>(
     override val items: List<T>,
     override val defaultValue: T = items[0],
     private val asString: (T) -> String,
+    private val serializer: (T) -> SerializeElement,
     private val deserializer: (SerializeElement) -> T,
-    private val serializer: (T) -> SerializeElement
 ) : ConfigBase<T, ConfigCycle<T>>(), ConfigCycleValue<T> {
 
     init {

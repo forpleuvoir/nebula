@@ -3,13 +3,13 @@
 package moe.forpleuvoir.nebula.common.util
 
 
-fun <T> T.clamps(minValue: T, maxValue: T): T where T : Number, T : Comparable<T> {
+fun <T> T.clamps(minValue: T, maxValue: T): T where T : Comparable<T> {
     return if (this > maxValue) maxValue
     else if (this < minValue) minValue
     else this
 }
 
-fun <T> T.clamp(range: ClosedRange<T>): T where T : Number, T : Comparable<T> {
+fun <T> T.clamp(range: ClosedRange<T>): T where T : Comparable<T> {
     return if (this > range.endInclusive) range.endInclusive
     else if (this < range.start) range.start
     else this

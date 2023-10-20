@@ -15,10 +15,10 @@ fun main() {
 		println("睡了5000")
 	}
 	TestConfigs.onSaved {
-		println("保存耗时${it / 1000000.0}ms")
+		println("保存耗时$it")
 	}
 	TestConfigs.onLoaded {
-		println("加载耗时${it / 1000000.0}ms")
+		println("加载耗时$it")
 	}
 	TestConfigs.init()
 	TestConfigs.load()

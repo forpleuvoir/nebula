@@ -5,6 +5,7 @@ import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
 import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
 import moe.forpleuvoir.nebula.config.util.ConfigThreadPool
 import kotlin.reflect.full.isSubclassOf
+import kotlin.time.Duration
 
 abstract class AbstractConfigManager(key: String) : ConfigManager, ConfigCategoryImpl(key), ConfigManagerPersistence {
 
@@ -37,16 +38,16 @@ abstract class AbstractConfigManager(key: String) : ConfigManager, ConfigCategor
         ConfigThreadPool.execute(::load)
     }
 
-    override fun onSaved(callback: (time: Long) -> Unit) {
+    override fun onSaved(callback: (duration: Duration) -> Unit) {
         onSaved = callback
     }
 
-    override fun onLoaded(callback: (time: Long) -> Unit) {
+    override fun onLoaded(callback: (duration: Duration) -> Unit) {
         onLoaded = callback
     }
 
-    protected var onSaved: (time: Long) -> Unit = {}
+    protected var onSaved: (duration: Duration) -> Unit = {}
 
-    protected var onLoaded: (time: Long) -> Unit = {}
+    protected var onLoaded: (duration: Duration) -> Unit = {}
 
 }

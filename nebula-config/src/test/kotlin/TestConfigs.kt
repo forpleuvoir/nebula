@@ -1,9 +1,7 @@
 import TestConfigs.Tag1.test4
 import moe.forpleuvoir.nebula.common.color.Colors
-import moe.forpleuvoir.nebula.common.times
 import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.common.util.plus
-import moe.forpleuvoir.nebula.common.util.second
 import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
@@ -11,15 +9,18 @@ import moe.forpleuvoir.nebula.config.manager.LocalConfigManager
 import moe.forpleuvoir.nebula.config.persistence.JsonConfigManagerPersistence
 import java.nio.file.Path
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.measureTime
 
 object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConfigManagerPersistence {
     override val configPath: Path = Path.of("./nebula-config/build/config")
-    override val starTime: Date = Date() + 5.second
-    override val period: Long = 5.second
+    override val initialDelay: Duration = 5.seconds
+    override val period: Duration = 5.seconds
 
     override val saveAction: (() -> Boolean) -> Unit
         get() = {
-            times({ println() }) {
+            println(measureTime {
                 test4++
                 println(test4)
                 println("当前是否需要保存 ${this.needSave}")
@@ -27,7 +28,7 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConf
                 println("是否需要保存 ${if (it()) "是" else "否"}")
                 if (it()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
                 if (it()) saveAsync()
-            }
+            })
         }
 
 

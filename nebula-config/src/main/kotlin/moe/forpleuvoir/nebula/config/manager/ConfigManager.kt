@@ -1,16 +1,17 @@
 package moe.forpleuvoir.nebula.config.manager
 
 import moe.forpleuvoir.nebula.config.category.ConfigCategory
+import kotlin.time.Duration
 
 interface ConfigManager : ConfigCategory {
 
     fun save()
 
     /**
-     * 在配置保存完成后执行
-     * time为保存时间,单位ns
+     *  在配置保存完成后执行
+     * @param callback (duration: Duration) -> Unit  duration为保存耗时
      */
-    fun onSaved(callback: (time: Long) -> Unit)
+    fun onSaved(callback: (duration: Duration) -> Unit)
 
     fun saveAsync()
 
@@ -22,9 +23,9 @@ interface ConfigManager : ConfigCategory {
 
     /**
      * 在配置加载完成后执行
-     * time为保存时间,单位ns
+     * @param callback (duration: Duration) -> Unit  duration为加载耗时
      */
-    fun onLoaded(callback: (time: Long) -> Unit)
+    fun onLoaded(callback: (duration: Duration) -> Unit)
 
     fun loadAsync()
 

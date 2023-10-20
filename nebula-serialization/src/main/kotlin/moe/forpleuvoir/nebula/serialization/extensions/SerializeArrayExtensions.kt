@@ -39,13 +39,13 @@ fun serializeArray(iterator: Iterator<*>): SerializeArray {
     }
 }
 
-inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> SerializeArray): SerializeArray {
+inline fun <T> serializeArray(iterable: Iterable<T>, converter: (T) -> SerializeElement): SerializeArray {
     contract {
         callsInPlace(converter, InvocationKind.UNKNOWN)
     }
     return SerializeArray().apply {
-        for (t in iterable) {
-            add(converter(t))
+        for (e in iterable) {
+            add(converter(e))
         }
     }
 }

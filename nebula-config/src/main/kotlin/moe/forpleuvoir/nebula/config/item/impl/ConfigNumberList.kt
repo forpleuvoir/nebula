@@ -1,41 +1,22 @@
 package moe.forpleuvoir.nebula.config.item.impl
 
-import moe.forpleuvoir.nebula.common.util.NotifiableArrayList
-import moe.forpleuvoir.nebula.config.ConfigBase
-import moe.forpleuvoir.nebula.config.item.ConfigMutableListValue
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.extensions.serializeArray
+import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 
 abstract class ConfigNumberList<T>(
-    override val key: String,
-    defaultValue: List<T>
-) : ConfigBase<MutableList<T>, ConfigNumberList<T>>(), ConfigMutableListValue<T> where T : Number, T : Comparable<T> {
+    key: String,
+    defaultValue: List<T>,
+    deserializer: (SerializeElement) -> T
+) : ConfigList<T>(key, defaultValue, { SerializePrimitive(it) }, deserializer) where T : Number, T : Comparable<T>
 
-    final override val defaultValue: MutableList<T> = ArrayList(defaultValue)
+class ConfigByteList(key: String, defaultValue: List<Byte>) : ConfigNumberList<Byte>(key, defaultValue, { it.asByte })
 
-    override var configValue: MutableList<T> = list(this.defaultValue)
+class ConfigShortList(key: String, defaultValue: List<Short>) : ConfigNumberList<Short>(key, defaultValue, { it.asShort })
 
-    protected abstract val mapping: Number.() -> T
-    override fun restDefault() {
-        if (isDefault()) return
-        configValue = list(defaultValue)
-        onChange(this)
-    }
+class ConfigIntList(key: String, defaultValue: List<Int>) : ConfigNumberList<Int>(key, defaultValue, { it.asInt })
 
-    private fun list(list: List<T>): NotifiableArrayList<T> {
-        return NotifiableArrayList(list).apply {
-            subscribe {
-                this@ConfigNumberList.onChange(this@ConfigNumberList)
-            }
-        }
-    }
+class ConfigLongList(key: String, defaultValue: List<Long>) : ConfigNumberList<Long>(key, defaultValue, { it.asLong })
 
-    override fun serialization(): SerializeElement =
-        serializeArray(configValue)
+class ConfigFloatList(key: String, defaultValue: List<Float>) : ConfigNumberList<Float>(key, defaultValue, { it.asFloat })
 
-    override fun deserialization(serializeElement: SerializeElement) {
-        val list = serializeElement.asArray.map { it.asNumber.mapping() }
-        configValue = list(list)
-    }
-
-}
+class ConfigDoubleList(key: String, defaultValue: List<Double>) : ConfigNumberList<Double>(key, defaultValue, { it.asDouble })
