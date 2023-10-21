@@ -126,6 +126,10 @@ class JsonParser private constructor(private val charArray: CharArray) {
             curr++
             while (curr < charArray.size - 1) {
                 skipChar()
+                if (isEnd(OBJECT_END)) {
+                    curr++
+                    break
+                }
                 val key = parseString().asString
                 skipChar()
                 if (currChar == PAIR_CONNECTION) curr++
@@ -148,6 +152,10 @@ class JsonParser private constructor(private val charArray: CharArray) {
             curr++
             while (curr < charArray.size - 1) {
                 skipChar()
+                if (isEnd(ARRAY_END)) {
+                    curr++
+                    break
+                }
                 add(parseElement())
                 skipChar()
                 if (isEnd(ARRAY_END)) {
