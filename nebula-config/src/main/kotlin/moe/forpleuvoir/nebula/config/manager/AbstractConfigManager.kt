@@ -3,7 +3,7 @@ package moe.forpleuvoir.nebula.config.manager
 import moe.forpleuvoir.nebula.config.category.ConfigCategory
 import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
 import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
-import moe.forpleuvoir.nebula.config.util.ConfigThreadPool
+import moe.forpleuvoir.nebula.config.util.configLaunch
 import kotlin.reflect.full.isSubclassOf
 import kotlin.time.Duration
 
@@ -27,15 +27,15 @@ abstract class AbstractConfigManager(key: String) : ConfigManager, ConfigCategor
         }
 
     override fun saveAsync() {
-        ConfigThreadPool.execute(::save)
+        configLaunch { save() }
     }
 
     override fun forceSaveAsync() {
-        ConfigThreadPool.execute(::forceSave)
+        configLaunch { forceSave() }
     }
 
     override fun loadAsync() {
-        ConfigThreadPool.execute(::load)
+        configLaunch { load() }
     }
 
     override fun onSaved(callback: (duration: Duration) -> Unit) {

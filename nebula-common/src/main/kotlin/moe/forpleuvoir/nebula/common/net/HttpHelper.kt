@@ -1,5 +1,7 @@
 package moe.forpleuvoir.nebula.common.net
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpClient.Version
@@ -134,16 +136,20 @@ class HttpHelper<T>(
 	 * 发送同步请求
 	 * @return HttpResponse<T>
 	 */
-	fun send(): HttpResponse<T> {
-		return client.send(requestBuilder.build(), bodyHandler)
+	suspend fun send(): HttpResponse<T> {
+		return withContext(Dispatchers.IO) {
+			client.send(requestBuilder.build(), bodyHandler)
+		}
 	}
 
 	/**
 	 * 发送同步请求 返回body
 	 * @return T
 	 */
-	fun sendGetBody(): T {
-		return client.send(requestBuilder.build(), bodyHandler).body()
+	suspend fun sendGetBody(): T {
+		return withContext(Dispatchers.IO) {
+			client.send(requestBuilder.build(), bodyHandler)
+		}.body()
 	}
 
 	/**

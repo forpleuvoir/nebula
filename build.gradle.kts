@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "moe.forpleuvoir"
-version = "0.2.6a"
+version = "0.2.6b"
 
 repositories {
     mavenCentral()
@@ -131,6 +131,7 @@ subprojects {
     dependencies {
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     }
 
     tasks.apply {

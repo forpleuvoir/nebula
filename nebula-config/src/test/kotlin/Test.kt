@@ -1,3 +1,4 @@
+import kotlinx.coroutines.runBlocking
 import moe.forpleuvoir.nebula.common.runAsync
 import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.item.impl.ConfigString
@@ -21,8 +22,11 @@ fun main() {
 		println("加载耗时$it")
 	}
 	TestConfigs.init()
-	TestConfigs.load()
-	TestConfigs.save()
+
+	runBlocking {
+		TestConfigs.load()
+		TestConfigs.save()
+	}
 }
 
 fun t() {

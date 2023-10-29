@@ -1,9 +1,12 @@
 package moe.forpleuvoir.nebula.config.util
 
+import kotlinx.coroutines.*
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.util.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 object ConfigUtil {
 
@@ -41,4 +44,14 @@ object ConfigUtil {
         throw IOException("Failed to read the file ${file.absolutePath}")
     }
 
+}
+
+val ConfigCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
+
+fun configLaunch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    return ConfigCoroutineScope.launch(context, start, block)
 }

@@ -5,7 +5,7 @@ import kotlin.time.Duration
 
 interface ConfigManager : ConfigCategory {
 
-    fun save()
+    suspend fun save()
 
     /**
      *  在配置保存完成后执行
@@ -15,11 +15,11 @@ interface ConfigManager : ConfigCategory {
 
     fun saveAsync()
 
-    fun forceSave()
+    suspend fun forceSave()
 
     fun forceSaveAsync()
 
-    fun load()
+    suspend fun load()
 
     /**
      * 在配置加载完成后执行

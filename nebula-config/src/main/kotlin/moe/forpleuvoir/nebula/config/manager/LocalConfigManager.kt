@@ -7,7 +7,7 @@ import kotlin.time.measureTime
 abstract class LocalConfigManager(key: String) : AbstractConfigManager(key) {
 
     abstract val configPath: Path
-    override fun save() {
+    override suspend fun save() {
         onSaved.invoke(
             measureTime {
                 if (!needSave) return
@@ -20,7 +20,7 @@ abstract class LocalConfigManager(key: String) : AbstractConfigManager(key) {
         )
     }
 
-    override fun forceSave() {
+    override suspend fun forceSave() {
         onSaved.invoke(
             measureTime {
                 ConfigUtil.run {
@@ -32,7 +32,7 @@ abstract class LocalConfigManager(key: String) : AbstractConfigManager(key) {
         )
     }
 
-    override fun load() {
+    override suspend fun load() {
         onLoaded.invoke(
             measureTime {
                 ConfigUtil.run {
