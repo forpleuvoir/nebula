@@ -1,5 +1,4 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
-import moe.forpleuvoir.nebula.common.times
 import moe.forpleuvoir.nebula.common.util.replace
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.SObj
@@ -9,6 +8,7 @@ import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.time.measureTime
 
 fun main() {
     test1()
@@ -43,9 +43,9 @@ fun test1() {
         }
 	""".trimIndent()
     val obj: SerializeObject
-    times {
+    measureTime {
         obj = JsonParser.parse("{}").asObject
-    }
+    }.let { println(it) }
     println(obj)
     println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
     println(json.parseToJsonObject.get("notes").asString)

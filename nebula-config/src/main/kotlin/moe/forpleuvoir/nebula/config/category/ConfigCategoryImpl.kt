@@ -2,7 +2,6 @@ package moe.forpleuvoir.nebula.config.category
 
 import moe.forpleuvoir.nebula.common.api.Notifiable
 import moe.forpleuvoir.nebula.config.Config
-import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.config.ConfigSerializable
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
@@ -108,7 +107,7 @@ open class ConfigCategoryImpl(override val key: String) : ConfigCategory {
                     deserializationExceptionHandler(
                         configSerialize,
                         serializeElement,
-                        DeserializationException("${configSerialize.key}:{${serializeElement}} deserialization failed", it)
+                        DeserializationException("${configSerialize.key}:\"${serializeElement}\" deserialization failed", it)
                     )
                 }
             }
