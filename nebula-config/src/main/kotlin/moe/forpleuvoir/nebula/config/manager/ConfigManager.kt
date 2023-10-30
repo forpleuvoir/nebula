@@ -5,6 +5,11 @@ import kotlin.time.Duration
 
 interface ConfigManager : ConfigCategory {
 
+    /**
+     * 所有对配置内容的操作都应该在此函数调用之后执行
+     */
+    override fun init()
+
     suspend fun save()
 
     /**

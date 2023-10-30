@@ -1,7 +1,6 @@
 import TestConfigs.Tag1.test4
 import moe.forpleuvoir.nebula.common.color.Colors
 import moe.forpleuvoir.nebula.common.util.format
-import moe.forpleuvoir.nebula.common.util.plus
 import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
@@ -51,6 +50,8 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConf
 
         val test8 = ConfigStringMap("test8", mapOf("k1" to "v1", "k2" to "v2"))
 
+        val enum = ConfigEnum("enum", TestEnum.E1)
+
         object Tag1_1 : ConfigCategoryImpl("tag1_1") {
 
             val test5 = ConfigStringList("test5", listOf("element1", "element2"))
@@ -59,6 +60,12 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConf
 
             val test7 = ConfigStringMap("test7", mapOf("k1" to "v1", "k2" to "v2"))
         }
+
+    }
+
+
+    enum class TestEnum {
+        E1, E2, E3
 
     }
 
