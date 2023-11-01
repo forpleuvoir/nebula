@@ -24,7 +24,7 @@ dependencies {
     }
 }
 
-tasks.apply {
+tasks {
     withType<JavaCompile>().configureEach {
         this.options.release
         this.options.encoding = "UTF-8"
@@ -128,13 +128,7 @@ subprojects {
         mavenLocal()
     }
 
-    dependencies {
-        implementation(kotlin("reflect"))
-        implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    }
-
-    tasks.apply {
+    tasks{
         withType<JavaCompile>().configureEach {
             this.options.release
             this.options.encoding = "UTF-8"
