@@ -5,6 +5,7 @@ import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
 import moe.forpleuvoir.nebula.config.manager.LocalConfigManager
+import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
 import moe.forpleuvoir.nebula.config.persistence.JsonConfigManagerPersistence
 import java.nio.file.Path
 import java.util.*
@@ -12,7 +13,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, JsonConfigManagerPersistence {
+object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigManagerPersistence by JsonConfigManagerPersistence {
     override val configPath: Path = Path.of("./nebula-config/build/config")
     override val initialDelay: Duration = 5.seconds
     override val period: Duration = 5.seconds

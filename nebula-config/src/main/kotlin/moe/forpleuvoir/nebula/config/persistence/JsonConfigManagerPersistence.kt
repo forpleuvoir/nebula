@@ -5,7 +5,7 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 
-interface JsonConfigManagerPersistence : ConfigManagerPersistence {
+object JsonConfigManagerPersistence : ConfigManagerPersistence {
     override fun fileName(key: String): String {
         return "$key.json"
     }

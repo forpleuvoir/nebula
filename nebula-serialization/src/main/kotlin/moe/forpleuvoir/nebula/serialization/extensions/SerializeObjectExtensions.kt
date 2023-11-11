@@ -6,7 +6,6 @@ package moe.forpleuvoir.nebula.serialization.extensions
 import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.lang.reflect.Modifier
-import kotlin.contracts.CallsInPlace
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract

@@ -1,4 +1,5 @@
 package moe.forpleuvoir.nebula.serialization.base.internal
+
 import java.math.BigDecimal
 
 internal class LazilyParsedNumber(private val value: String) : Number() {
@@ -11,8 +12,9 @@ internal class LazilyParsedNumber(private val value: String) : Number() {
         return value.toByte()
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun toChar(): Char {
-        return value.toCharArray()[0]
+        return value.toInt().toChar()
     }
 
     override fun toDouble(): Double {

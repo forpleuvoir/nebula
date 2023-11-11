@@ -11,10 +11,10 @@
       <option name="taskNames">
         <list>
             <option value="nebula-common:publishNebula-commonPublicationToSnapshotsRepository"/>
-            <option value="nebula-config:publishNebula-configPublicationToSnapshotsRepository"/>
             <option value="nebula-event:publishNebula-eventPublicationToSnapshotsRepository"/>
             <option value="nebula-serialization:publishNebula-serializationPublicationToSnapshotsRepository"/>
             <option value="nebula-serialization-gson:publishNebula-serialization-gsonPublicationToSnapshotsRepository"/>
+            <option value="nebula-config:publishNebula-configPublicationToSnapshotsRepository"/>
             <option value="publishNebulaPublicationToSnapshotsRepository"/>
         </list>
       </option>

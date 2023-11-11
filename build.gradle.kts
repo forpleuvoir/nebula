@@ -5,13 +5,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     signing
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
 }
 
 group = "moe.forpleuvoir"
-version = "0.2.6c"
+version = "0.2.6d"
 
 repositories {
     mavenCentral()

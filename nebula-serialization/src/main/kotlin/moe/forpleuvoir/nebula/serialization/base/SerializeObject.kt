@@ -4,7 +4,6 @@ package moe.forpleuvoir.nebula.serialization.base
 
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.collections.MutableMap.MutableEntry
 
 /**
  *
@@ -20,9 +19,10 @@ import kotlin.collections.MutableMap.MutableEntry
  * @author forpleuvoir
 
  */
-class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
+class SerializeObject
+internal constructor(private val members: LinkedHashMap<String, SerializeElement>) : SerializeElement, MutableMap<String, SerializeElement> by members {
 
-    private val members: LinkedHashMap<String, SerializeElement> = LinkedHashMap()
+    constructor() : this(members = LinkedHashMap())
 
     override val deepCopy: SerializeObject
         get() {
@@ -32,14 +32,6 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
             }
             return result
         }
-    override val entries: MutableSet<MutableEntry<String, SerializeElement>>
-        get() = members.entries
-    override val keys: MutableSet<String>
-        get() = members.keys
-    override val size: Int
-        get() = members.size
-    override val values: MutableCollection<SerializeElement>
-        get() = members.values
 
     operator fun set(key: String, value: String): String? {
         return this.put(key, SerializePrimitive(value))?.asString
@@ -75,38 +67,6 @@ class SerializeObject : SerializeElement, MutableMap<String, SerializeElement> {
 
     fun getAsObject(key: String): SerializeObject? {
         return this[key]?.asObject
-    }
-
-    override fun clear() {
-        this.members.clear()
-    }
-
-    override fun isEmpty(): Boolean {
-        return this.members.isEmpty()
-    }
-
-    override fun remove(key: String): SerializeElement? {
-        return this.members.remove(key)
-    }
-
-    override fun putAll(from: Map<out String, SerializeElement>) {
-        this.members.putAll(from)
-    }
-
-    override fun put(key: String, value: SerializeElement): SerializeElement? {
-        return this.members.put(key, value)
-    }
-
-    override fun get(key: String): SerializeElement? {
-        return this.members[key]
-    }
-
-    override fun containsValue(value: SerializeElement): Boolean {
-        return this.members.containsValue(value)
-    }
-
-    override fun containsKey(key: String): Boolean {
-        return this.members.containsKey(key)
     }
 
     fun containsKey(vararg keys: String): Boolean {

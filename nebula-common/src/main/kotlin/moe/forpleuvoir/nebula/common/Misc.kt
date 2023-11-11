@@ -34,11 +34,13 @@ inline fun Boolean?.notc(action: () -> Unit) {
 
 fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
 
+fun <R> Boolean?.ternary(action1: () -> R, action2: () -> R): R = if (this == true) action1() else action2()
+
 fun runAsync(runnable: Runnable): CompletableFuture<Void> {
     return CompletableFuture.runAsync(runnable)
 }
 
-val NebulaDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+val NebulaDispatcher by lazy { Executors.newFixedThreadPool(4).asCoroutineDispatcher() }
 
 val CommonCoroutineScope by lazy { CoroutineScope(NebulaDispatcher) }
 
