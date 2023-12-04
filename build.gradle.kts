@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "moe.forpleuvoir"
-version = "0.2.6e"
+version = "0.2.6f"
 
 repositories {
     mavenCentral()
@@ -36,11 +36,12 @@ tasks {
         kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
     }
     withType<ShadowJar>().configureEach {
-        archivesName.set("${project.name}-shadow")
-        archiveClassifier.set("shadow")
+        archivesName.set("${project.name}-nebula")
+        archiveClassifier.set("nebula")
         dependencies {
-            exclude(dependency("org.jetbrains.kotlin:"))
-            exclude(dependency("org.jetbrains:"))
+            project.subprojects.forEach {
+                include(dependency("${it.group}:${it.name}"))
+            }
         }
     }
 }
@@ -128,7 +129,7 @@ subprojects {
         mavenLocal()
     }
 
-    tasks{
+    tasks {
         withType<JavaCompile>().configureEach {
             this.options.release
             this.options.encoding = "UTF-8"
@@ -138,16 +139,6 @@ subprojects {
         withType<KotlinCompile>().configureEach {
             kotlinOptions.suppressWarnings = true
             kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
-        }
-        if (!isCommon) {
-            withType<ShadowJar>().configureEach {
-                archivesName.set("${project.name}-shadow")
-                archiveClassifier.set("shadow")
-                dependencies {
-                    exclude(dependency("org.jetbrains.kotlin:"))
-                    exclude(dependency("org.jetbrains:"))
-                }
-            }
         }
     }
 

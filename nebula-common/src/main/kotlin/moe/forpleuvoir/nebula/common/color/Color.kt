@@ -360,7 +360,7 @@ class Color : ARGBColor, Cloneable {
      * @param opacity [Float] Range(0 ~ 255)
      * @return [Color] 复制对象
      */
-    fun opacity(opacity: Int): Color = this.clone().apply { alpha *= opacity.fixValue(checkRange, "Opacity") }
+    fun opacity(opacity: Int): Color = this.clone().apply { alpha = (alpha * (opacity.fixValue(checkRange, "Opacity") / 255f)).toInt() }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
