@@ -11,10 +11,10 @@
             <option name="taskNames">
                 <list>
                     <option value="nebula-common:publishNebula-commonPublicationToMavenLocal"/>
-                    <option value="nebula-config:publishNebula-configPublicationToMavenLocal"/>
                     <option value="nebula-event:publishNebula-eventPublicationToMavenLocal"/>
                     <option value="nebula-serialization:publishNebula-serializationPublicationToMavenLocal"/>
                     <option value="nebula-serialization-gson:publishNebula-serialization-gsonPublicationToMavenLocal"/>
+                    <option value="nebula-config:publishNebula-configPublicationToMavenLocal"/>
                     <option value="publishNebulaPublicationToMavenLocal"/>
                 </list>
             </option>
