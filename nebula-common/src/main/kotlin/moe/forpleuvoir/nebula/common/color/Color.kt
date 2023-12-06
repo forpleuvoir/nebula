@@ -5,6 +5,8 @@ package moe.forpleuvoir.nebula.common.color
 import moe.forpleuvoir.nebula.common.util.clamp
 import moe.forpleuvoir.nebula.common.util.fillBefore
 
+fun Color(argb: UInt, checkRange: Boolean = false) = Color(argb.toInt(), checkRange)
+
 class Color : ARGBColor, Cloneable {
 
     companion object {

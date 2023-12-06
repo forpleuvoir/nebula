@@ -1,13 +1,12 @@
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.HSVColor
-import moe.forpleuvoir.nebula.common.times
 import java.io.File
 import java.io.FileWriter
 import java.util.*
+import kotlin.time.measureTime
 
 fun main() {
-    hsv()
-
+    println(Color(0xFF8CECFFu))
 }
 
 fun hsv() {
@@ -31,7 +30,7 @@ fun test() {
 
 
 fun map() {
-    times {
+    measureTime {
         val colorNames = File("D:\\workspace\\kotlin\\nebula\\color").readLines()
         val colorCodes = File("D:\\workspace\\kotlin\\nebula\\color2").readLines()
         val colorStrs = ArrayList<String>(colorCodes.size)
@@ -48,5 +47,5 @@ fun map() {
                 file.append(it)
             }
         }
-    }
+    }.let(::println)
 }
