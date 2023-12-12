@@ -32,9 +32,9 @@ class JsonSerializer(
         get() = buildString { for (index in 1..indentationLevel * indentationSize) append(' ') }
 
     @OptIn(ExperimentalContracts::class)
-    private fun humanReadable(action: () -> Unit) {
-        contract { callsInPlace(action, InvocationKind.AT_MOST_ONCE) }
-        if (humanReadable) action()
+    private fun humanReadable(block: () -> Unit) {
+        contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE) }
+        if (humanReadable) block()
     }
 
 

@@ -154,20 +154,20 @@ class HttpHelper<T>(
 
 	/**
 	 * 发送异步请求
-	 * @param action Function1<HttpResponse<T>, Unit>
+	 * @param block Function1<HttpResponse<T>, Unit>
 	 */
-	fun sendAsync(action: (HttpResponse<T>) -> Unit) {
+	fun sendAsync(block: (HttpResponse<T>) -> Unit) {
 		client.sendAsync(requestBuilder.build(), bodyHandler)
-			.thenAcceptAsync(action)
+			.thenAcceptAsync(block)
 	}
 
 	/**
 	 * 发送异步请求
-	 * @param action Function1<T, Unit> T ：body
+	 * @param block Function1<T, Unit> T ：body
 	 */
-	fun sendAsyncGetBody(action: (T) -> Unit) {
+	fun sendAsyncGetBody(block: (T) -> Unit) {
 		client.sendAsync(requestBuilder.build(), bodyHandler)
-			.thenAcceptAsync { action(it.body()) }
+			.thenAcceptAsync { block(it.body()) }
 	}
 }
 

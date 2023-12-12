@@ -12,6 +12,6 @@ interface CancellableEvent : Event {
 		else throw EventException("this event has been canceled")
 	}
 
-	fun isCanceled(action: Runnable) = if (canceled) action.run() else Unit
+	fun isCanceled(block: Runnable) = if (canceled) block.run() else Unit
 
 }

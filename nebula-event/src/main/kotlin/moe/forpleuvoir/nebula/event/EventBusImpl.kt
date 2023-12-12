@@ -14,11 +14,11 @@ open class EventBusImpl : EventBus {
 	private val subscribers = ConcurrentHashMap<KClass<out Event>, ConcurrentLinkedQueue<EventPair>>()
 
 	override fun <E : Event> broadcast(event: E) {
-		subscribers[event::class]?.forEach { it.action.accept(event) }
+		subscribers[event::class]?.forEach { it.block.accept(event) }
 		val superClass = event::class.allSuperclasses
 		superClass.forEach { eventChannel ->
 			subscribers[eventChannel]?.forEach {
-				if (it.greedy) it.action.accept(event)
+				if (it.greedy) it.block.accept(event)
 			}
 		}
 	}
@@ -34,5 +34,5 @@ open class EventBusImpl : EventBus {
 		}
 	}
 
-	private data class EventPair(val action: Consumer<Event>, val greedy: Boolean)
+	private data class EventPair(val block: Consumer<Event>, val greedy: Boolean)
 }

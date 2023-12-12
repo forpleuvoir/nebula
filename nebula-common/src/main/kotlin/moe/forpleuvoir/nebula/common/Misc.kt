@@ -15,26 +15,26 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.reflect.KClass
 
 @OptIn(ExperimentalContracts::class)
-inline fun Boolean?.ifc(action: () -> Unit) {
+inline fun Boolean?.ifc(block: () -> Unit) {
     contract {
-        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
-    if (this == true) action.invoke()
+    if (this == true) block.invoke()
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun Boolean?.notc(action: () -> Unit) {
+inline fun Boolean?.notc(block: () -> Unit) {
     contract {
-        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
     if (this != null) {
-        if (!this) action() else Unit
+        if (!this) block() else Unit
     }
 }
 
 fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
 
-fun <R> Boolean?.ternary(action1: () -> R, action2: () -> R): R = if (this == true) action1() else action2()
+fun <R> Boolean?.ternary(block: () -> R, block2: () -> R): R = if (this == true) block() else block2()
 
 fun runAsync(runnable: Runnable): CompletableFuture<Void> {
     return CompletableFuture.runAsync(runnable)

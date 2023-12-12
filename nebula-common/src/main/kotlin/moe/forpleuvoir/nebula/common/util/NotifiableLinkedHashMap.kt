@@ -41,13 +41,13 @@ class NotifiableLinkedHashMap<K, V : Any>() : LinkedHashMap<K, V>(), Notifiable<
     var enableNotify = true
 
     @OptIn(ExperimentalContracts::class)
-    inline fun disableNotify(action: () -> Unit) {
+    inline fun disableNotify(block: () -> Unit) {
         contract {
-            callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
         }
         val temp = enableNotify
         enableNotify = false
-        action()
+        block()
         enableNotify = temp
     }
 
