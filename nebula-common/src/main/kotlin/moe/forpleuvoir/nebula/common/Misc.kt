@@ -32,9 +32,9 @@ inline fun Boolean?.notc(block: () -> Unit) {
     }
 }
 
-fun <T> Boolean?.ternary(v1: T, v2: T): T = if (this == true) v1 else v2
+fun <T> Boolean?.pick(v1: T, v2: T): T = if (this == true) v1 else v2
 
-fun <R> Boolean?.ternary(block: () -> R, block2: () -> R): R = if (this == true) block() else block2()
+fun <R> Boolean?.pick(block: () -> R, block2: () -> R): R = if (this == true) block() else block2()
 
 fun runAsync(runnable: Runnable): CompletableFuture<Void> {
     return CompletableFuture.runAsync(runnable)

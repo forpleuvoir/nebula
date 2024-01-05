@@ -364,6 +364,50 @@ class Color : ARGBColor, Cloneable {
      */
     fun opacity(opacity: Int): Color = this.clone().apply { alpha = (alpha * (opacity.fixValue(checkRange, "Opacity") / 255f)).toInt() }
 
+    override operator fun plus(other: ARGBColor): Color {
+        return super.plus(other) as Color
+    }
+
+    operator fun plusAssign(other: ARGBColor) {
+        redF = (redF + other.redF).fixValue(false, "RED")
+        greenF = (greenF + other.greenF).fixValue(false, "GREEN")
+        blueF = (blueF + other.blueF).fixValue(false, "BLUE")
+        alphaF = (alphaF + other.alphaF).fixValue(false, "ALPHA")
+    }
+
+    override operator fun minus(other: ARGBColor): Color {
+        return super.minus(other) as Color
+    }
+
+    operator fun minusAssign(other: ARGBColor) {
+        redF = (redF - other.redF).fixValue(false, "RED")
+        greenF = (greenF - other.greenF).fixValue(false, "GREEN")
+        blueF = (blueF - other.blueF).fixValue(false, "BLUE")
+        alphaF = (alphaF - other.alphaF).fixValue(false, "ALPHA")
+    }
+
+    override operator fun times(other: ARGBColor): Color {
+        return super.times(other) as Color
+    }
+
+    operator fun timesAssign(other: ARGBColor) {
+        redF = (redF * other.redF).fixValue(false, "RED")
+        greenF = (greenF * other.greenF).fixValue(false, "GREEN")
+        blueF = (blueF * other.blueF).fixValue(false, "BLUE")
+        alphaF = (alphaF * other.alphaF).fixValue(false, "ALPHA")
+    }
+
+    override operator fun div(other: ARGBColor): Color {
+        return super.div(other) as Color
+    }
+
+    operator fun divAssign(other: ARGBColor) {
+        redF = (redF / other.redF).fixValue(false, "RED")
+        greenF = (greenF / other.greenF).fixValue(false, "GREEN")
+        blueF = (blueF / other.blueF).fixValue(false, "BLUE")
+        alphaF = (alphaF / other.alphaF).fixValue(false, "ALPHA")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

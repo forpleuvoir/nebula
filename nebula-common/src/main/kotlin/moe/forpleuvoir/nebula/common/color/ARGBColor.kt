@@ -1,5 +1,7 @@
 package moe.forpleuvoir.nebula.common.color
 
+import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
+
 interface ARGBColor : RGBColor {
 
     val argb: Int
@@ -7,6 +9,46 @@ interface ARGBColor : RGBColor {
     val alpha: Int
 
     val alphaF: Float
+
+    operator fun plus(other: ARGBColor): ARGBColor {
+        return Color(
+            red = (redF + other.redF).fixValue(false, "Red"),
+            green = (greenF + other.greenF).fixValue(false, "Green"),
+            blue = (blueF + other.blueF).fixValue(false, "Blue"),
+            alpha = (alphaF + other.alphaF).fixValue(false, "Alpha"),
+            checkRange = false
+        )
+    }
+
+    operator fun minus(other: ARGBColor): ARGBColor {
+        return Color(
+            red = (redF - other.redF).fixValue(false, "Red"),
+            green = (greenF - other.greenF).fixValue(false, "Green"),
+            blue = (blueF - other.blueF).fixValue(false, "Blue"),
+            alpha = (alphaF - other.alphaF).fixValue(false, "Alpha"),
+            checkRange = false
+        )
+    }
+
+    operator fun times(other: ARGBColor): ARGBColor {
+        return Color(
+            red = (redF * other.redF).fixValue(false, "Red"),
+            green = (greenF * other.greenF).fixValue(false, "Green"),
+            blue = (blueF * other.blueF).fixValue(false, "Blue"),
+            alpha = (alphaF * other.alphaF).fixValue(false, "Alpha"),
+            checkRange = false
+        )
+    }
+
+    operator fun div(other: ARGBColor): ARGBColor {
+        return Color(
+            red = (redF / other.redF).fixValue(false, "Red"),
+            green = (greenF / other.greenF).fixValue(false, "Green"),
+            blue = (blueF / other.blueF).fixValue(false, "Blue"),
+            alpha = (alphaF / other.alphaF).fixValue(false, "Alpha"),
+            checkRange = false
+        )
+    }
 
 }
 

@@ -117,6 +117,62 @@ class HSVColor(
      */
     fun opacity(opacity: Float): HSVColor = this.clone().apply { alphaF *= opacity.fixValue(checkRange, "Opacity") }
 
+    override operator fun plus(other: ARGBColor): HSVColor {
+        return HSVColor(super.plus(other).argb)
+    }
+
+    operator fun plusAssign(other: ARGBColor) {
+        this.argb = Color(
+            red = (redF + other.redF).fixValue(false, "RED"),
+            green = (greenF + other.greenF).fixValue(false, "GREEN"),
+            blue = (blueF + other.blueF).fixValue(false, "BLUE"),
+            alpha = (alphaF + other.alphaF).fixValue(false, "ALPHA"),
+            checkRange = false
+        ).argb
+    }
+
+    override operator fun minus(other: ARGBColor): HSVColor {
+        return HSVColor(super.minus(other).argb)
+    }
+
+    operator fun minusAssign(other: ARGBColor) {
+        this.argb = Color(
+            red = (redF - other.redF).fixValue(false, "RED"),
+            green = (greenF - other.greenF).fixValue(false, "GREEN"),
+            blue = (blueF - other.blueF).fixValue(false, "BLUE"),
+            alpha = (alphaF - other.alphaF).fixValue(false, "ALPHA"),
+            checkRange = false
+        ).argb
+    }
+
+    override operator fun times(other: ARGBColor): HSVColor {
+        return HSVColor(super.times(other).argb)
+    }
+
+    operator fun timesAssign(other: ARGBColor) {
+        this.argb = Color(
+            red = (redF * other.redF).fixValue(false, "RED"),
+            green = (greenF * other.greenF).fixValue(false, "GREEN"),
+            blue = (blueF * other.blueF).fixValue(false, "BLUE"),
+            alpha = (alphaF * other.alphaF).fixValue(false, "ALPHA"),
+            false
+        ).argb
+    }
+
+    override operator fun div(other: ARGBColor): HSVColor {
+        return HSVColor(super.div(other).argb)
+    }
+
+    operator fun divAssign(other: ARGBColor) {
+        this.argb = Color(
+            red = (redF / other.redF).fixValue(false, "RED"),
+            green = (greenF / other.greenF).fixValue(false, "GREEN"),
+            blue = (blueF / other.blueF).fixValue(false, "BLUE"),
+            alpha = (alphaF / other.alphaF).fixValue(false, "ALPHA"),
+            false,
+        ).argb
+    }
+
     public override fun clone(): HSVColor = HSVColor(hue, saturation, value, alphaF)
 
     override fun toString(): String {

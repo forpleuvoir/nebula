@@ -1,5 +1,7 @@
 package moe.forpleuvoir.nebula.common.color
 
+import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
+
 interface RGBColor {
 
     val rgb: Int
@@ -17,6 +19,42 @@ interface RGBColor {
     val blueF: Float
 
     val hexStr: String
+
+    operator fun plus(other: RGBColor): RGBColor {
+        return Color(
+            red = (redF + other.redF).fixValue(false, "Red"),
+            green = (greenF + other.greenF).fixValue(false, "Green"),
+            blue = (blueF + other.blueF).fixValue(false, "Blue"),
+            checkRange = false
+        )
+    }
+
+    operator fun minus(other: RGBColor): RGBColor {
+        return Color(
+            red = (redF - other.redF).fixValue(false, "Red"),
+            green = (greenF - other.greenF).fixValue(false, "Green"),
+            blue = (blueF - other.blueF).fixValue(false, "Blue"),
+            checkRange = false
+        )
+    }
+
+    operator fun times(other: RGBColor): RGBColor {
+        return Color(
+            red = (redF * other.redF).fixValue(false, "Red"),
+            green = (greenF * other.greenF).fixValue(false, "Green"),
+            blue = (blueF * other.blueF).fixValue(false, "Blue"),
+            checkRange = false
+        )
+    }
+
+    operator fun div(other: RGBColor): RGBColor {
+        return Color(
+            red = (redF / other.redF).fixValue(false, "Red"),
+            green = (greenF / other.greenF).fixValue(false, "Green"),
+            blue = (blueF / other.blueF).fixValue(false, "Blue"),
+            checkRange = false
+        )
+    }
 
 }
 
