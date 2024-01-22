@@ -35,7 +35,7 @@ open class ConfigList<T>(
         serializeArray(configValue, serializer)
 
     override fun deserialization(serializeElement: SerializeElement) {
-        configValue = notifiableList(serializeElement.asArray.map { deserializer(it) })
+        setValue(notifiableList(serializeElement.asArray.map { deserializer(it) }))
     }
 
 }

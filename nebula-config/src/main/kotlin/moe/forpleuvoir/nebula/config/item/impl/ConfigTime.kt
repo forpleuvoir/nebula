@@ -23,9 +23,9 @@ class ConfigTime(
     }
 
     override fun deserialization(serializeElement: SerializeElement) {
-        configValue = TimeDeserializer.deserialization(serializeElement).run {
+        setValue(TimeDeserializer.deserialization(serializeElement).run {
             Time(value, unit)
-        }
+        })
     }
 
     override fun serialization(): SerializeElement {

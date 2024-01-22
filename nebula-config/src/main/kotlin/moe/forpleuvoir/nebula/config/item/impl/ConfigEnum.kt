@@ -16,7 +16,7 @@ open class ConfigEnum<E : Enum<E>>(
     }
 
     override fun deserialization(serializeElement: SerializeElement) {
-        return serializeElement.asString.let { java.lang.Enum.valueOf(configValue.javaClass, it) }
+        setValue(java.lang.Enum.valueOf(configValue.javaClass, serializeElement.asString))
     }
 
 }

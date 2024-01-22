@@ -29,7 +29,7 @@ open class ConfigNumber<T>(
         SerializePrimitive(configValue)
 
     override fun deserialization(serializeElement: SerializeElement) {
-        configValue = deserializer(serializeElement).clamp()
+        setValue(deserializer(serializeElement).clamp())
     }
 
 }

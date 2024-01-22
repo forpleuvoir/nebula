@@ -7,27 +7,27 @@ import moe.forpleuvoir.nebula.serialization.extensions.deserialization
 import moe.forpleuvoir.nebula.serialization.extensions.serialization
 
 class ConfigColor(
-	override val key: String,
-	override val defaultValue: Color
+    override val key: String,
+    override val defaultValue: Color
 ) : ConfigBase<Color, ConfigColor>() {
 
-	override var configValue: Color = defaultValue.clone()
+    override var configValue: Color = defaultValue.clone()
 
-	override fun setValue(value: Color) {
-		if (configValue isEquals value) return
-		configValue = value.clone()
-		onChange(this)
-	}
+    override fun setValue(value: Color) {
+        if (configValue isEquals value) return
+        configValue = value.clone()
+        onChange(this)
+    }
 
-	override fun getValue(): Color {
-		return configValue.clone()
-	}
+    override fun getValue(): Color {
+        return configValue.clone()
+    }
 
-	override fun serialization(): SerializeElement =
-		configValue.serialization()
+    override fun serialization(): SerializeElement =
+        configValue.serialization()
 
-	override fun deserialization(serializeElement: SerializeElement) {
-		configValue.deserialization(serializeElement)
-	}
+    override fun deserialization(serializeElement: SerializeElement) {
+        setValue(Color(0xFFFFFFFFu).apply { deserialization(serializeElement) })
+    }
 
 }

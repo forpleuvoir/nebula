@@ -4,7 +4,11 @@ import moe.forpleuvoir.nebula.config.util.ConfigUtil
 import java.nio.file.Path
 import kotlin.time.measureTime
 
-abstract class LocalConfigManager(key: String) : AbstractConfigManager(key) {
+abstract class LocalConfigManager(
+    key: String,
+    autoScan: Boolean = true,
+    descriptionKeyMap: (String) -> String = { "@$it" }
+) : AbstractConfigManager(key, autoScan, descriptionKeyMap) {
 
     abstract val configPath: Path
     override suspend fun save() {

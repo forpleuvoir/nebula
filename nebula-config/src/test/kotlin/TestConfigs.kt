@@ -1,7 +1,8 @@
-import TestConfigs.Tag1.test4
-import moe.forpleuvoir.nebula.common.color.Colors
+import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.util.Time
 import moe.forpleuvoir.nebula.common.util.format
-import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
+import moe.forpleuvoir.nebula.config.Description
+import moe.forpleuvoir.nebula.config.category.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
 import moe.forpleuvoir.nebula.config.manager.LocalConfigManager
@@ -11,6 +12,7 @@ import java.nio.file.Path
 import java.util.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
 object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigManagerPersistence by JsonConfigManagerPersistence {
@@ -21,8 +23,6 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigMa
     override val saveAction: (() -> Boolean) -> Unit
         get() = {
             println(measureTime {
-                test4++
-                println(test4)
                 println("当前是否需要保存 ${this.needSave}")
 
                 println("是否需要保存 ${if (it()) "是" else "否"}")
@@ -37,37 +37,43 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigMa
         super<AutoSaveConfigManager>.init()
     }
 
-    val a_test by ConfigString("test", "外部测试")
+    @Description("字符串配置测试")
+    val bool = ConfigBoolean("bool", true)
 
-    object Tag1 : ConfigCategoryImpl("tag1") {
+    @Description("颜色配置测试")
+    val color = ConfigColor("color", Color(255, 0, 0))
 
-        val test = ConfigString("test", "defaultValue")
+    @Description("字符串配置容器测试")
+    object Strings : ConfigContainerImpl("config_strings", descriptionKeyMap = { "#$it.desc" }) {
+        @Description("循环字符串配置测试")
+        var cycleString by ConfigCycleString("cycleString", listOf("一", "二", "三"), defaultValue = "二")
 
-        val test2 = ConfigInt("test2", 10)
+        @Description("字符串列表配置测试")
+        var stringList by ConfigStringList("stringList", listOf("element1", "element2", "element3"))
 
-        val test3 = ConfigColor("test3", Colors.AQUA)
+    }
 
-        var test4 by ConfigDouble("test4", 0.5)
+    @Description("枚举配置测试")
+    val enumTest = ConfigEnum("enumTest", TestEnum.E2)
 
-        val test8 = ConfigStringMap("test8", mapOf("k1" to "v1", "k2" to "v2"))
+    @Description("日期配置测试")
+    val date = ConfigDate("date", Date())
 
-        val enum = ConfigEnum("enum", TestEnum.E1)
+    @Description("时间配置测试")
+    val time = ConfigTime("time", Time(15.0, DurationUnit.MINUTES))
 
-        object Tag1_1 : ConfigCategoryImpl("tag1_1") {
+    @Description("整数配置测试")
+    object Numbers : ConfigContainerImpl("config_numbers") {
 
-            val test5 = ConfigStringList("test5", listOf("element1", "element2"))
+        @Description("整数配置测试")
+        var int by ConfigInt("int", 10)
 
-            val test6 = ConfigStringList("test6", listOf("element3", "element4"))
-
-            val test7 = ConfigStringMap("test7", mapOf("k1" to "v1", "k2" to "v2"))
-        }
-
+        @Description("浮点数配置测试")
+        var double by ConfigDouble("double", 10.0)
     }
 
 
     enum class TestEnum {
         E1, E2, E3
-
     }
-
 }

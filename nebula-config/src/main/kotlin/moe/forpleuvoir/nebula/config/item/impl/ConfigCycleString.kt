@@ -28,7 +28,7 @@ class ConfigCycleString(
 		SerializePrimitive(configValue)
 
 	override fun deserialization(serializeElement: SerializeElement) {
-		configValue = checkValue(serializeElement.asString)
+		setValue(checkValue(serializeElement.asString))
 	}
 
 

@@ -2,8 +2,6 @@ package moe.forpleuvoir.nebula.config.item.impl
 
 import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
-import moe.forpleuvoir.nebula.serialization.extensions.deserialization
 import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.util.*
 
@@ -17,7 +15,7 @@ class ConfigDate(
     override fun serialization(): SerializeElement = configValue.serialization()
 
     override fun deserialization(serializeElement: SerializeElement) {
-        configValue.deserialization(serializeElement)
+        setValue(Date(serializeElement.asLong))
     }
 
 }

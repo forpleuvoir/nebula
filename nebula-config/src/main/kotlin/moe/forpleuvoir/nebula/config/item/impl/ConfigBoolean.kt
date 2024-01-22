@@ -16,7 +16,7 @@ class ConfigBoolean(
 		SerializePrimitive(configValue)
 
 	override fun deserialization(serializeElement: SerializeElement) {
-		configValue = serializeElement.asBoolean
+		setValue(serializeElement.asBoolean)
 	}
 
 }

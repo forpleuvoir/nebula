@@ -1,9 +1,9 @@
 package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.config.category.ConfigCategory
+import moe.forpleuvoir.nebula.config.category.ConfigContainer
 import kotlin.time.Duration
 
-interface ConfigManager : ConfigCategory {
+interface ConfigManager : ConfigContainer {
 
     /**
      * 所有对配置内容的操作都应该在此函数调用之后执行

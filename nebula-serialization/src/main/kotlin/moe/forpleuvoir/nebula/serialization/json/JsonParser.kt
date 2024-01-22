@@ -115,7 +115,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
                 in STRING_BEGIN  -> parseString()
                 in BOOLEAN_BEGIN -> parseBoolean()
                 in NUMBER_BEGIN  -> parseNumber()
-                else             -> throw JsonParseException("unexpect char '$currChar' $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+                else             -> throw JsonParseException("unexpect char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
             }
         }
         return SerializeNull
@@ -133,7 +133,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
                 val key = parseString().asString
                 skipChar()
                 if (currChar == PAIR_CONNECTION) curr++
-                else throw JsonParseException("expect '$PAIR_CONNECTION',current key '$key',found $currChar $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+                else throw JsonParseException("expect '$PAIR_CONNECTION',current key '$key',found $currChar index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
                 skipChar()
                 key - parseElement()//put in object
                 skipChar()
@@ -141,7 +141,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
                     curr++
                     break
                 } else if (currChar == ELEMENT_SEPARATOR) curr++
-                else throw JsonParseException("expect '$ELEMENT_SEPARATOR' or '$OBJECT_END',found '$currChar' $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+                else throw JsonParseException("expect '$ELEMENT_SEPARATOR' or '$OBJECT_END',found '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
             }
 
         }
@@ -162,7 +162,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
                     curr++
                     break
                 } else if (currChar == ELEMENT_SEPARATOR) curr++
-                else throw JsonParseException("expect '$ELEMENT_SEPARATOR' or '$ARRAY_END',found '$currChar' $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+                else throw JsonParseException("expect '$ELEMENT_SEPARATOR' or '$ARRAY_END',found '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
             }
 
         }
@@ -188,7 +188,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
             }
 
             else -> {
-                throw JsonParseException("unexpect char '$currChar' $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+                throw JsonParseException("unexpect char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
             }
         }
         curr++
@@ -203,7 +203,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
             builder.append(currChar)
             curr++
         }
-        if (charArray[curr - 1] !in NUMBER_END) throw JsonParseException("unexpect char '$currChar' $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+        if (charArray[curr - 1] !in NUMBER_END) throw JsonParseException("unexpect char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
         val str = builder.toString()
         return if ('e' in str || 'E' in str) {
             val value = str.toBigDecimal()
@@ -211,7 +211,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
             else SerializePrimitive(value.toBigInteger())
         } else {
             if ('.' in str) SerializePrimitive(str.toDouble())
-            else SerializePrimitive(str.toInt())
+            else SerializePrimitive(str.toLong())
         }
     }
 
@@ -245,7 +245,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
                 }
             }
         }
-        throw JsonParseException("unexpect boolean char '$currChar' $curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+        throw JsonParseException("unexpect boolean char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
 
     }
 
@@ -263,6 +263,6 @@ class JsonParser private constructor(private val charArray: CharArray) {
                 }
             }
         }
-        throw JsonParseException("unexpect null char $currChar curr (${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)})")
+        throw JsonParseException("unexpect null char $currChar index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
     }
 }

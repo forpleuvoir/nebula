@@ -44,13 +44,14 @@ fun test1() {
 	""".trimIndent()
     val obj: SerializeObject
     measureTime {
-        obj = JsonParser.parse("{}").asObject
+        obj = JsonParser.parse(json).asObject
     }.let { println(it) }
-    println(obj)
-    println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
+//    println(obj)
+//    println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
+    println(JsonParser.parse(obj["notes"]!!.asString.replace(JsonParser.ESCAPE)).asObject["nestedKey"]!!.asString)
     println(json.parseToJsonObject.get("notes").asString)
-    println(obj.dumpAsJson(true))
-    println(obj["contacts"]?.dumpAsJson(true))
+//    println(obj.dumpAsJson(true))
+//    println(obj["contacts"]?.dumpAsJson(true))
 }
 
 @OptIn(ExperimentalApi::class)

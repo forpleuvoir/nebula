@@ -1,30 +1,35 @@
 package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.config.category.ConfigCategory
-import moe.forpleuvoir.nebula.config.category.ConfigCategoryImpl
+import moe.forpleuvoir.nebula.config.category.ConfigContainer
+import moe.forpleuvoir.nebula.config.category.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
 import moe.forpleuvoir.nebula.config.util.configLaunch
 import kotlin.reflect.full.isSubclassOf
 import kotlin.time.Duration
 
-abstract class AbstractConfigManager(key: String) : ConfigManager, ConfigCategoryImpl(key), ConfigManagerPersistence {
+abstract class AbstractConfigManager(
+    key: String,
+    autoScan: Boolean = true,
+    descriptionKeyMap: (String) -> String = { "@$it" }
+) : ConfigManager, ConfigContainerImpl(key, autoScan, descriptionKeyMap), ConfigManagerPersistence {
 
-    override var needSave: Boolean = false
-        get() {
-            return if (!allConfigSerializable().none { it::class.isSubclassOf(ConfigCategory::class) && (it as ConfigCategory).needSave }) true
-            else field
-        }
-        set(value) {
-            field = value
-            if (!value) {
-                allConfigSerializable().filter {
-                    it::class.isSubclassOf(ConfigCategory::class)
-                }.forEach {
-                    it as ConfigCategory
-                    it.needSave = false
-                }
-            }
-        }
+//    override var needSave: Boolean = false
+//        get() {
+//            //如果有任意一个配置需要保存，则返回true
+//            return if (!allConfigSerializable().none { it::class.isSubclassOf(ConfigContainer::class) && (it as ConfigContainer).needSave }) true
+//            else field
+//        }
+//        set(value) {
+//            field = value
+//            if (!value) {
+//                allConfigSerializable().filter {
+//                    it::class.isSubclassOf(ConfigContainer::class)
+//                }.forEach {
+//                    it as ConfigContainer
+//                    it.needSave = false
+//                }
+//            }
+//        }
 
     override fun saveAsync() {
         configLaunch { save() }

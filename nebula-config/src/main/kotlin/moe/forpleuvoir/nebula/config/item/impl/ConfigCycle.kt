@@ -31,7 +31,7 @@ class ConfigCycle<T>(
     }
 
     override fun deserialization(serializeElement: SerializeElement) {
-        configValue = deserializer(serializeElement)
+        setValue(deserializer(serializeElement))
     }
 
     override fun serialization(): SerializeElement {
