@@ -4,8 +4,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 val gsonVersion = "2.10"
 
 dependencies {
-    api(project(":nebula-serialization"))
-    api("com.google.code.gson:gson:$gsonVersion")
+    implementation(project(":nebula-common"))
+    implementation(project(":nebula-serialization"))
+    implementation("com.google.code.gson:gson:$gsonVersion")
 }
 
 tasks.withType<ShadowJar>().configureEach {

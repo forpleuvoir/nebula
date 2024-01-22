@@ -1,3 +1,3 @@
 dependencies {
-    api(project(":nebula-common"))
+    implementation(project(":nebula-common"))
 }

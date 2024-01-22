@@ -2,8 +2,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 
 dependencies {
-    api(project(":nebula-serialization"))
+    implementation(project(":nebula-common"))
+    implementation(project(":nebula-serialization"))
     testImplementation(project(":nebula-serialization-gson"))
+    testImplementation("com.google.code.gson:gson:2.10")
 }
 
 tasks.withType<ShadowJar>().configureEach {
