@@ -3,38 +3,34 @@ import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.config.Description
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
-import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
-import moe.forpleuvoir.nebula.config.manager.LocalConfigManager
-import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
-import moe.forpleuvoir.nebula.config.persistence.JsonConfigManagerPersistence
+import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
+import moe.forpleuvoir.nebula.config.manager.plugin.autoSave
+import moe.forpleuvoir.nebula.config.manager.plugin.localConfig
+import moe.forpleuvoir.nebula.config.manager.plugins
+import moe.forpleuvoir.nebula.config.persistence.jsonPersistence
 import java.nio.file.Path
 import java.util.*
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigManagerPersistence by JsonConfigManagerPersistence {
-    override val configPath: Path = Path.of("./nebula-config/build/config")
-    override val initialDelay: Duration = 5.seconds
-    override val period: Duration = 5.seconds
+object TestConfigs : ConfigManagerImpl("test") {
 
-    override val saveAction: (() -> Boolean) -> Unit
-        get() = {
-            println(measureTime {
-                println("当前是否需要保存 ${this.needSave}")
-
-                println("是否需要保存 ${if (it()) "是" else "否"}")
-                if (it()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
-                if (it()) saveAsync()
-            })
+    init {
+        plugins {
+            localConfig(Path.of("./nebula-config/build/config"), jsonPersistence())
+            autoSave(5.seconds, 5.seconds) { needSave ->
+                println(measureTime {
+                    println("当前是否需要保存 ${this.manager.needSave}")
+                    Numbers.int++
+                    println("是否需要保存 ${if (needSave()) "是" else "否"}")
+                    if (needSave()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
+                    if (needSave()) asyncSave()
+                })
+            }
         }
-
-
-    override fun init() {
-        super<LocalConfigManager>.init()
-        super<AutoSaveConfigManager>.init()
     }
+
 
     @Description("字符串配置测试")
     val bool = ConfigBoolean("bool", true)

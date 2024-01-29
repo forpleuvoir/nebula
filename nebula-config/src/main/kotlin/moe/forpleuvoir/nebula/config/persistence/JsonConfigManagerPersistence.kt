@@ -1,13 +1,14 @@
 package moe.forpleuvoir.nebula.config.persistence
 
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
+import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 
 object JsonConfigManagerPersistence : ConfigManagerPersistence {
-    override fun fileName(key: String): String {
-        return "$key.json"
+    override fun fileName(manager: ConfigManager): String {
+        return "${manager.key}.json"
     }
 
     @OptIn(ExperimentalApi::class)
@@ -21,3 +22,5 @@ object JsonConfigManagerPersistence : ConfigManagerPersistence {
     }
 
 }
+
+fun jsonPersistence(): JsonConfigManagerPersistence = JsonConfigManagerPersistence
