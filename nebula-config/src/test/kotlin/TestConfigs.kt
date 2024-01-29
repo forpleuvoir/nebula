@@ -1,8 +1,7 @@
 import moe.forpleuvoir.nebula.common.color.Color
-import moe.forpleuvoir.nebula.common.util.Time
 import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.config.Description
-import moe.forpleuvoir.nebula.config.category.ConfigContainerImpl
+import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.AutoSaveConfigManager
 import moe.forpleuvoir.nebula.config.manager.LocalConfigManager
@@ -11,8 +10,8 @@ import moe.forpleuvoir.nebula.config.persistence.JsonConfigManagerPersistence
 import java.nio.file.Path
 import java.util.*
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
 object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigManagerPersistence by JsonConfigManagerPersistence {
@@ -60,7 +59,7 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigMa
     val date = ConfigDate("date", Date())
 
     @Description("时间配置测试")
-    val time = ConfigTime("time", Time(15.0, DurationUnit.MINUTES))
+    val duration = ConfigDuration("time", 15.minutes)
 
     @Description("整数配置测试")
     object Numbers : ConfigContainerImpl("config_numbers") {
@@ -72,8 +71,20 @@ object TestConfigs : LocalConfigManager("test"), AutoSaveConfigManager, ConfigMa
         var double by ConfigDouble("double", 10.0)
     }
 
+    @Description("整数配置测试2")
+    val numbers2 = Numbers2()
+
+    class Numbers2 : ConfigContainerImpl("config_numbers2") {
+
+        @Description("整数配置测试")
+        var int by ConfigInt("int", 10)
+
+        @Description("浮点数配置测试")
+        var double by ConfigDouble("double", 10.0)
+    }
 
     enum class TestEnum {
-        E1, E2, E3
+        E1, E2, E3;
     }
+
 }

@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.config.category
+package moe.forpleuvoir.nebula.config.container
 
 import moe.forpleuvoir.nebula.config.ConfigSerializable
 import moe.forpleuvoir.nebula.serialization.DeserializationException

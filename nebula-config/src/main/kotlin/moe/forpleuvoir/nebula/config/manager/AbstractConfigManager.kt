@@ -1,10 +1,8 @@
 package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.config.category.ConfigContainer
-import moe.forpleuvoir.nebula.config.category.ConfigContainerImpl
+import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
 import moe.forpleuvoir.nebula.config.util.configLaunch
-import kotlin.reflect.full.isSubclassOf
 import kotlin.time.Duration
 
 abstract class AbstractConfigManager(

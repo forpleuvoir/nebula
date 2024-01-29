@@ -1,7 +1,6 @@
-package moe.forpleuvoir.nebula.config.category
+package moe.forpleuvoir.nebula.config.container
 
 import moe.forpleuvoir.nebula.common.api.Notifiable
-import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigDescription
 import moe.forpleuvoir.nebula.config.ConfigSerializable
 import moe.forpleuvoir.nebula.config.Description
@@ -24,7 +23,7 @@ import kotlin.reflect.jvm.isAccessible
 open class ConfigContainerImpl(
     override val key: String,
     private val autoScan: Boolean = true,
-    private val descriptionKeyMap: (String) -> String = { "@$it" }
+    private val descriptionKeyMap: (String) -> String = { "_$it" }
 ) : ConfigContainer {
 
     private val configSerializes: MutableList<ConfigSerializable> = ArrayList()
@@ -69,20 +68,20 @@ open class ConfigContainerImpl(
             memberProperty.isAccessible = true
             memberProperty as KProperty1<ConfigContainerImpl, *>
 
-            var config: Config<*, *>? = null
+            var config: ConfigSerializable? = null
 
             //获取委托属性
             memberProperty.getDelegate(this)?.let { property ->
-                if (property::class.isSubclassOf(Config::class)) {
-                    config = property as Config<*, *>
+                if (property::class.isSubclassOf(ConfigSerializable::class)) {
+                    config = property as ConfigSerializable
                 }
             }
 
             //获取普通属性
             memberProperty.get(this)?.let { property ->
                 runCatching {
-                    if (property::class.isSubclassOf(Config::class)) {
-                        config = property as Config<*, *>
+                    if (property::class.isSubclassOf(ConfigSerializable::class)) {
+                        config = property as ConfigSerializable
                     }
                 }.onFailure {
                     //防止获取到高阶函数无法转换

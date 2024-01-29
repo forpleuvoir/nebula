@@ -1,6 +1,6 @@
 package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.config.category.ConfigContainer
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import kotlin.time.Duration
 
 interface ConfigManager : ConfigContainer {

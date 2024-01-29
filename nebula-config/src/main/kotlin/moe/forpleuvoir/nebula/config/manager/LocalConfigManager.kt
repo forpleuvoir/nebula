@@ -7,7 +7,7 @@ import kotlin.time.measureTime
 abstract class LocalConfigManager(
     key: String,
     autoScan: Boolean = true,
-    descriptionKeyMap: (String) -> String = { "@$it" }
+    descriptionKeyMap: (String) -> String = { "_$it" }
 ) : AbstractConfigManager(key, autoScan, descriptionKeyMap) {
 
     abstract val configPath: Path
