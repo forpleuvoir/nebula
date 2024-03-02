@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config.util
 
 import kotlinx.coroutines.*
+import moe.forpleuvoir.nebula.common.NebulaDispatcher
 import java.io.*
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -50,7 +51,7 @@ object ConfigUtil {
 
 }
 
-val ConfigCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
+val ConfigCoroutineScope by lazy { CoroutineScope(NebulaDispatcher) }
 
 fun configLaunch(
     context: CoroutineContext = EmptyCoroutineContext,

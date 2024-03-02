@@ -1,6 +1,9 @@
 package moe.forpleuvoir.nebula.config.manager
 
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
+import moe.forpleuvoir.nebula.config.manager.plugin.ConfigManagerPlugin
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.time.Duration
 
 interface ConfigManager : ConfigContainer {
@@ -10,6 +13,8 @@ interface ConfigManager : ConfigContainer {
      */
     override fun init()
 
+    fun plugin(plugin: ConfigManagerPlugin): ConfigManager
+
     suspend fun save()
 
     /**
@@ -18,11 +23,11 @@ interface ConfigManager : ConfigContainer {
      */
     fun onSaved(callback: (duration: Duration) -> Unit)
 
-    fun saveAsync()
+    fun asyncSave()
 
     suspend fun forceSave()
 
-    fun forceSaveAsync()
+    fun asyncForceSave()
 
     suspend fun load()
 
@@ -32,6 +37,27 @@ interface ConfigManager : ConfigContainer {
      */
     fun onLoaded(callback: (duration: Duration) -> Unit)
 
-    fun loadAsync()
+    fun asyncLoad()
 
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun ConfigManager.plugin(pluginProvider: ConfigManager.() -> ConfigManagerPlugin): ConfigManager {
+    contract {
+        callsInPlace(pluginProvider, kotlin.contracts.InvocationKind.EXACTLY_ONCE)
+    }
+    return plugin(pluginProvider.invoke(this))
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun ConfigManager.plugins(pluginProvider: ConfigManagerPluginContext.() -> Unit): ConfigManager {
+    contract {
+        callsInPlace(pluginProvider, kotlin.contracts.InvocationKind.EXACTLY_ONCE)
+    }
+    pluginProvider.invoke(ConfigManagerPluginContext(this))
+    return this
+}
+
+class ConfigManagerPluginContext(val manager: ConfigManager) {
+    fun plugin(plugin: ConfigManagerPlugin) = manager.plugin(plugin)
 }
