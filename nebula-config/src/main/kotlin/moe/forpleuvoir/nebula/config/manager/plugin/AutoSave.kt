@@ -13,7 +13,6 @@ open class AutoSave(
     val saveAction: (needSave: () -> Boolean) -> Unit = { if (it()) manager.asyncSave() }
 ) : ConfigManagerPlugin {
 
-
     override fun onInit() {
         Timer("AutoSaveConfigManager[${manager.key}]").schedule(initialDelay, period) {
             saveAction { manager.needSave }

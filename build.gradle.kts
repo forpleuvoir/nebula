@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "moe.forpleuvoir"
-version = "0.2.8b"
+version = "0.2.8c"
 
 repositories {
     mavenCentral()
