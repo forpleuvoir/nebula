@@ -1,5 +1,25 @@
 package moe.forpleuvoir.nebula.serialization
 
-class SerializationException(message: String, cause: Throwable) : Exception(message, cause)
+class SerializationException : RuntimeException {
 
-class DeserializationException(message: String, cause: Throwable) : Exception(message, cause)
+    constructor() : super()
+
+    constructor(message: String) : super(message)
+
+    constructor(cause: Throwable) : super(cause)
+
+    constructor(message: String, cause: Throwable) : super(message, cause)
+
+}
+
+class DeserializationException : RuntimeException {
+
+    constructor() : super()
+
+    constructor(message: String) : super(message)
+
+    constructor(cause: Throwable) : super(cause)
+
+    constructor(message: String, cause: Throwable) : super(message, cause)
+
+}
