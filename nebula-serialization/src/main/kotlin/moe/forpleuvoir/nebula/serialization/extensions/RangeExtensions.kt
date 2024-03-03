@@ -10,7 +10,6 @@ fun <T : Comparable<T>> ClosedRange<T>.serialization(): SerializeElement {
 object ClosedRangeDeserializer {
 
     inline fun <T : Comparable<T>> deserialization(serializeElement: SerializeElement, supplier: (String) -> T): ClosedRange<T> {
-        IntRange.deserialization(serializeElement)
         serializeElement.asString.let {
             val pair = it.split("..")
             return supplier(pair[0])..supplier(pair[1])

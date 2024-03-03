@@ -22,117 +22,119 @@ import java.math.BigInteger
  */
 class SerializePrimitive private constructor(internal val value: Any) : SerializeElement {
 
-	constructor(boolean: Boolean) : this(boolean as Any)
+    constructor(boolean: Boolean) : this(boolean as Any)
 
-	constructor(string: String) : this(string as Any)
+    constructor(string: String) : this(string as Any)
 
-	constructor(number: Number) : this(number as Any)
+    constructor(number: Number) : this(number as Any)
 
-	constructor(bigInteger: BigInteger) : this(bigInteger as Any)
+    constructor(bigInteger: BigInteger) : this(bigInteger as Any)
 
-	constructor(bigDecimal: BigDecimal) : this(bigDecimal as Any)
+    constructor(bigDecimal: BigDecimal) : this(bigDecimal as Any)
 
-	constructor(char: Char) : this(char.toString())
+    constructor(char: Char) : this(char.toString())
 
-	override val deepCopy: SerializePrimitive get() = this
+    override fun deepCopy(): SerializePrimitive = SerializePrimitive(this.value)
 
-	val isString: Boolean get() = value is String
+    override fun copy(): SerializeElement = SerializePrimitive(this.value)
 
-	val isBoolean: Boolean get() = value is Boolean
+    val isString: Boolean get() = value is String
 
-	val isNumber: Boolean get() = value is Number
+    val isBoolean: Boolean get() = value is Boolean
 
-	val isInt: Boolean get() = value is Int
+    val isNumber: Boolean get() = value is Number
 
-	val isLong: Boolean get() = value is Long
+    val isInt: Boolean get() = value is Int
 
-	val isShort: Boolean get() = value is Short
+    val isLong: Boolean get() = value is Long
 
-	val isByte: Boolean get() = value is Byte
+    val isShort: Boolean get() = value is Short
 
-	val isFloat: Boolean get() = value is Float
+    val isByte: Boolean get() = value is Byte
 
-	val isDouble: Boolean get() = value is Double
+    val isFloat: Boolean get() = value is Float
 
-	val isBigInteger: Boolean get() = value is BigInteger
+    val isDouble: Boolean get() = value is Double
 
-	val isBigDecimal: Boolean get() = value is BigDecimal
+    val isBigInteger: Boolean get() = value is BigInteger
 
-	override val asString: String
-		get() {
-			return if (this.isNumber) {
-				this.asNumber.toString()
-			} else {
-				if (this.isBoolean) (value as Boolean).toString() else (value as String)
-			}
-		}
+    val isBigDecimal: Boolean get() = value is BigDecimal
 
-	override val asBoolean: Boolean
-		get() {
-			return if (this.isBoolean) (value as Boolean) else asString.toBoolean()
-		}
+    override val asString: String
+        get() {
+            return if (this.isNumber) {
+                this.asNumber.toString()
+            } else {
+                if (this.isBoolean) (value as Boolean).toString() else (value as String)
+            }
+        }
 
-	override val asNumber: Number
-		get() {
-			return if (this.isString) LazilyParsedNumber(asString) else value as Number
-		}
+    override val asBoolean: Boolean
+        get() {
+            return if (this.isBoolean) (value as Boolean) else asString.toBoolean()
+        }
 
-	override val asInt: Int
-		get() {
-			return if (this.isNumber) asNumber.toInt() else asString.toInt()
-		}
+    override val asNumber: Number
+        get() {
+            return if (this.isString) LazilyParsedNumber(asString) else value as Number
+        }
 
-	override val asLong: Long
-		get() {
-			return if (this.isNumber) asNumber.toLong() else asString.toLong()
-		}
+    override val asInt: Int
+        get() {
+            return if (this.isNumber) asNumber.toInt() else asString.toInt()
+        }
 
-	override val asShort: Short
-		get() {
-			return if (this.isNumber) asNumber.toShort() else asString.toShort()
-		}
+    override val asLong: Long
+        get() {
+            return if (this.isNumber) asNumber.toLong() else asString.toLong()
+        }
 
-	override val asByte: Byte
-		get() {
-			return if (this.isNumber) asNumber.toByte() else asString.toByte()
-		}
+    override val asShort: Short
+        get() {
+            return if (this.isNumber) asNumber.toShort() else asString.toShort()
+        }
 
-	override val asFloat: Float
-		get() {
-			return if (this.isNumber) asNumber.toFloat() else asString.toFloat()
-		}
+    override val asByte: Byte
+        get() {
+            return if (this.isNumber) asNumber.toByte() else asString.toByte()
+        }
 
-	override val asDouble: Double
-		get() {
-			return if (this.isNumber) asNumber.toDouble() else asString.toDouble()
-		}
+    override val asFloat: Float
+        get() {
+            return if (this.isNumber) asNumber.toFloat() else asString.toFloat()
+        }
 
-	override val asBigInteger: BigInteger
-		get() {
-			return if (this.isBigInteger) value as BigInteger else BigInteger(asString)
-		}
+    override val asDouble: Double
+        get() {
+            return if (this.isNumber) asNumber.toDouble() else asString.toDouble()
+        }
 
-	override val asBigDecimal: BigDecimal
-		get() {
-			return if (this.isBigDecimal) value as BigDecimal else BigDecimal(asString)
-		}
+    override val asBigInteger: BigInteger
+        get() {
+            return if (this.isBigInteger) value as BigInteger else BigInteger(asString)
+        }
 
-	override fun toString(): String {
-		if (isString) return "\"${asString}\""
-		return value.toString()
-	}
+    override val asBigDecimal: BigDecimal
+        get() {
+            return if (this.isBigDecimal) value as BigDecimal else BigDecimal(asString)
+        }
 
-	override fun hashCode(): Int {
-		return value.hashCode()
-	}
+    override fun toString(): String {
+        if (isString) return "\"${asString}\""
+        return value.toString()
+    }
 
-	override fun equals(other: Any?): Boolean {
-		if (this === other) return true
-		if (javaClass != other?.javaClass) return false
+    override fun hashCode(): Int {
+        return value.hashCode()
+    }
 
-		other as SerializePrimitive
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-		return value == other.value
-	}
+        other as SerializePrimitive
+
+        return value == other.value
+    }
 
 }

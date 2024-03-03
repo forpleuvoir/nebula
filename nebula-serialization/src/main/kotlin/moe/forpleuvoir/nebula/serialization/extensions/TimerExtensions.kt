@@ -8,7 +8,7 @@ import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import java.util.*
 import kotlin.time.DurationUnit
 
-fun SerializableDuration.serialization(): SerializeElement {
+fun SerializableDuration.serialization(): SerializeObject {
     return serializeObject {
         "value" - value
         "unit" - unit.name

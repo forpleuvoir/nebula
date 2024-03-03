@@ -16,17 +16,19 @@ package moe.forpleuvoir.nebula.serialization.base
  */
 object SerializeNull : SerializeElement {
 
-	override val deepCopy: SerializeNull get() = this
+    override fun deepCopy(): SerializeElement = this
 
-	override fun equals(other: Any?): Boolean {
-		return other == this
-	}
+    override fun copy(): SerializeElement = this
 
-	override fun hashCode(): Int {
-		return SerializeNull::class.hashCode()
-	}
+    override fun equals(other: Any?): Boolean {
+        return other == this
+    }
 
-	override fun toString(): String {
-		return "null"
-	}
+    override fun hashCode(): Int {
+        return SerializeNull::class.hashCode()
+    }
+
+    override fun toString(): String {
+        return "null"
+    }
 }

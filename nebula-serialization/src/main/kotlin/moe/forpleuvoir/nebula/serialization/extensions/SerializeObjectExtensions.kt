@@ -6,36 +6,41 @@ package moe.forpleuvoir.nebula.serialization.extensions
 import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.lang.reflect.Modifier
+import java.util.function.Function
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility.INTERNAL
+import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
-
-/**
- *
-
- * 项目名 nebula
-
- * 包名 moe.forpleuvoir.nebula.serialization.extensions
-
- * 文件名 SerializeObjectExtensions
-
- * 创建时间 2022/12/8 23:47
-
- * @author forpleuvoir
-
- */
+import kotlin.reflect.jvm.jvmErasure
 
 @Suppress("UNCHECKED_CAST")
 fun Any.toSerializeObject(): SerializeObject {
+    //如果有缓存，则直接调用缓存的方法
+    SerializeObject.serializerCache[this::class]?.let {
+        it as Function<Any, SerializeObject>
+        return it.apply(this)
+    }
+    //如果实现了[Serializable]接口，则调用其[serialization]方法
     if (this is Serializable) {
         return this.serialization().asObject
     }
+    //如果有方法名为[serialization]返回值类型为[SerializeObject]的无参方法，则调用该方法
+    this::class.declaredFunctions.find {
+        it.returnType.jvmErasure.isSubclassOf(SerializeObject::class)
+        && it.name == "serialization"
+        && it.parameters.size == 1
+        && it.parameters[0].type.jvmErasure == this::class
+    }?.let {
+        return it.call(this) as SerializeObject
+    }
+
     val obj = SerializeObject()
     this::class.apply {
         memberProperties.filter {
@@ -57,7 +62,6 @@ fun Any.toSerializeObject(): SerializeObject {
 
 fun Map<*, *>.toSerializeObject(): SerializeObject {
     return serializeObject(this.mapKeys { it.toString() })
-
 }
 
 fun SerializeObject.putAny(key: String, value: Any?) {
@@ -75,13 +79,6 @@ fun SerializeObject.toMap(): Map<String, Any?> {
             }
         }
     }
-}
-
-interface SObj {
-    fun serialize(): SerializeObject {
-        return this.toSerializeObject()
-    }
-
 }
 
 class SerializeObjectScope {
@@ -106,7 +103,6 @@ class SerializeObjectScope {
     }
 
     operator fun set(key: String, value: Any?) {
-        obj["a"] = SerializeObject()
         obj.putAny(key, value)
     }
 
@@ -122,6 +118,24 @@ fun serializeObject(scope: SerializeObjectScope.() -> Unit): SerializeObject {
 
 fun serializeObject(map: Map<String, Any?>): SerializeObject {
     return serializeObject(map.entries)
+}
+
+@JvmName("serializeObjectByPair")
+fun <T> serializeObject(pairs: Iterable<Pair<T, *>>, converter: (T) -> String): SerializeObject {
+    return serializeObject {
+        for ((k, v) in pairs) {
+            this[converter(k)] = v
+        }
+    }
+}
+
+@JvmName("serializeObjectByEntry")
+fun <T> serializeObject(pairs: Iterable<Map.Entry<T, *>>, converter: (T) -> String): SerializeObject {
+    return serializeObject {
+        for ((k, v) in pairs) {
+            this[converter(k)] = v
+        }
+    }
 }
 
 fun serializeObject(entries: Iterable<Map.Entry<String, *>>): SerializeObject {
@@ -153,7 +167,6 @@ fun <T> serializeObject(entries: Set<Map.Entry<String, T>>, entryConverter: (Str
         }
     }
 }
-
 
 fun <T> SerializeObject.getOr(key: String, or: T, converter: (SerializeElement) -> T): T {
     return runCatching { converter(this[key]!!) }.getOrDefault(or)

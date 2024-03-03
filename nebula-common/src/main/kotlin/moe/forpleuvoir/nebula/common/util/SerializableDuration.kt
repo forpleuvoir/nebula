@@ -7,5 +7,5 @@ data class SerializableDuration(
     val value: Double,
     val unit: DurationUnit
 ) {
-    val duration = value.toDuration(unit)
+    val duration get() = value.toDuration(unit)
 }

@@ -73,7 +73,7 @@ class Color : ARGBColor, Cloneable {
     /**
      * 检查值得范围是否合法
      */
-    var checkRange: Boolean
+    private var checkRange: Boolean
 
     /**
      * @param argb [Int] 包含ARGB信息的颜色值

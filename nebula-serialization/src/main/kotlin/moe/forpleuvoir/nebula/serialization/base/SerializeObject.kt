@@ -2,8 +2,17 @@
 
 package moe.forpleuvoir.nebula.serialization.base
 
+import moe.forpleuvoir.nebula.common.color.ARGBColor
+import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.color.HSVColor
+import moe.forpleuvoir.nebula.common.color.RGBColor
+import moe.forpleuvoir.nebula.common.util.SerializableDuration
+import moe.forpleuvoir.nebula.serialization.extensions.serialization
+import moe.forpleuvoir.nebula.serialization.extensions.serializationAsObject
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.function.Function
+import kotlin.reflect.KClass
 
 /**
  *
@@ -24,14 +33,38 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
 
     constructor() : this(members = LinkedHashMap())
 
-    override val deepCopy: SerializeObject
-        get() {
-            val result = SerializeObject()
-            for (entry in entries) {
-                result[entry.key] = entry.value.deepCopy
-            }
-            return result
+    companion object {
+
+        internal val serializerCache: MutableMap<KClass<out Any>, Function<*, SerializeObject>> = mutableMapOf(
+            Color::class to Function<Color, SerializeObject> { it.serializationAsObject() },
+            HSVColor::class to Function<HSVColor, SerializeObject> { it.serializationAsObject() },
+            RGBColor::class to Function<Color, SerializeObject> { it.serializationAsObject() },
+            ARGBColor::class to Function<HSVColor, SerializeObject> { it.serializationAsObject() },
+            SerializableDuration::class to Function<SerializableDuration, SerializeObject> { it.serialization() }
+        )
+
+        fun <T : Any> registerSerializer(type: KClass<T>, func: Function<*, SerializeObject>) {
+            serializerCache[type] = func
         }
+
+        inline fun <reified T : Any> registerSerializer(func: Function<T, SerializeObject>) {
+            registerSerializer(T::class, func)
+        }
+
+    }
+
+    override fun deepCopy(): SerializeObject {
+        if (this.isEmpty()) return SerializeObject()
+        return SerializeObject().apply {
+            for (entry in this@SerializeObject) {
+                this[entry.key] = entry.value.deepCopy()
+            }
+        }
+    }
+
+    override fun copy(): SerializeElement {
+        return SerializeObject(this.members)
+    }
 
     operator fun set(key: String, value: String): String? {
         return this.put(key, SerializePrimitive(value))?.asString

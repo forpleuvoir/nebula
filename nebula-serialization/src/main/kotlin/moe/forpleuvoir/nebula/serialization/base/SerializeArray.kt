@@ -31,17 +31,23 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             }
         else ArrayList())
 
-    override val deepCopy: SerializeArray
-        get() {
-            if (this.isNotEmpty()) {
-                val result = SerializeArray(elements.size)
-                for (element in this.elements) {
-                    result.add(element.deepCopy)
-                }
-                return result
+    override fun deepCopy(): SerializeArray {
+        if (this.isNotEmpty()) {
+            val result = SerializeArray(elements.size)
+            for (element in this.elements) {
+                result.add(element.deepCopy())
             }
-            return SerializeArray()
+            return result
         }
+        return SerializeArray()
+    }
+
+    override fun copy(): SerializeArray {
+        if (this.isNotEmpty()) {
+            return SerializeArray(elements)
+        }
+        return SerializeArray()
+    }
 
     override val asPrimitive: SerializePrimitive
         get() {

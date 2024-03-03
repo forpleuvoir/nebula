@@ -2,6 +2,7 @@
 @file:OptIn(ExperimentalContracts::class)
 
 package moe.forpleuvoir.nebula.serialization.extensions
+
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -12,7 +13,6 @@ import kotlin.contracts.contract
 fun serializeArray(vararg elements: Any?): SerializeArray {
     return serializeArray(elements.toList())
 }
-
 
 inline fun serializeArray(scope: SerializeArray.() -> Unit): SerializeArray {
     contract {
@@ -33,7 +33,7 @@ fun serializeArray(iterator: Iterator<*>): SerializeArray {
                 is Char             -> add(element)
                 is SerializeElement -> add(element)
                 null                -> add(SerializeNull)
-                else                -> add(element.toSerializeObject())
+                else -> add(element.toSerializeElement())
             }
         }
     }
@@ -62,7 +62,6 @@ fun SerializeArray.toList(): List<Any> {
             is SerializeObject    -> e.toMap()
             is SerializeArray     -> e.toList()
             is SerializeNull      -> SerializeNull.toString()
-            else                  -> e.toString()
         }
     }
 }

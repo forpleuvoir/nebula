@@ -5,7 +5,6 @@ package moe.forpleuvoir.nebula.event
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
-
 interface EventBus {
 
 	companion object {
@@ -41,7 +40,8 @@ interface EventBus {
 	}
 
 	fun <E : Event> broadcast(event: E)
-	fun <E : Event> subscribe(channel: KClass<out E>, greedy: Boolean = false, subscriber: Consumer<E>)
+
+    fun <E : Event> subscribe(channel: KClass<out E>, greedy: Boolean = false, subscriber: Consumer<E>)
 
 }
 

@@ -1,17 +1,23 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
+import moe.forpleuvoir.nebula.common.color.Colors
+import moe.forpleuvoir.nebula.common.util.SerializableDuration
 import moe.forpleuvoir.nebula.common.util.replace
+import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
-import moe.forpleuvoir.nebula.serialization.extensions.SObj
+import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import moe.forpleuvoir.nebula.serialization.extensions.checkType
+import moe.forpleuvoir.nebula.serialization.extensions.serialization
+import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
-import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
 import kotlin.time.measureTime
 
 fun main() {
-    test1()
+    test3()
 }
 
 @OptIn(ExperimentalApi::class)
@@ -54,11 +60,18 @@ fun test1() {
 //    println(obj["contacts"]?.dumpAsJson(true))
 }
 
-@OptIn(ExperimentalApi::class)
+@OptIn(ExperimentalApi::class, ExperimentalReflectionOnLambdas::class)
 fun test3() {
     val o = object {
         var aa = 65
         var bb = "bb"
+
+        fun serialization(): SerializeObject {
+            return serializeObject {
+                "aa" to aa
+                "bb" to bb
+            }
+        }
 
         override fun toString(): String {
             return "(aa=$aa, bb='$bb')"
@@ -76,21 +89,40 @@ fun test3() {
         val g = null
         val h = arrayOf(6, "c", "asdas", o)
         val j = o
+        val color = Colors.BLACK
+        val t = T.V1
     }
-    println(obj.toSerializeObject().dumpAsJson(true))
+
+    SerializePrimitive(10).checkType<Int>()
+        .check<Float> {
+            it.toInt()
+        }.getOrThrow().let {
+            println(it)
+        }
+
+//    (serializeArray(1, 2, 3, 4) as SerializeElement)
+    SerializeElement.registerSerializer<SerializableDuration>() {
+        it.serialization()
+    }
+    obj.toSerializeObject()
+        .checkType<SerializeObject, String> {
+            it["t"].toString()
+        }.getOrThrow().let {
+            println(it)
+        }
+//    o.toSerializeObject().let {
+//        println(it.toString())
+//    }
+//    println(obj.toSerializeObject().dumpAsJson(true))
 }
 
 fun test2() {
-    val a = object : SObj {
-        private val test = "aaa"
-        val tes2 = 6
-        var tes3 = true
-        val test4 = 'a'
-    }
-    println(a.serialize())
-    a.tes3 = false
-    println(a.serialize())
+
 }
 
+
+enum class T {
+    V1, V2;
+}
 
 

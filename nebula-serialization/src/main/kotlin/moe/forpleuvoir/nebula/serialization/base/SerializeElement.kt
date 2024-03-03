@@ -1,7 +1,16 @@
 package moe.forpleuvoir.nebula.serialization.base
 
+import moe.forpleuvoir.nebula.common.color.ARGBColor
+import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.color.HSVColor
+import moe.forpleuvoir.nebula.common.color.RGBColor
+import moe.forpleuvoir.nebula.common.util.SerializableDuration
+import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.*
+import java.util.function.Function
+import kotlin.reflect.KClass
 
 /**
  *
@@ -17,120 +26,143 @@ import java.math.BigInteger
  * @author forpleuvoir
 
  */
-interface SerializeElement {
+sealed interface SerializeElement {
 
-	val deepCopy: SerializeElement
+    companion object {
 
-	/**
-	 * 是否为原始类型
-	 * @return Boolean
-	 */
-	val isPrimitive: Boolean get() = this is SerializePrimitive
+        internal val serializerCache: MutableMap<KClass<out Any>, Function<*, SerializeElement>> = mutableMapOf(
+            Color::class to Function<Color, SerializeElement> { it.serialization() },
+            HSVColor::class to Function<HSVColor, SerializeElement> { it.serialization() },
+            RGBColor::class to Function<Color, SerializeElement> { it.serialization() },
+            ARGBColor::class to Function<HSVColor, SerializeElement> { it.serialization() },
+            SerializableDuration::class to Function<SerializableDuration, SerializeElement> { it.serialization() },
+            Date::class to Function<Date, SerializeElement> { it.serialization() },
+        )
 
-	/**
-	 * 是否为对象
-	 * @return Boolean
-	 */
-	val isObject: Boolean get() = this is SerializeObject
+        fun <T : Any> registerSerializer(type: KClass<T>, func: Function<*, SerializeElement>) {
+            serializerCache[type] = func
+        }
 
-	/**
-	 * 是否为数组
-	 * @return Boolean
-	 */
-	val isArray: Boolean get() = this is SerializeArray
+        inline fun <reified T : Any> registerSerializer(func: Function<T, SerializeElement>) {
+            registerSerializer(T::class, func)
+        }
 
-	/**
-	 * 是否为空
-	 * @return Boolean
-	 */
-	val isNull: Boolean get() = this is SerializeNull
+    }
 
-	val asPrimitive: SerializePrimitive
-		get() {
-			if (this.isPrimitive) {
-				return this as SerializePrimitive
-			}
-			throw IllegalStateException("Not a serialization Primitive,type: ${this::class.simpleName}, '${toString()}' ")
-		}
+    fun deepCopy(): SerializeElement
 
-	val asObject: SerializeObject
-		get() {
-			if (this.isObject) {
-				return this as SerializeObject
-			}
-			throw IllegalStateException("Not a serialization Object,type: ${this::class.simpleName}, '${toString()}' ")
-		}
+    fun copy(): SerializeElement
 
-	val asArray: SerializeArray
-		get() {
-			if (this.isArray) {
-				return this as SerializeArray
-			}
-			throw IllegalStateException("Not a serialization Array,type: ${this::class.simpleName}, '${toString()}' ")
-		}
+    /**
+     * 是否为原始类型
+     * @return Boolean
+     */
+    val isPrimitive: Boolean get() = this is SerializePrimitive
 
-	val asNull: SerializeNull
-		get() {
-			if (this.isNull) {
-				return this as SerializeNull
-			}
-			throw IllegalStateException("Not a serialization Null,type: ${this::class.simpleName}, '${toString()}' ")
-		}
+    /**
+     * 是否为对象
+     * @return Boolean
+     */
+    val isObject: Boolean get() = this is SerializeObject
 
-	val asString: String
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    /**
+     * 是否为数组
+     * @return Boolean
+     */
+    val isArray: Boolean get() = this is SerializeArray
 
-	val asBoolean: Boolean
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    /**
+     * 是否为空
+     * @return Boolean
+     */
+    val isNull: Boolean get() = this is SerializeNull
 
-	val asNumber: Number
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asPrimitive: SerializePrimitive
+        get() {
+            if (this.isPrimitive) {
+                return this as SerializePrimitive
+            }
+            throw IllegalStateException("Not a serialization Primitive,type: ${this::class.simpleName}, '${toString()}' ")
+        }
 
-	val asInt: Int
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asObject: SerializeObject
+        get() {
+            if (this.isObject) {
+                return this as SerializeObject
+            }
+            throw IllegalStateException("Not a serialization Object,type: ${this::class.simpleName}, '${toString()}' ")
+        }
 
-	val asLong: Long
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asArray: SerializeArray
+        get() {
+            if (this.isArray) {
+                return this as SerializeArray
+            }
+            throw IllegalStateException("Not a serialization Array,type: ${this::class.simpleName}, '${toString()}' ")
+        }
 
-	val asShort: Short
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asNull: SerializeNull
+        get() {
+            if (this.isNull) {
+                return this as SerializeNull
+            }
+            throw IllegalStateException("Not a serialization Null,type: ${this::class.simpleName}, '${toString()}' ")
+        }
 
-	val asByte: Byte
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asString: String
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
 
-	val asFloat: Float
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asBoolean: Boolean
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
 
-	val asDouble: Double
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asNumber: Number
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
 
-	val asBigInteger: BigInteger
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asInt: Int
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
 
-	val asBigDecimal: BigDecimal
-		get() {
-			throw UnsupportedOperationException(this::class.simpleName)
-		}
+    val asLong: Long
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
+
+    val asShort: Short
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
+
+    val asByte: Byte
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
+
+    val asFloat: Float
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
+
+    val asDouble: Double
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
+
+    val asBigInteger: BigInteger
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
+
+    val asBigDecimal: BigDecimal
+        get() {
+            throw UnsupportedOperationException(this::class.simpleName)
+        }
 
 
 }

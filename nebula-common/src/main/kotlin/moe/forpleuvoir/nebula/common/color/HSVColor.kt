@@ -14,6 +14,8 @@ class HSVColor(
     private val checkRange: Boolean = true
 ) : ARGBColor, Cloneable {
 
+    companion object {}
+
     constructor(argb: Int, checkRange: Boolean = true) : this(checkRange = checkRange) {
         this.argb = argb
     }
