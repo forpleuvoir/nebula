@@ -1,8 +1,9 @@
 package moe.forpleuvoir.nebula.config.manager
 
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
-import moe.forpleuvoir.nebula.config.manager.plugin.ConfigManagerPlugin
+import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.time.Duration
 
@@ -13,7 +14,12 @@ interface ConfigManager : ConfigContainer {
      */
     override fun init()
 
-    fun plugin(plugin: ConfigManagerPlugin): ConfigManager
+    /**
+     * 添加组件 应该在初始化阶段就完成
+     * @param component ConfigManagerComponent
+     * @return ConfigManager
+     */
+    fun compose(component: ConfigManagerComponent): ConfigManager
 
     suspend fun save()
 
@@ -42,22 +48,22 @@ interface ConfigManager : ConfigContainer {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun ConfigManager.plugin(pluginProvider: ConfigManager.() -> ConfigManagerPlugin): ConfigManager {
+inline fun ConfigManager.compose(pluginProvider: ConfigManager.() -> ConfigManagerComponent): ConfigManager {
     contract {
-        callsInPlace(pluginProvider, kotlin.contracts.InvocationKind.EXACTLY_ONCE)
+        callsInPlace(pluginProvider, InvocationKind.EXACTLY_ONCE)
     }
-    return plugin(pluginProvider.invoke(this))
+    return compose(pluginProvider.invoke(this))
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun ConfigManager.plugins(pluginProvider: ConfigManagerPluginContext.() -> Unit): ConfigManager {
+inline fun ConfigManager.components(context: ConfigManagerComponentContext.() -> Unit): ConfigManager {
     contract {
-        callsInPlace(pluginProvider, kotlin.contracts.InvocationKind.EXACTLY_ONCE)
+        callsInPlace(context, InvocationKind.EXACTLY_ONCE)
     }
-    pluginProvider.invoke(ConfigManagerPluginContext(this))
+    context.invoke(ConfigManagerComponentContext(this))
     return this
 }
 
-class ConfigManagerPluginContext(val manager: ConfigManager) {
-    fun plugin(plugin: ConfigManagerPlugin) = manager.plugin(plugin)
+class ConfigManagerComponentContext(val manager: ConfigManager) {
+    fun component(component: ConfigManagerComponent) = manager.compose(component)
 }

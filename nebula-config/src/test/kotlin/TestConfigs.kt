@@ -4,9 +4,9 @@ import moe.forpleuvoir.nebula.config.Description
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
-import moe.forpleuvoir.nebula.config.manager.plugin.autoSave
-import moe.forpleuvoir.nebula.config.manager.plugin.localConfig
-import moe.forpleuvoir.nebula.config.manager.plugins
+import moe.forpleuvoir.nebula.config.manager.component.autoSave
+import moe.forpleuvoir.nebula.config.manager.component.localConfig
+import moe.forpleuvoir.nebula.config.manager.components
 import moe.forpleuvoir.nebula.config.persistence.jsonPersistence
 import java.nio.file.Path
 import java.util.*
@@ -17,8 +17,8 @@ import kotlin.time.measureTime
 object TestConfigs : ConfigManagerImpl("test") {
 
     init {
-        plugins {
-            localConfig(Path.of("./nebula-config/build/config"), jsonPersistence())
+        components {
+            localConfig({ Path.of("./nebula-config/build/config") }, ::jsonPersistence)
             autoSave(5.seconds, 5.seconds) { needSave ->
                 println(measureTime {
                     println("当前是否需要保存 ${this.manager.needSave}")
