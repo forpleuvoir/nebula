@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.config.manager
 
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
-import moe.forpleuvoir.nebula.config.manager.plugin.ConfigManagerPlugin
+import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
 import moe.forpleuvoir.nebula.config.util.configLaunch
 import kotlin.time.Duration
 import kotlin.time.measureTime
@@ -12,10 +12,10 @@ open class ConfigManagerImpl(
     descriptionKeyMap: (String) -> String = { "_$it" }
 ) : ConfigManager, ConfigContainerImpl(key, autoScan, descriptionKeyMap) {
 
-    protected val plugins: MutableSet<ConfigManagerPlugin> = mutableSetOf()
+    protected val plugins: MutableSet<ConfigManagerComponent> = mutableSetOf()
 
-    override fun plugin(plugin: ConfigManagerPlugin): ConfigManager {
-        plugins.add(plugin)
+    override fun compose(component: ConfigManagerComponent): ConfigManager {
+        plugins.add(component)
         return this
     }
 
