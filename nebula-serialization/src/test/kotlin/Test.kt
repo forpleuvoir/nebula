@@ -93,7 +93,7 @@ fun test3() {
         val t = T.V1
     }
 
-    SerializePrimitive(10).checkType<Int>()
+    SerializePrimitive(10f).checkType<Int>()
         .check<Float> {
             it.toInt()
         }.getOrThrow().let {
@@ -101,8 +101,8 @@ fun test3() {
         }
 
 //    (serializeArray(1, 2, 3, 4) as SerializeElement)
-    SerializeElement.registerSerializer<SerializableDuration>() {
-        it.serialization()
+    SerializeObject.registerSerializer<SerializableDuration>{
+        it.toSerializeObject()
     }
     obj.toSerializeObject()
         .checkType<SerializeObject, String> {

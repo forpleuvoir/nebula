@@ -9,7 +9,6 @@ import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
-import java.util.function.Function
 import kotlin.reflect.KClass
 
 /**
@@ -30,20 +29,28 @@ sealed interface SerializeElement {
 
     companion object {
 
-        internal val serializerCache: MutableMap<KClass<out Any>, Function<*, SerializeElement>> = mutableMapOf(
-            Color::class to Function<Color, SerializeElement> { it.serialization() },
-            HSVColor::class to Function<HSVColor, SerializeElement> { it.serialization() },
-            RGBColor::class to Function<Color, SerializeElement> { it.serialization() },
-            ARGBColor::class to Function<HSVColor, SerializeElement> { it.serialization() },
-            SerializableDuration::class to Function<SerializableDuration, SerializeElement> { it.serialization() },
-            Date::class to Function<Date, SerializeElement> { it.serialization() },
-        )
+        internal val serializerCache: MutableMap<KClass<out Any>, (Any) -> SerializeElement> = mutableMapOf()
 
-        fun <T : Any> registerSerializer(type: KClass<T>, func: Function<*, SerializeElement>) {
-            serializerCache[type] = func
+        init {
+            register<Color>(Color::serialization)
+            register<HSVColor>(HSVColor::serialization)
+            register<RGBColor>(RGBColor::serialization)
+            register<ARGBColor>(ARGBColor::serialization)
+            register<SerializableDuration>(SerializableDuration::serialization)
+            register<Date>(Date::serialization)
         }
 
-        inline fun <reified T : Any> registerSerializer(func: Function<T, SerializeElement>) {
+        @Suppress("UNCHECKED_CAST")
+        private inline fun <reified T : Any> register(noinline func: (T) -> SerializeElement) {
+            serializerCache[T::class] = func as (Any) -> SerializeElement
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T : Any> registerSerializer(type: KClass<T>, func: (T) -> SerializeElement) {
+            serializerCache[type] = func as (Any) -> SerializeElement
+        }
+
+        inline fun <reified T : Any> registerSerializer(noinline func: (T) -> SerializeElement) {
             registerSerializer(T::class, func)
         }
 

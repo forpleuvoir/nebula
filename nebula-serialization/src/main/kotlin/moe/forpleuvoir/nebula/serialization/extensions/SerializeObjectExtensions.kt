@@ -24,8 +24,7 @@ import kotlin.reflect.jvm.jvmErasure
 fun Any.toSerializeObject(): SerializeObject {
     //如果有缓存，则直接调用缓存的方法
     SerializeObject.serializerCache[this::class]?.let {
-        it as Function<Any, SerializeObject>
-        return it.apply(this)
+        return it(this)
     }
     //如果实现了[Serializable]接口，则调用其[serialization]方法
     if (this is Serializable) {

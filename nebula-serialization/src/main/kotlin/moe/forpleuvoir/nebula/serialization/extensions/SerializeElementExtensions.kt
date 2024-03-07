@@ -105,7 +105,7 @@ class SerializeElementCheckTypeResult<R : Any> internal constructor(private val 
 }
 
 
-@Suppress("DuplicatedCode", "UNCHECKED_CAST")
+@Suppress("DuplicatedCode")
 fun Any?.toSerializeElement(): SerializeElement {
     return when (this) {
         null                        -> SerializeNull
@@ -131,8 +131,7 @@ fun Any?.toSerializeElement(): SerializeElement {
         else                        -> {
             //如果有缓存，则直接调用缓存的方法
             SerializeElement.serializerCache[this::class]?.let {
-                it as Function<Any, SerializeElement>
-                return it.apply(this)
+                return it(this)
             }
             //如果实现了[Serializable]接口，则调用其[serialization]方法
             if (this is Serializable) {
