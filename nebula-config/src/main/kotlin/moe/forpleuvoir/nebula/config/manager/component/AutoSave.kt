@@ -2,7 +2,7 @@ package moe.forpleuvoir.nebula.config.manager.component
 
 import moe.forpleuvoir.nebula.common.util.schedule
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
-import moe.forpleuvoir.nebula.config.manager.ConfigManagerComponentContext
+import moe.forpleuvoir.nebula.config.manager.ConfigManagerComponentScope
 import java.util.*
 import kotlin.time.Duration
 
@@ -44,8 +44,8 @@ fun ConfigManager.autoSave(
     saveAction: (needSave: () -> Boolean) -> Unit = { if (it()) asyncSave() }
 ) = AutoSave({ this }, initialDelay, period, saveAction)
 
-fun ConfigManagerComponentContext.autoSave(
+fun ConfigManagerComponentScope.autoSave(
     initialDelay: Duration,
     period: Duration,
     saveAction: (needSave: () -> Boolean) -> Unit = { if (it()) this.manager.asyncSave() }
-) = AutoSave({ this.manager }, initialDelay, period, saveAction).also { component(it) }
+) = AutoSave({ this.manager }, initialDelay, period, saveAction).also { compose(it) }

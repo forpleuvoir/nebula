@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.config.manager.component
 
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
-import moe.forpleuvoir.nebula.config.manager.ConfigManagerComponentContext
+import moe.forpleuvoir.nebula.config.manager.ConfigManagerComponentScope
 import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
 import moe.forpleuvoir.nebula.config.util.ConfigUtil
 import java.nio.file.Path
@@ -47,17 +47,17 @@ fun ConfigManager.localConfig(
     persistence: () -> ConfigManagerPersistence
 ) = LocalConfig({ this }, configPath, persistence)
 
-fun ConfigManagerComponentContext.localConfig(
+fun ConfigManagerComponentScope.localConfig(
     configPath: () -> Path,
     persistence: () -> ConfigManagerPersistence
-) = LocalConfig({ this.manager }, configPath, persistence).also { component(it) }
+) = LocalConfig({ this.manager }, configPath, persistence).also { compose(it) }
 
 fun ConfigManager.localConfig(
     configPath: Path,
     persistence: ConfigManagerPersistence
 ) = LocalConfig({ this }, { configPath }, { persistence })
 
-fun ConfigManagerComponentContext.localConfig(
+fun ConfigManagerComponentScope.localConfig(
     configPath: Path,
     persistence: ConfigManagerPersistence
-) = LocalConfig({ this.manager }, { configPath }, { persistence }).also { component(it) }
+) = LocalConfig({ this.manager }, { configPath }, { persistence }).also { compose(it) }

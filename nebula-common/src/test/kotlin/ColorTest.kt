@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.time.measureTime
 
 fun main() {
-    println(Color(0xFF8CECFFu))
+    println(Color(0xFF8CECFF))
 }
 
 fun hsv() {
