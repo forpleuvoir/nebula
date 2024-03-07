@@ -27,7 +27,7 @@ class ConfigColor(
         configValue.serialization()
 
     override fun deserialization(serializeElement: SerializeElement) {
-        setValue(Color(0xFFFFFFFFu).apply { deserialization(serializeElement) })
+        setValue(Color.deserialization(serializeElement))
     }
 
 }

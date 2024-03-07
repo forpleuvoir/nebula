@@ -5,8 +5,6 @@ package moe.forpleuvoir.nebula.common.color
 import moe.forpleuvoir.nebula.common.util.clamp
 import moe.forpleuvoir.nebula.common.util.fillBefore
 
-fun Color(argb: UInt, checkRange: Boolean = false) = Color(argb.toInt(), checkRange)
-
 class Color : ARGBColor, Cloneable {
 
     companion object {
@@ -114,6 +112,21 @@ class Color : ARGBColor, Cloneable {
      * @constructor
      */
     constructor(argb: Int, checkRange: Boolean = true) : this(argb, checkRange, false)
+
+    /**
+     * @param argb [Int] 包含ARGB信息的颜色值
+     *
+     * @param checkRange [Boolean]
+     *
+     * &#09;是否严格限制各种值是否合法
+     *
+     * &#09;如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
+     *
+     * &#09;为 false 则只会将值修复到合法范围内
+     *
+     * @constructor
+     */
+    constructor(argb: Long, checkRange: Boolean = true) : this(argb.toInt(), checkRange, false)
 
     /**
      *

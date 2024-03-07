@@ -3,7 +3,7 @@ import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.config.Description
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
-import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
+import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.config.manager.component.autoSave
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
 import moe.forpleuvoir.nebula.config.manager.components
@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : ConfigManagerImpl("test") {
+object TestConfigs : ConfigManager by ConfigManager("test") {
 
     init {
         components {

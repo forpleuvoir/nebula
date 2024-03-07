@@ -9,6 +9,18 @@ import kotlin.time.Duration
 
 interface ConfigManager : ConfigContainer {
 
+    companion object {
+
+        operator fun invoke(
+            key: String,
+            autoScan: Boolean = true,
+            descriptionKeyMap: (String) -> String = { "_$it" }
+        ): ConfigManager {
+            return ConfigManagerImpl(key, autoScan, descriptionKeyMap)
+        }
+
+    }
+
     /**
      * 所有对配置内容的操作都应该在此函数调用之后执行
      */
@@ -56,14 +68,14 @@ inline fun ConfigManager.compose(pluginProvider: ConfigManager.() -> ConfigManag
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun ConfigManager.components(context: ConfigManagerComponentContext.() -> Unit): ConfigManager {
+inline fun ConfigManager.components(scope: ConfigManagerComponentScope.() -> Unit): ConfigManager {
     contract {
-        callsInPlace(context, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(scope, InvocationKind.EXACTLY_ONCE)
     }
-    context.invoke(ConfigManagerComponentContext(this))
+    scope.invoke(ConfigManagerComponentScope(this))
     return this
 }
 
-class ConfigManagerComponentContext(val manager: ConfigManager) {
-    fun component(component: ConfigManagerComponent) = manager.compose(component)
+class ConfigManagerComponentScope(val manager: ConfigManager) {
+    fun compose(component: ConfigManagerComponent) = manager.compose(component)
 }
