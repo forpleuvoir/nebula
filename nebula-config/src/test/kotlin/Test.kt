@@ -9,6 +9,7 @@ import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
+import kotlin.time.Duration.Companion.seconds
 
 fun main() {
     runAsync {
@@ -31,6 +32,8 @@ fun main() {
         }
         TestConfigs.save()
     }
+
+    TestConfigs.duration = 12.seconds
 }
 
 fun t() {

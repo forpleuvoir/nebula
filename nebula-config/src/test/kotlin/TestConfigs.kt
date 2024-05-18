@@ -55,7 +55,7 @@ object TestConfigs : ConfigManager by ConfigManager("test") {
     val date = ConfigDate("date", Date())
 
     @Description("时间配置测试")
-    val duration = ConfigDuration("time", 15.minutes)
+    var duration by ConfigDuration("time", 15.minutes).asDuration
 
     @Description("整数配置测试")
     object Numbers : ConfigContainerImpl("config_numbers") {

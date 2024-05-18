@@ -15,7 +15,7 @@ fun SerializableDuration.serialization(): SerializeObject {
     }
 }
 
-object TimeDeserializer : Deserializer<SerializableDuration> {
+object DurationDeserializer : Deserializer<SerializableDuration> {
     override fun deserialization(serializeElement: SerializeElement): SerializableDuration {
         serializeElement as SerializeObject
         val time = serializeElement["value"]!!.asDouble
