@@ -1,28 +1,26 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
 import moe.forpleuvoir.nebula.common.color.Colors
-import moe.forpleuvoir.nebula.common.util.SerializableDuration
 import moe.forpleuvoir.nebula.common.util.replace
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
-import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.URI
 import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
+import kotlin.test.Test
 import kotlin.time.measureTime
 
-fun main() {
-    test3()
-}
+internal class SerializerTest {
 
-@OptIn(ExperimentalApi::class)
-fun test1() {
-    val json = """
+    @Test
+    @OptIn(ExperimentalApi::class)
+    fun test1() {
+        val json = """
 		{
           "name": "John Doe",
           "age": 30,
@@ -48,17 +46,34 @@ fun test1() {
           "url": "https://maven.forpleuvoir.moe"
         }
 	""".trimIndent()
-    val obj: SerializeObject
-    measureTime {
-        obj = JsonParser.parse(json).asObject
-    }.let { println(it) }
+        val obj: SerializeObject
+        measureTime {
+            obj = JsonParser.parse(json).asObject
+        }.let { println(it) }
 //    println(obj)
 //    println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
-    println(JsonParser.parse(obj["notes"]!!.asString.replace(JsonParser.ESCAPE)).asObject["nestedKey"]!!.asString)
-    println(json.parseToJsonObject.get("notes").asString)
+        println(JsonParser.parse(obj["notes"]!!.asString.replace(JsonParser.ESCAPE)).asObject["nestedKey"]!!.asString)
+        println(json.parseToJsonObject.get("notes").asString)
 //    println(obj.dumpAsJson(true))
 //    println(obj["contacts"]?.dumpAsJson(true))
+    }
+
+
 }
+
+fun main() {
+    val uri = URI.create("ws://localhost:8080/message?verifyKey=1234567890&qq=12345678")
+    uri.apply {
+        println(this.scheme)
+        println(this.host)
+        println(this.path)
+
+    }
+    URI(
+        uri.scheme, uri.userInfo, uri.host, uri.port, "${uri.path}/message", uri.query, uri.fragment
+    ).apply { println(this.toString()) }
+}
+
 
 @OptIn(ExperimentalApi::class, ExperimentalReflectionOnLambdas::class)
 fun test3() {
@@ -101,9 +116,6 @@ fun test3() {
         }
 
 //    (serializeArray(1, 2, 3, 4) as SerializeElement)
-    SerializeObject.registerSerializer<SerializableDuration>{
-        it.toSerializeObject()
-    }
     obj.toSerializeObject()
         .checkType<SerializeObject, String> {
             it["t"].toString()

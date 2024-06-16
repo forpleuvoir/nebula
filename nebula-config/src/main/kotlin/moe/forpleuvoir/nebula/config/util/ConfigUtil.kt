@@ -1,7 +1,6 @@
 package moe.forpleuvoir.nebula.config.util
 
 import kotlinx.coroutines.*
-import moe.forpleuvoir.nebula.common.NebulaDispatcher
 import java.io.*
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -51,7 +50,7 @@ object ConfigUtil {
 
 }
 
-val ConfigCoroutineScope by lazy { CoroutineScope(NebulaDispatcher) }
+val ConfigCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
 
 fun configLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -59,4 +58,12 @@ fun configLaunch(
     block: suspend CoroutineScope.() -> Unit
 ): Job {
     return ConfigCoroutineScope.launch(context, start, block)
+}
+
+fun <T> configAsync(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> T
+): Deferred<T> {
+    return ConfigCoroutineScope.async(context, start, block)
 }

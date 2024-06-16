@@ -6,8 +6,6 @@ import moe.forpleuvoir.nebula.common.color.ARGBColor
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.HSVColor
 import moe.forpleuvoir.nebula.common.color.RGBColor
-import moe.forpleuvoir.nebula.common.util.SerializableDuration
-import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import moe.forpleuvoir.nebula.serialization.extensions.serializationAsObject
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -41,7 +39,6 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
             register<HSVColor>(HSVColor::serializationAsObject)
             register<RGBColor>(RGBColor::serializationAsObject)
             register<ARGBColor>(ARGBColor::serializationAsObject)
-            register<SerializableDuration>(SerializableDuration::serialization)
         }
 
         @Suppress("UNCHECKED_CAST")

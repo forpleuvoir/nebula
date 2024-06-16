@@ -1,17 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
     signing
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
 }
 
 group = "moe.forpleuvoir"
-version = "0.2.8g"
+version = "0.2.9b"
 
 repositories {
     mavenCentral()
@@ -32,11 +32,13 @@ tasks {
         sourceCompatibility = JavaVersion.VERSION_17.toString()
     }
     withType<KotlinCompile>().configureEach {
-        kotlinOptions.suppressWarnings = true
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+        compilerOptions {
+            suppressWarnings = true
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
     }
     withType<ShadowJar>().configureEach {
-        archivesName.set("${project.name}-nebula")
+        archiveBaseName.set("${project.name}-nebula")
         archiveClassifier.set("nebula")
         dependencies {
             project.subprojects.forEach {
@@ -82,7 +84,7 @@ publishing {
     publications {
         create<MavenPublication>(project.name) {
             groupId = project.group.toString()
-            artifactId = project.archivesName.get()
+            artifactId = project.name
             version = project.version.toString()
             from(components["java"])
             pom {
@@ -129,13 +131,17 @@ subprojects {
         mavenLocal()
     }
 
-    dependencies{
+    dependencies {
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+        testImplementation(kotlin("test"))
     }
 
     tasks {
+        test {
+            useJUnitPlatform()
+        }
         withType<JavaCompile>().configureEach {
             this.options.release
             this.options.encoding = "UTF-8"
@@ -143,8 +149,10 @@ subprojects {
             sourceCompatibility = JavaVersion.VERSION_17.toString()
         }
         withType<KotlinCompile>().configureEach {
-            kotlinOptions.suppressWarnings = true
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+            compilerOptions {
+                suppressWarnings = true
+                jvmTarget.set(JvmTarget.JVM_17)
+            }
         }
     }
 
@@ -184,7 +192,7 @@ subprojects {
         publications {
             create<MavenPublication>(project.name) {
                 groupId = project.group.toString()
-                artifactId = project.archivesName.get()
+                artifactId = project.name
                 version = project.version.toString()
                 from(components["java"])
                 pom {

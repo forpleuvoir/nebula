@@ -4,12 +4,12 @@ import moe.forpleuvoir.nebula.common.color.ARGBColor
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.HSVColor
 import moe.forpleuvoir.nebula.common.color.RGBColor
-import moe.forpleuvoir.nebula.common.util.SerializableDuration
 import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 /**
  *
@@ -36,7 +36,7 @@ sealed interface SerializeElement {
             register<HSVColor>(HSVColor::serialization)
             register<RGBColor>(RGBColor::serialization)
             register<ARGBColor>(ARGBColor::serialization)
-            register<SerializableDuration>(SerializableDuration::serialization)
+            register<Duration>(Duration::serialization)
             register<Date>(Date::serialization)
         }
 

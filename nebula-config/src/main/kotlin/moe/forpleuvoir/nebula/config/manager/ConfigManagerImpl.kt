@@ -12,22 +12,22 @@ open class ConfigManagerImpl(
     descriptionKeyMap: (String) -> String = { "_$it" }
 ) : ConfigManager, ConfigContainerImpl(key, autoScan, descriptionKeyMap) {
 
-    protected val plugins: MutableSet<ConfigManagerComponent> = mutableSetOf()
+    protected val components: MutableSet<ConfigManagerComponent> = mutableSetOf()
 
     override fun compose(component: ConfigManagerComponent): ConfigManager {
-        plugins.add(component)
+        components.add(component)
         return this
     }
 
     override fun init() {
         super.init()
-        plugins.forEach { it.onInit() }
+        components.forEach { it.onInit() }
     }
 
     override suspend fun save() {
         onSaved.invoke(
             measureTime {
-                plugins.forEach { it.onSave() }
+                components.forEach { it.onSave() }
             }
         )
     }
@@ -39,7 +39,7 @@ open class ConfigManagerImpl(
     override suspend fun forceSave() {
         onSaved.invoke(
             measureTime {
-                plugins.forEach { it.onForcedSave() }
+                components.forEach { it.onForcedSave() }
             }
         )
     }
@@ -51,7 +51,7 @@ open class ConfigManagerImpl(
     override suspend fun load() {
         onLoaded.invoke(
             measureTime {
-                plugins.forEach { it.onLoad() }
+                components.forEach { it.onLoad() }
             }
         )
     }

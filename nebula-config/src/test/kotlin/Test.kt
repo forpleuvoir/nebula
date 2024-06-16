@@ -9,7 +9,38 @@ import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
+import kotlin.test.Test
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+
+
+class ConfigTest {
+
+
+    @Test
+    fun test() {
+        println(5.5.seconds.toString())
+        println(Duration.parse("5.4s"))
+    }
+
+    @Test
+    fun test2() {
+        val pattern = """#\{bind\[((\d+)|last)\]\}""".toRegex()
+        val input = "Some string with #{bind[123]} and #{bind[last]}"
+
+        if (pattern.containsMatchIn(input)) {
+            println("Match found!")
+            val matches = pattern.findAll(input)
+            matches.forEach { matchResult ->
+                println("Match: ${matchResult.value}")
+            }
+        } else {
+            println("No match found.")
+        }
+
+    }
+
+}
 
 fun main() {
     runAsync {

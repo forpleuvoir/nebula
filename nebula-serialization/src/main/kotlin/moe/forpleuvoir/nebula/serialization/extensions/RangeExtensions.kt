@@ -2,12 +2,13 @@ package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import kotlin.ranges.ClosedRange
 
 fun <T : Comparable<T>> ClosedRange<T>.serialization(): SerializeElement {
     return SerializePrimitive("${this.start}..${this.endInclusive}")
 }
 
-object ClosedRangeDeserializer {
+object ClosedRange {
 
     inline fun <T : Comparable<T>> deserialization(serializeElement: SerializeElement, supplier: (String) -> T): ClosedRange<T> {
         serializeElement.asString.let {
@@ -18,12 +19,14 @@ object ClosedRangeDeserializer {
 
 }
 
+
 fun IntRange.Companion.deserialization(serializeElement: SerializeElement): IntRange {
     serializeElement.asString.let {
         val pair = it.split("..")
         return pair[0].toInt()..pair[1].toInt()
     }
 }
+
 
 fun UIntRange.Companion.deserialization(serializeElement: SerializeElement): UIntRange {
     serializeElement.asString.let {

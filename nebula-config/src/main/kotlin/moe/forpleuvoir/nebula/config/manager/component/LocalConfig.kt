@@ -12,8 +12,6 @@ class LocalConfig(
     val persistence: () -> ConfigManagerPersistence
 ) : ConfigManagerComponent {
 
-    override fun onInit() = Unit
-
     override fun onSave() {
         if (!manager().needSave) return
         ConfigUtil.run {

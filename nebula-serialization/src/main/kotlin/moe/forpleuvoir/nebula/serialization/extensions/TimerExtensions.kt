@@ -1,28 +1,18 @@
 package moe.forpleuvoir.nebula.serialization.extensions
 
-import moe.forpleuvoir.nebula.common.util.SerializableDuration
-import moe.forpleuvoir.nebula.serialization.Deserializer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import java.util.*
-import kotlin.time.DurationUnit
+import kotlin.time.Duration
 
-fun SerializableDuration.serialization(): SerializeObject {
-    return serializeObject {
-        "value" - value
-        "unit" - unit.name
-    }
+fun Duration.serialization(): SerializePrimitive {
+    return SerializePrimitive(this.toString())
 }
 
-object DurationDeserializer : Deserializer<SerializableDuration> {
-    override fun deserialization(serializeElement: SerializeElement): SerializableDuration {
-        serializeElement as SerializeObject
-        val time = serializeElement["value"]!!.asDouble
-        val unit = DurationUnit.valueOf(serializeElement["unit"]!!.asString)
-        return SerializableDuration(time, unit)
-    }
-
+fun Duration.Companion.deserialization(serializeElement: SerializeElement): Duration {
+    return serializeElement.checkType<SerializePrimitive, Duration> {
+        parse(it.asString)
+    }.getOrThrow()
 }
 
 fun Date.serialization(): SerializeElement {
