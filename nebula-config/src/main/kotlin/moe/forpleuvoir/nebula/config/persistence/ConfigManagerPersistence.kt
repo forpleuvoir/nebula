@@ -1,13 +1,13 @@
 package moe.forpleuvoir.nebula.config.persistence
 
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 
 interface ConfigManagerPersistence {
 
 	fun wrapFileName(fileName: String): String
 
-	fun serializeObjectToString(serializeObject: SerializeObject): String
+	fun serializeToString(serializeObject: SerializeElement): String
 
-	fun stringToSerializeObject(str: String): SerializeObject
+	fun stringToSerialization(str: String): SerializeElement
 
 }

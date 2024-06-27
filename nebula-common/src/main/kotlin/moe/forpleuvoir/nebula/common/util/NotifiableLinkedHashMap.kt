@@ -24,6 +24,14 @@ fun <K, V : Any> Map<K, V>.notification(): NotifiableLinkedHashMap<K, V> {
     return NotifiableLinkedHashMap(this)
 }
 
+fun <K, V : Any> buildNotifiableMap(scope: NotifiableLinkedHashMap<K, V>.() -> Unit): NotifiableLinkedHashMap<K, V> {
+    return NotifiableLinkedHashMap<K, V>().apply {
+        disableNotify {
+            scope.invoke(this)
+        }
+    }
+}
+
 class NotifiableLinkedHashMap<K, V : Any>() : LinkedHashMap<K, V>(), Notifiable<NotifiableLinkedHashMap<K, V>> {
 
     constructor(callback: Consumer<NotifiableLinkedHashMap<K, V>>) : this() {

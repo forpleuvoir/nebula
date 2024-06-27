@@ -6,6 +6,8 @@ import moe.forpleuvoir.nebula.config.ConfigSerializable
 import moe.forpleuvoir.nebula.config.Description
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
+import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import moe.forpleuvoir.nebula.serialization.extensions.checkType
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
@@ -145,14 +147,15 @@ open class ConfigContainerImpl(
     }
 
     override fun deserialization(serializeElement: SerializeElement) {
-        serializeElement.asObject.apply {
+        serializeElement.checkType<SerializeObject, Unit> {
             for (configSerialize in allConfigSerializable()) {
                 runCatching {
-                    configSerialize.deserialization(this[configSerialize.key]!!)
+                    configSerialize.deserialization(it[configSerialize.key]!!)
                 }.onFailure {
                     var message = "${configSerialize.key}:\"${serializeElement}\" deserialization failed"
                     when (it) {
-                        is NullPointerException -> message = "not found key[${configSerialize.key}] from \"${serializeElement}\",the default value will be used"
+                        is NullPointerException -> message =
+                            "not found key[${configSerialize.key}] from \"${serializeElement}\",the default value will be used"
                     }
                     deserializationExceptionHandler(configSerialize, serializeElement, DeserializationException(message, it))
                 }

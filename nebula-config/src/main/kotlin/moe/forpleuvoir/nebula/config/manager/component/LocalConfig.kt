@@ -16,7 +16,7 @@ class LocalConfig(
         if (!manager().needSave) return
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
-            writeStringToFile(persistence().serializeObjectToString(manager().serialization().asObject), file)
+            writeToFile(persistence().serializeToString(manager().serialization().asObject), file)
             manager().needSave = false
         }
     }
@@ -24,7 +24,7 @@ class LocalConfig(
     override suspend fun onForcedSave() {
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
-            writeStringToFile(persistence().serializeObjectToString(manager().serialization().asObject), file)
+            writeToFile(persistence().serializeToString(manager().serialization().asObject), file)
             manager().needSave = false
         }
     }
@@ -32,7 +32,7 @@ class LocalConfig(
     override suspend fun onLoad() {
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
-            persistence().stringToSerializeObject(readFileToString(file)).apply {
+            persistence().stringToSerialization(readFileToString(file)).apply {
                 manager().deserialization(this)
             }
         }

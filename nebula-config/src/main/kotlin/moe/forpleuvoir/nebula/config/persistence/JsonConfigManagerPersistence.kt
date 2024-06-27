@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.config.persistence
 
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 
@@ -12,13 +12,13 @@ object JsonConfigManagerPersistence : ConfigManagerPersistence {
     }
 
     @OptIn(ExperimentalApi::class)
-    override fun serializeObjectToString(serializeObject: SerializeObject): String {
+    override fun serializeToString(serializeObject: SerializeElement): String {
         return serializeObject.dumpAsJson(true)
     }
 
     @OptIn(ExperimentalApi::class)
-    override fun stringToSerializeObject(str: String): SerializeObject {
-        return JsonParser.parse(str).asObject
+    override fun stringToSerialization(str: String): SerializeElement {
+        return JsonParser.parse(str)
     }
 
 }

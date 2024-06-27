@@ -24,6 +24,14 @@ fun <T> List<T>.notification(): NotifiableArrayList<T> {
     return NotifiableArrayList(this)
 }
 
+fun <T> buildNotifiableList(scope: NotifiableArrayList<T>.() -> Unit): NotifiableArrayList<T> {
+    return NotifiableArrayList<T>().apply {
+        disableNotify {
+            scope.invoke(this)
+        }
+    }
+}
+
 
 class NotifiableArrayList<T>() : ArrayList<T>(), Notifiable<NotifiableArrayList<T>> {
 

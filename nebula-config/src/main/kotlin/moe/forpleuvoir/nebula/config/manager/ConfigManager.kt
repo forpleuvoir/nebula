@@ -1,5 +1,6 @@
 package moe.forpleuvoir.nebula.config.manager
 
+import kotlinx.coroutines.Deferred
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
 import kotlin.contracts.ExperimentalContracts
@@ -8,18 +9,6 @@ import kotlin.contracts.contract
 import kotlin.time.Duration
 
 interface ConfigManager : ConfigContainer {
-
-    companion object {
-
-        operator fun invoke(
-            key: String,
-            autoScan: Boolean = true,
-            descriptionKeyMap: (String) -> String = { "_$it" }
-        ): ConfigManager {
-            return ConfigManagerImpl(key, autoScan, descriptionKeyMap)
-        }
-
-    }
 
     /**
      * 所有对配置内容的操作都应该在此函数调用之后执行
@@ -33,29 +22,29 @@ interface ConfigManager : ConfigContainer {
      */
     fun compose(component: ConfigManagerComponent): ConfigManager
 
-    suspend fun save()
+    suspend fun save(): Duration
 
     /**
      *  在配置保存完成后执行
      * @param callback (duration: Duration) -> Unit  duration为保存耗时
      */
-    fun onSaved(callback: (duration: Duration) -> Unit)
+    fun onSaved(callback: suspend (duration: Duration) -> Unit)
 
-    fun asyncSave()
+    fun asyncSave(): Deferred<Duration>
 
-    suspend fun forceSave()
+    suspend fun forceSave(): Duration
 
-    fun asyncForceSave()
+    fun asyncForceSave(): Deferred<Duration>
 
-    suspend fun load()
+    suspend fun load(): Duration
 
     /**
      * 在配置加载完成后执行
      * @param callback (duration: Duration) -> Unit  duration为加载耗时
      */
-    fun onLoaded(callback: (duration: Duration) -> Unit)
+    fun onLoaded(callback: suspend (duration: Duration) -> Unit)
 
-    fun asyncLoad()
+    fun asyncLoad(): Deferred<Duration>
 
 }
 

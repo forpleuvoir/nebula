@@ -3,7 +3,7 @@ import moe.forpleuvoir.nebula.common.util.format
 import moe.forpleuvoir.nebula.config.Description
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
-import moe.forpleuvoir.nebula.config.manager.ConfigManager
+import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
 import moe.forpleuvoir.nebula.config.manager.component.autoSave
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
 import moe.forpleuvoir.nebula.config.manager.components
@@ -14,18 +14,18 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : ConfigManager by ConfigManager("test") {
+object TestConfigs : ConfigManagerImpl("test") {
 
     init {
         components {
             localConfig({ Path.of("./nebula-config/build/config") }, ::jsonPersistence)
-            autoSave(5.seconds, 5.seconds) { needSave ->
+            autoSave(initialDelay = 5.seconds, period = 5.seconds) { needSave ->
                 println(measureTime {
                     println("当前是否需要保存 ${this.manager.needSave}")
                     Numbers.int++
                     println("是否需要保存 ${if (needSave()) "是" else "否"}")
-                    if (needSave()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
-                    if (needSave()) asyncSave()
+                    if (needSave()) println("${Thread.currentThread().name} 开始保存耗时：${Date().format("HH:mm:ss")}")
+                    if (needSave()) save()
                 })
             }
         }

@@ -2,7 +2,9 @@ package moe.forpleuvoir.nebula.config.manager.component
 
 interface ConfigManagerComponent {
 
-    fun onInit() = Unit
+    fun beforeInit() = Unit
+
+    fun afterInit() = Unit
 
     suspend fun onSave() = Unit
 

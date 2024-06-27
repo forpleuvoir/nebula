@@ -30,25 +30,46 @@ object ConfigUtil {
         }
 
 
-    suspend fun writeStringToFile(string: String, file: File) =
-        withContext(Dispatchers.IO) {
-            var fileTmp = File(file.parentFile, file.name + ".tmp")
-            if (fileTmp.exists()) {
-                fileTmp = File(file.parentFile, UUID.randomUUID().toString() + ".tmp")
-            }
-            OutputStreamWriter(FileOutputStream(fileTmp), charset).use { it.write(string) }
-            if (file.exists() && file.isFile && !file.delete()) {
-                throw FileNotFoundException("Failed to delete file ${file.absolutePath}")
-            }
-            fileTmp.renameTo(file)
+    suspend fun writeToFile(content: ByteArray, file: File) = withContext(Dispatchers.IO) {
+        var fileTmp = File(file.parentFile, file.name + ".tmp")
+        if (fileTmp.exists()) {
+            fileTmp = File(file.parentFile, UUID.randomUUID().toString() + ".tmp")
         }
+        fileTmp.outputStream().use {
+            it.write(content)
+        }
+        if (file.exists() && file.isFile && !file.delete()) {
+            throw IOException("Failed to delete file ${file.absolutePath}")
+        }
+        if (!fileTmp.renameTo(file)) {
+            throw IOException("Failed to rename temp file to ${file.absolutePath}")
+        }
+    }
+
+    suspend fun writeToFile(content: String, file: File) = withContext(Dispatchers.IO) {
+        var fileTmp = File(file.parentFile, file.name + ".tmp")
+        if (fileTmp.exists()) {
+            fileTmp = File(file.parentFile, UUID.randomUUID().toString() + ".tmp")
+        }
+        OutputStreamWriter(fileTmp.outputStream(), charset).use { it.write(content) }
+        if (file.exists() && file.isFile && !file.delete()) {
+            throw IOException("Failed to delete file ${file.absolutePath}")
+        }
+        if (!fileTmp.renameTo(file)) {
+            throw IOException("Failed to rename temp file to ${file.absolutePath}")
+        }
+    }
 
 
-    suspend fun readFileToString(file: File): String =
-        withContext(Dispatchers.IO) {
-            if (file.exists() && file.isFile && file.canRead()) {
-                InputStreamReader(FileInputStream(file), charset).use { it.readText() }
-            }
-            throw IOException("Failed to read the file ${file.absolutePath}")
-        }
+    suspend fun readFileToString(file: File): String = withContext(Dispatchers.IO) {
+        if (file.exists() && file.isFile && file.canRead()) {
+            InputStreamReader(file.inputStream(), charset).use { it.readText() }
+        } else throw IOException("Failed to read the file ${file.absolutePath}")
+    }
+
+    suspend fun readFile(file: File): ByteArray = withContext(Dispatchers.IO) {
+        if (file.exists() && file.isFile && file.canRead()) {
+            file.inputStream().use(InputStream::readBytes)
+        } else throw IOException("Failed to read the file ${file.absolutePath}")
+    }
 }

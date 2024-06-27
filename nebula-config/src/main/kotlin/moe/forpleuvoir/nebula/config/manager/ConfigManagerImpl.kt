@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config.manager
 
-import moe.forpleuvoir.nebula.common.ioLaunch
+import kotlinx.coroutines.Deferred
+import moe.forpleuvoir.nebula.common.ioAsync
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
 import kotlin.time.Duration
@@ -12,7 +13,7 @@ open class ConfigManagerImpl(
     descriptionKeyMap: (String) -> String = { "_$it" }
 ) : ConfigManager, ConfigContainerImpl(key, autoScan, descriptionKeyMap) {
 
-    protected val components: MutableSet<ConfigManagerComponent> = mutableSetOf()
+    private val components: MutableSet<ConfigManagerComponent> = mutableSetOf()
 
     override fun compose(component: ConfigManagerComponent): ConfigManager {
         components.add(component)
@@ -20,56 +21,55 @@ open class ConfigManagerImpl(
     }
 
     override fun init() {
+        components.forEach { it.beforeInit() }
         super.init()
-        components.forEach { it.onInit() }
+        components.forEach { it.afterInit() }
     }
 
-    override suspend fun save() {
-        onSaved.invoke(
-            measureTime {
-                components.forEach { it.onSave() }
-            }
-        )
+    override suspend fun save(): Duration {
+        measureTime {
+            components.forEach { it.onSave() }
+        }.let {
+            onSaved.invoke(it)
+            return it
+        }
     }
 
-    override fun asyncSave() {
-        ioLaunch { save() }
+    override fun asyncSave() = ioAsync { save() }
+
+    override suspend fun forceSave(): Duration {
+        measureTime {
+            components.forEach { it.onForcedSave() }
+        }.let {
+            onSaved.invoke(it)
+            return it
+        }
     }
 
-    override suspend fun forceSave() {
-        onSaved.invoke(
-            measureTime {
-                components.forEach { it.onForcedSave() }
-            }
-        )
+    override fun asyncForceSave() = ioAsync { forceSave() }
+
+    override suspend fun load(): Duration {
+        measureTime {
+            components.forEach { it.onLoad() }
+        }.let {
+            onLoaded.invoke(it)
+            return it
+        }
     }
 
-    override fun asyncForceSave() {
-        ioLaunch { forceSave() }
-    }
+    override fun asyncLoad(): Deferred<Duration> = ioAsync { load() }
 
-    override suspend fun load() {
-        onLoaded.invoke(
-            measureTime {
-                components.forEach { it.onLoad() }
-            }
-        )
-    }
 
-    override fun asyncLoad() {
-        ioLaunch { load() }
-    }
-
-    override fun onSaved(callback: (duration: Duration) -> Unit) {
+    override fun onSaved(callback: suspend (duration: Duration) -> Unit) {
         onSaved = callback
     }
 
-    override fun onLoaded(callback: (duration: Duration) -> Unit) {
+    override fun onLoaded(callback: suspend (duration: Duration) -> Unit) {
         onLoaded = callback
     }
 
-    protected var onSaved: (duration: Duration) -> Unit = {}
+    private var onSaved: suspend (duration: Duration) -> Unit = {}
 
-    protected var onLoaded: (duration: Duration) -> Unit = {}
+    private var onLoaded: suspend (duration: Duration) -> Unit = {}
 
 }

@@ -1,9 +1,9 @@
 package moe.forpleuvoir.nebula.config.manager.component
 
-import moe.forpleuvoir.nebula.common.util.schedule
+import kotlinx.coroutines.delay
+import moe.forpleuvoir.nebula.common.ioLaunch
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.config.manager.ConfigManagerComponentScope
-import java.util.*
 import kotlin.time.Duration
 
 open class AutoSave(
@@ -22,12 +22,22 @@ open class AutoSave(
     /**
      * 保存操作
      */
-    val saveAction: (needSave: () -> Boolean) -> Unit = { if (it()) manager().asyncSave() }
+    val saveAction: suspend (needSave: () -> Boolean) -> Unit = { if (it()) manager().save() }
 ) : ConfigManagerComponent {
 
-    override fun onInit() {
-        Timer("AutoSaveConfigManager[${manager().key}]").schedule(initialDelay, period) {
-            saveAction { manager().needSave }
+    var isActive: Boolean = true
+        set(value) {
+            field = value
+            if (field) afterInit()
+        }
+
+    override fun afterInit() {
+        ioLaunch {
+            delay(initialDelay)
+            while (isActive) {
+                delay(period)
+                saveAction { manager().needSave }
+            }
         }
     }
 
@@ -36,11 +46,11 @@ open class AutoSave(
 fun ConfigManager.autoSave(
     initialDelay: Duration,
     period: Duration,
-    saveAction: (needSave: () -> Boolean) -> Unit = { if (it()) asyncSave() }
+    saveAction: suspend (needSave: () -> Boolean) -> Unit = { if (it()) save() }
 ) = AutoSave({ this }, initialDelay, period, saveAction)
 
 fun ConfigManagerComponentScope.autoSave(
     initialDelay: Duration,
     period: Duration,
-    saveAction: (needSave: () -> Boolean) -> Unit = { if (it()) this.manager.asyncSave() }
+    saveAction: suspend (needSave: () -> Boolean) -> Unit = { if (it()) this.manager.save() }
 ) = AutoSave({ this.manager }, initialDelay, period, saveAction).also { compose(it) }

@@ -61,10 +61,11 @@ fun main() {
         }.onFailure {
             TestConfigs.needSave = true
         }
-        TestConfigs.save()
+        TestConfigs.forceSave()
     }
 
     TestConfigs.duration = 12.seconds
+    Thread.sleep(50000)
 }
 
 fun t() {
