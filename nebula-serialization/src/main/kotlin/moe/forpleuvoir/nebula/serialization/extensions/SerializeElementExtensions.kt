@@ -32,6 +32,10 @@ fun <R : Any> SerializeElement.checkType(block: SerializeElementCheckTypeResult<
     return SerializeElementCheckTypeResult<R>(this).apply { block() }
 }
 
+fun SerializeElement.checkType(block: SerializeElementCheckTypeResult<Unit>.() -> Unit = {}): SerializeElementCheckTypeResult<Unit> {
+    return SerializeElementCheckTypeResult<Unit>(this).apply { block() }
+}
+
 class SerializeElementCheckTypeResult<R : Any> internal constructor(private val element: SerializeElement) {
 
     private var expectedTypes = mutableListOf<KClass<out SerializeElement>>()
