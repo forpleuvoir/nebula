@@ -12,7 +12,7 @@ class LocalConfig(
     val persistence: () -> ConfigManagerPersistence
 ) : ConfigManagerComponent {
 
-    override fun onSave() {
+    override suspend fun onSave() {
         if (!manager().needSave) return
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
@@ -21,7 +21,7 @@ class LocalConfig(
         }
     }
 
-    override fun onForcedSave() {
+    override suspend fun onForcedSave() {
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
             writeStringToFile(persistence().serializeObjectToString(manager().serialization().asObject), file)
@@ -29,7 +29,7 @@ class LocalConfig(
         }
     }
 
-    override fun onLoad() {
+    override suspend fun onLoad() {
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
             persistence().stringToSerializeObject(readFileToString(file)).apply {

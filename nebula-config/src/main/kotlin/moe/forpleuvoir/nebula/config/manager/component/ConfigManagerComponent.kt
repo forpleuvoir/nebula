@@ -4,10 +4,10 @@ interface ConfigManagerComponent {
 
     fun onInit() = Unit
 
-    fun onSave() = Unit
+    suspend fun onSave() = Unit
 
-    fun onForcedSave() = Unit
+    suspend fun onForcedSave() = Unit
 
-    fun onLoad() = Unit
+    suspend fun onLoad() = Unit
 
 }

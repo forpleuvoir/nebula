@@ -31,11 +31,6 @@ open class AutoSave(
         }
     }
 
-    override fun onSave() = Unit
-
-    override fun onForcedSave() = Unit
-
-    override fun onLoad() = Unit
 }
 
 fun ConfigManager.autoSave(
