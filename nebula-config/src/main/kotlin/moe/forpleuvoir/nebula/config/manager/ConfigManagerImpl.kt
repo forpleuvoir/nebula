@@ -1,8 +1,8 @@
 package moe.forpleuvoir.nebula.config.manager
 
+import moe.forpleuvoir.nebula.common.ioLaunch
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
-import moe.forpleuvoir.nebula.config.util.configLaunch
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
@@ -33,7 +33,7 @@ open class ConfigManagerImpl(
     }
 
     override fun asyncSave() {
-        configLaunch { save() }
+        ioLaunch { save() }
     }
 
     override suspend fun forceSave() {
@@ -45,7 +45,7 @@ open class ConfigManagerImpl(
     }
 
     override fun asyncForceSave() {
-        configLaunch { forceSave() }
+        ioLaunch { forceSave() }
     }
 
     override suspend fun load() {
@@ -57,7 +57,7 @@ open class ConfigManagerImpl(
     }
 
     override fun asyncLoad() {
-        configLaunch { load() }
+        ioLaunch { load() }
     }
 
     override fun onSaved(callback: (duration: Duration) -> Unit) {

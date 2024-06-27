@@ -5,7 +5,6 @@ import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.function.Function
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -31,6 +30,10 @@ inline fun <reified T : SerializeElement, R> SerializeElement.checkType(type: KC
 
 fun <R : Any> SerializeElement.checkType(block: SerializeElementCheckTypeResult<R>.() -> Unit = {}): SerializeElementCheckTypeResult<R> {
     return SerializeElementCheckTypeResult<R>(this).apply { block() }
+}
+
+fun SerializeElement.checkType(block: SerializeElementCheckTypeResult<Unit>.() -> Unit = {}): SerializeElementCheckTypeResult<Unit> {
+    return SerializeElementCheckTypeResult<Unit>(this).apply { block() }
 }
 
 class SerializeElementCheckTypeResult<R : Any> internal constructor(private val element: SerializeElement) {
@@ -140,9 +143,9 @@ fun Any?.toSerializeElement(): SerializeElement {
             //如果有方法名为[serialization]返回值类型为[SerializeElement]的无参方法，则调用该方法
             this::class.declaredFunctions.find {
                 it.returnType.jvmErasure.isSubclassOf(SerializeElement::class)
-                && it.name == "serialization"
-                && it.parameters.size == 1
-                && it.parameters[0].type.jvmErasure == this::class
+                        && it.name == "serialization"
+                        && it.parameters.size == 1
+                        && it.parameters[0].type.jvmErasure == this::class
             }?.let {
                 return it.call(this) as SerializeElement
             }
