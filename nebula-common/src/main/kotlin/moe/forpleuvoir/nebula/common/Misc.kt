@@ -58,6 +58,14 @@ fun <T> defaultAsync(
     return DefaultCoroutineScope.async(context, start, block)
 }
 
+fun defaultCancel(message: String, cause: Throwable? = null) {
+    DefaultCoroutineScope.cancel(message, cause)
+}
+
+fun defaultCancel(cause: CancellationException? = null) {
+    DefaultCoroutineScope.cancel(cause)
+}
+
 val IOCoroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
 
 fun ioLaunch(
@@ -74,6 +82,14 @@ fun <T> ioAsync(
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> {
     return IOCoroutineScope.async(context, start, block)
+}
+
+fun ioCancel(message: String, cause: Throwable? = null) {
+    IOCoroutineScope.cancel(message, cause)
+}
+
+fun ioCancel(cause: CancellationException? = null) {
+    IOCoroutineScope.cancel(cause)
 }
 
 fun scanPackage(packageName: String, predicate: Predicate<KClass<*>>): Set<KClass<*>> {

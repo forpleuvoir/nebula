@@ -144,7 +144,13 @@ class Color : ARGBColor, Cloneable {
      *
      * @constructor
      */
-    constructor(red: Int = 255, green: Int = 255, blue: Int = 255, alpha: Int = 255, checkRange: Boolean = true) : this(
+    constructor(
+        red: Int = 255,
+        green: Int = 255,
+        blue: Int = 255,
+        alpha: Int = 255,
+        checkRange: Boolean = true
+    ) : this(
         ((alpha.fixValue(checkRange, "Alpha") and 0xFF) shl 24) or
                 ((red.fixValue(checkRange, "Red") and 0xFF) shl 16) or
                 ((green.fixValue(checkRange, "Green") and 0xFF) shl 8) or

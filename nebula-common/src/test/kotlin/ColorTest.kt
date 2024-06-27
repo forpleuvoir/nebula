@@ -1,9 +1,38 @@
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.HSVColor
+import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.FileWriter
 import java.util.*
 import kotlin.time.measureTime
+
+class ColorTest {
+
+
+    @Test
+    fun test1() {
+        listOf(
+            Color(170),
+            Color(43520),
+            Color(43690),
+            Color(11141120),
+            Color(11141290),
+            Color(16755200),
+            Color(11184810),
+            Color(5592405),
+            Color(5592575),
+            Color(5635925),
+            Color(5636095),
+            Color(16733525),
+            Color(16733695),
+            Color(16777045),
+            Color(16777215),
+        ).forEach { color ->
+            println(color.hexStr)
+        }
+    }
+
+}
 
 fun main() {
     println(Color(0xFF8CECFF))
