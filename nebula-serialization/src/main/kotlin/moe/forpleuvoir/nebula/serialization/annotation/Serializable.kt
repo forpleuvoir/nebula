@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.serialization.extensions
+package moe.forpleuvoir.nebula.serialization.annotation
 
 import moe.forpleuvoir.nebula.serialization.Serializer
 import kotlin.contracts.ExperimentalContracts

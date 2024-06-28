@@ -14,7 +14,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 
-class ConfigTest {
+class ConfigMetaTest {
 
 
     @Test
@@ -63,7 +63,7 @@ fun main() {
         }
         TestConfigs.forceSave()
     }
-
+    TestConfigs.init()
     TestConfigs.duration = 12.seconds
     Thread.sleep(50000)
 }

@@ -2,9 +2,9 @@ package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.Serializable
+import moe.forpleuvoir.nebula.serialization.annotation.Serializable.Companion.findSerializable
+import moe.forpleuvoir.nebula.serialization.annotation.Serializable.Companion.getSerializer
 import moe.forpleuvoir.nebula.serialization.base.*
-import moe.forpleuvoir.nebula.serialization.extensions.Serializable.Companion.findSerializable
-import moe.forpleuvoir.nebula.serialization.extensions.Serializable.Companion.getSerializer
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.contracts.ExperimentalContracts

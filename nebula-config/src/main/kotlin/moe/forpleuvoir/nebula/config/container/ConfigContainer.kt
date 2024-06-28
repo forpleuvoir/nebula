@@ -23,8 +23,6 @@ interface ConfigContainer : ConfigSerializable {
      */
     override fun init()
 
-    override val key: String
-
     var needSave: Boolean
 
     fun configureSerializable()
@@ -33,7 +31,7 @@ interface ConfigContainer : ConfigSerializable {
 
     fun allConfigSerializable(): Iterable<ConfigSerializable>
 
-    fun addConfigSerializable(configSerializable: ConfigSerializable): ConfigSerializable
+    fun <C : ConfigSerializable> addConfigSerializable(configSerializable: C): C
 
     fun deserializationExceptionHandler(
         configSerializable: ConfigSerializable,

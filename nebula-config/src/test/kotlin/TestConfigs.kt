@@ -1,6 +1,6 @@
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.util.format
-import moe.forpleuvoir.nebula.config.Description
+import moe.forpleuvoir.nebula.config.annotation.ConfigMeta
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
@@ -31,51 +31,49 @@ object TestConfigs : ConfigManagerImpl("test") {
         }
     }
 
+    @ConfigMeta(order = -999)
+    object Numbers2 : ConfigContainerImpl("config_numbers2") {
 
-    @Description("字符串配置测试")
-    val bool = ConfigBoolean("bool", true)
+        @ConfigMeta("整数配置测试")
+        var int by ConfigInt("int", 10)
 
-    @Description("颜色配置测试")
+        @ConfigMeta("浮点数配置测试")
+        var double by ConfigDouble("double", 10.0)
+    }
+
+
+    @ConfigMeta(description = "字符串配置测试")
+    val bool by ConfigBoolean("bool", true)
+
+    @ConfigMeta(description = "颜色配置测试")
     val color = ConfigColor("color", Color(255, 0, 0))
 
-    @Description("字符串配置容器测试")
+    @ConfigMeta(description = "字符串配置容器测试", -1)
     object Strings : ConfigContainerImpl("config_strings", descriptionKeyMap = { "#$it.desc" }) {
-        @Description("循环字符串配置测试")
+        @ConfigMeta(description = "循环字符串配置测试")
         var cycleString by ConfigCycleString("cycleString", listOf("一", "二", "三"), defaultValue = "二")
 
-        @Description("字符串列表配置测试")
+        @ConfigMeta("字符串列表配置测试")
         var stringList by ConfigStringList("stringList", listOf("element1", "element2", "element3"))
 
     }
 
-    @Description("枚举配置测试")
+    @ConfigMeta("枚举配置测试")
     val enumTest = ConfigEnum("enumTest", TestEnum.E2)
 
-    @Description("日期配置测试")
+    @ConfigMeta("日期配置测试")
     val date = ConfigDate("date", Date())
 
-    @Description("时间配置测试")
+    @ConfigMeta("时间配置测试")
     var duration by ConfigDuration("time", 15.minutes)
 
-    @Description("整数配置测试")
+    @ConfigMeta("整数配置测试")
     object Numbers : ConfigContainerImpl("config_numbers") {
 
-        @Description("整数配置测试")
+        @ConfigMeta("整数配置测试")
         var int by ConfigInt("int", 10)
 
-        @Description("浮点数配置测试")
-        var double by ConfigDouble("double", 10.0)
-    }
-
-    @Description("整数配置测试2")
-    val numbers2 = Numbers2()
-
-    class Numbers2 : ConfigContainerImpl("config_numbers2") {
-
-        @Description("整数配置测试")
-        var int by ConfigInt("int", 10)
-
-        @Description("浮点数配置测试")
+        @ConfigMeta("浮点数配置测试")
         var double by ConfigDouble("double", 10.0)
     }
 

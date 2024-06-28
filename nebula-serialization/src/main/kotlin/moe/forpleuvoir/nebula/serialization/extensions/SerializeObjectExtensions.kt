@@ -4,10 +4,9 @@
 package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.Serializable
-import moe.forpleuvoir.nebula.serialization.Serializer
+import moe.forpleuvoir.nebula.serialization.annotation.Serializable.Companion.findSerializable
+import moe.forpleuvoir.nebula.serialization.annotation.Serializable.Companion.getSerializer
 import moe.forpleuvoir.nebula.serialization.base.*
-import moe.forpleuvoir.nebula.serialization.extensions.Serializable.Companion.findSerializable
-import moe.forpleuvoir.nebula.serialization.extensions.Serializable.Companion.getSerializer
 import java.lang.reflect.Modifier
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind

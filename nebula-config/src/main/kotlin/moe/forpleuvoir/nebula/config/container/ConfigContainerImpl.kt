@@ -3,7 +3,8 @@ package moe.forpleuvoir.nebula.config.container
 import moe.forpleuvoir.nebula.common.api.Notifiable
 import moe.forpleuvoir.nebula.config.ConfigDescription
 import moe.forpleuvoir.nebula.config.ConfigSerializable
-import moe.forpleuvoir.nebula.config.Description
+import moe.forpleuvoir.nebula.config.annotation.ConfigMeta
+import moe.forpleuvoir.nebula.config.annotation.ConfigMeta.Companion.createConfigDescription
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
@@ -28,7 +29,7 @@ open class ConfigContainerImpl(
     private val descriptionKeyMap: (String) -> String = { "_$it" }
 ) : ConfigContainer {
 
-    private val configSerializes: MutableList<ConfigSerializable> = ArrayList()
+    private val configSerializes: MutableMap<String, ConfigSerializable> = LinkedHashMap()
 
     override var needSave: Boolean = false
         get() {
@@ -49,7 +50,6 @@ open class ConfigContainerImpl(
         }
 
     override fun init() {
-        configSerializes.clear()
         configureSerializable()
         initSerializable()
     }
@@ -72,6 +72,7 @@ open class ConfigContainerImpl(
 
     @Suppress("UNCHECKED_CAST")
     protected open fun autoScan() {
+        val configs = mutableListOf<Pair<ConfigSerializable, ConfigMeta?>>()
         for (memberProperty in this::class.declaredMemberProperties) {
             memberProperty.isAccessible = true
             memberProperty as KProperty1<ConfigContainerImpl, *>
@@ -98,9 +99,7 @@ open class ConfigContainerImpl(
             }
 
             config?.let { c ->
-                addConfigSerializableWithDescription(c, description = memberProperty.findAnnotation<Description>()?.let {
-                    ConfigDescription(c, it.value, descriptionKeyMap)
-                })
+                configs.add(c to memberProperty.findAnnotation<ConfigMeta>())
             }
         }
         //获取嵌套类
@@ -108,31 +107,32 @@ open class ConfigContainerImpl(
             //判断是否为ConfigSerializable子类的实例对象
             if (nestedClass.objectInstance != null && nestedClass.isSubclassOf(ConfigSerializable::class)) {
                 (nestedClass.objectInstance as ConfigSerializable).let { configSerializable ->
-                    addConfigSerializableWithDescription(configSerializable, description = nestedClass.findAnnotation<Description>()?.let {
-                        ConfigDescription(configSerializable, it.value, descriptionKeyMap)
-                    })
+                    configs.add(configSerializable to nestedClass.findAnnotation<ConfigMeta>())
                 }
             }
+        }
+        configs.sortedBy { it.second?.order ?: 0x114514 }.forEach { (configSerializable, meta) ->
+            addConfigSerializableWithDescription(configSerializable, meta?.createConfigDescription(configSerializable))
         }
     }
 
     override fun allConfigSerializable(): Iterable<ConfigSerializable> {
-        return configSerializes
+        return configSerializes.values
     }
 
-    override fun addConfigSerializable(configSerializable: ConfigSerializable): ConfigSerializable {
-        configSerializes.add(configSerializable)
+    override fun <C : ConfigSerializable> addConfigSerializable(configSerializable: C): C {
+        configSerializes[configSerializable.key] = configSerializable
         return configSerializable
     }
 
     fun addConfigSerializableWithDescription(configSerializable: ConfigSerializable, description: ConfigDescription?) {
-        description?.let { configSerializes.add(it) }
-        configSerializes.add(configSerializable)
+        description?.let { configSerializes[it.key] = it }
+        configSerializes[configSerializable.key] = configSerializable
     }
 
     fun addConfigSerializableWithDescription(configSerializable: ConfigSerializable, description: String, descriptionKeyMap: ((String) -> String)? = null) {
-        configSerializes.add(ConfigDescription(configSerializable, description, descriptionKeyMap ?: this.descriptionKeyMap))
-        configSerializes.add(configSerializable)
+        ConfigDescription(configSerializable, description, descriptionKeyMap ?: this.descriptionKeyMap).let { configSerializes[it.key] = it }
+        configSerializes[configSerializable.key] = configSerializable
     }
 
     override fun deserializationExceptionHandler(

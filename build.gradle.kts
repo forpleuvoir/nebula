@@ -1,17 +1,18 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
     signing
-    kotlin("jvm") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.shadow)
     id("maven-publish")
 }
 
 group = "moe.forpleuvoir"
-version = "0.2.9e"
+version = libs.versions.nebulaVersion.get()
 
 repositories {
     mavenCentral()
@@ -24,19 +25,62 @@ dependencies {
     }
 }
 
+val subprojectsOrder = listOf(
+    project("nebula-common"),
+    project("nebula-event"),
+    project("nebula-serialization"),
+    project("nebula-serialization-gson"),
+    project("nebula-config")
+)
+
+sourceSets {
+    getByName("test") {
+        kotlin.srcDir("src/test/kotlin")
+    }
+}
+
+java {
+    withSourcesJar()
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
+
 tasks {
+
+    register("publishNebulaToSnapshots") {
+        subprojectsOrder.forEach {
+            dependsOn(it.tasks.named("publish${it.name.uppercaseFirstChar()}PublicationToSnapshotsRepository"))
+        }
+        dependsOn(named("publishNebulaPublicationToSnapshotsRepository"))
+    }
+
+    register("publishNebulaToReleases") {
+        subprojectsOrder.forEach {
+            dependsOn(it.tasks.named("publish${it.name.uppercaseFirstChar()}PublicationToReleasesRepository"))
+        }
+        dependsOn(named("publishNebulaPublicationToReleasesRepository"))
+    }
+
+    register("publishNebulaToLocal") {
+        subprojectsOrder.forEach {
+            dependsOn(it.tasks.named("publish${it.name.uppercaseFirstChar()}PublicationToMavenLocalRepository"))
+        }
+        dependsOn(named("publishNebulaPublicationToMavenLocalRepository"))
+    }
+
     withType<JavaCompile>().configureEach {
         this.options.release
         this.options.encoding = "UTF-8"
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_21.toString()
+        sourceCompatibility = JavaVersion.VERSION_21.toString()
     }
+
     withType<KotlinCompile>().configureEach {
         compilerOptions {
             suppressWarnings = true
-            jvmTarget.set(JvmTarget.JVM_17)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
+
     withType<ShadowJar>().configureEach {
         archiveBaseName.set("${project.name}-nebula")
         archiveClassifier.set("nebula")
@@ -46,18 +90,13 @@ tasks {
             }
         }
     }
+
 }
 
-sourceSets {
-    getByName("test") {
-        kotlin.srcDir("src/test/kotlin")
+val nebulaSourcesJar = tasks.register<Jar>("nebulaSourcesJar") {
+    subprojects.forEach {
+        from(it.sourceSets["main"].allSource)
     }
-}
-
-
-java {
-    withSourcesJar()
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 publishing {
@@ -86,7 +125,17 @@ publishing {
             groupId = project.group.toString()
             artifactId = project.name
             version = project.version.toString()
-            from(components["java"])
+            artifact(tasks.named("shadowJar"))
+            artifact(tasks.named("shadowJar")) {
+                classifier = ""
+            }
+            artifact(nebulaSourcesJar) {
+                classifier = "sources"
+            }
+            artifact(nebulaSourcesJar) {
+                classifier = "nebula-sources"
+                extension = "jar"
+            }
             pom {
                 name.set(project.name)
                 description.set("forpleuvoir的基础代码库")
@@ -111,17 +160,11 @@ publishing {
 
 subprojects {
 
-    val isTest = this.name.contains("test")
-    val isCommon = this.name == "nebula-common"
-
     apply(plugin = "java")
     apply(plugin = "kotlin")
     apply(plugin = "signing")
-    if (!isTest) {
-        if (!isCommon)
-            apply(plugin = "com.github.johnrengelman.shadow")
-        apply(plugin = "maven-publish")
-    }
+    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "maven-publish")
 
     group = rootProject.group
     version = rootProject.version
@@ -132,28 +175,35 @@ subprojects {
     }
 
     dependencies {
-        implementation(kotlin("reflect"))
-        implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+        implementation(rootProject.libs.bundles.kotlin)
         testImplementation(kotlin("test"))
     }
 
     tasks {
+
         test {
             useJUnitPlatform()
         }
+
         withType<JavaCompile>().configureEach {
             this.options.release
             this.options.encoding = "UTF-8"
-            targetCompatibility = JavaVersion.VERSION_17.toString()
-            sourceCompatibility = JavaVersion.VERSION_17.toString()
+            targetCompatibility = JavaVersion.VERSION_21.toString()
+            sourceCompatibility = JavaVersion.VERSION_21.toString()
         }
+
         withType<KotlinCompile>().configureEach {
             compilerOptions {
                 suppressWarnings = true
-                jvmTarget.set(JvmTarget.JVM_17)
+                jvmTarget.set(JvmTarget.JVM_21)
             }
         }
+
+        register<Jar>("nebulaSourcesJar") {
+            archiveClassifier.set("nebula-sources")
+            from(sourceSets["main"].allSource)
+        }
+
     }
 
     sourceSets {
@@ -165,7 +215,7 @@ subprojects {
 
     java {
         withSourcesJar()
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
 
     publishing {
@@ -189,32 +239,39 @@ subprojects {
                 }
             }
         }
-        publications {
-            create<MavenPublication>(project.name) {
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
-                from(components["java"])
-                pom {
-                    name.set(project.name)
-                    description.set("forpleuvoir的基础代码库")
-                    url.set("https://github.com/forpleuvoir/nebula")
-                    licenses {
-                        license {
-                            name.set("GNU General Public License, version 3 (GPLv3)")
-                            url.set("https://www.gnu.org/licenses/gpl-3.0.txt")
-                        }
+        publishing {
+            publications {
+                create<MavenPublication>(project.name) {
+                    groupId = project.group.toString()
+                    artifactId = project.name
+                    version = project.version.toString()
+                    from(components["java"])
+                    artifact(tasks.getByName("nebulaSourcesJar")) {
+                        classifier = "nebula-sources"
+                        extension = "jar"
                     }
-                    developers {
-                        developer {
-                            id.set("forpleuvoir")
-                            name.set("forpleuvoir")
-                            email.set("forpleuvoir@gmail.com")
+                    pom {
+                        name.set(project.name)
+                        description.set("forpleuvoir的基础代码库,${project.name}")
+                        url.set("https://github.com/forpleuvoir/nebula")
+                        licenses {
+                            license {
+                                name.set("GNU General Public License, version 3 (GPLv3)")
+                                url.set("https://www.gnu.org/licenses/gpl-3.0.txt")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("forpleuvoir")
+                                name.set("forpleuvoir")
+                                email.set("forpleuvoir@gmail.com")
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 
 }
