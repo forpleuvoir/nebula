@@ -3,6 +3,8 @@ package moe.forpleuvoir.nebula.serialization.extensions
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.Serializable
 import moe.forpleuvoir.nebula.serialization.base.*
+import moe.forpleuvoir.nebula.serialization.extensions.Serializable.Companion.findSerializable
+import moe.forpleuvoir.nebula.serialization.extensions.Serializable.Companion.getSerializer
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.contracts.ExperimentalContracts
@@ -128,13 +130,17 @@ fun Any?.toSerializeElement(): SerializeElement {
         }
 
         else                        -> {
+            //如果实现了[Serializable]接口，则调用其[serialization]方法
+            if (this is Serializable) {
+                return this.serialization()
+            }
             //如果有缓存，则直接调用缓存的方法
             SerializeElement.serializerCache[this::class]?.let {
                 return it(this)
             }
-            //如果实现了[Serializable]接口，则调用其[serialization]方法
-            if (this is Serializable) {
-                return this.serialization()
+            //如果有[Serializable]注解，则调用其注解[Serializable.value]的对象实例的[serialization]方法
+            this::class.findSerializable{
+                return it.getSerializer<Any>().serialization(this)
             }
             //如果有方法名为[serialization]返回值类型为[SerializeElement]的无参方法，则调用该方法
             this::class.declaredFunctions.find {

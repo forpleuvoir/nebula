@@ -48,12 +48,18 @@ open class ConfigContainerImpl(
             }
         }
 
-    @Suppress("UNCHECKED_CAST")
     override fun init() {
         configSerializes.clear()
+        configureSerializable()
+        initSerializable()
+    }
 
+    override fun configureSerializable() {
         if (autoScan) autoScan()
+    }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun initSerializable() {
         for (config in allConfigSerializable()) {
             config.init()
             if (config::class.isSubclassOf(Notifiable::class)) {

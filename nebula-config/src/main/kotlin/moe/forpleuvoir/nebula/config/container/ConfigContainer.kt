@@ -27,6 +27,10 @@ interface ConfigContainer : ConfigSerializable {
 
     var needSave: Boolean
 
+    fun configureSerializable()
+
+    fun initSerializable()
+
     fun allConfigSerializable(): Iterable<ConfigSerializable>
 
     fun addConfigSerializable(configSerializable: ConfigSerializable): ConfigSerializable
