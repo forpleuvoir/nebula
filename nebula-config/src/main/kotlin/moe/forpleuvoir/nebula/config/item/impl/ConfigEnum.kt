@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config.item.impl
 
 import moe.forpleuvoir.nebula.config.ConfigBase
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 
@@ -20,3 +21,5 @@ open class ConfigEnum<E : Enum<E>>(
     }
 
 }
+
+fun <E : Enum<E>> ConfigContainer.enum(key: String, defaultValue: E) = addConfig(ConfigEnum(key, defaultValue))

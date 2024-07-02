@@ -1,11 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val gsonVersion = "2.10"
-
 dependencies {
     implementation(project(":nebula-common"))
     implementation(project(":nebula-serialization"))
-    implementation("com.google.code.gson:gson:$gsonVersion")
+    implementation(libs.gson)
 }
 
 tasks {

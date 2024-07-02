@@ -1,6 +1,5 @@
 package moe.forpleuvoir.nebula.config
 
-import jdk.jfr.Description
 import moe.forpleuvoir.nebula.common.api.Initializable
 import moe.forpleuvoir.nebula.serialization.Deserializable
 import moe.forpleuvoir.nebula.serialization.Serializable

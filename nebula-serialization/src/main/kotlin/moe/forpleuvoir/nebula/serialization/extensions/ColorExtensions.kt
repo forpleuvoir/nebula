@@ -68,30 +68,32 @@ fun HSVColor.Companion.deserialization(serializeElement: SerializeElement): HSVC
 }
 
 private fun decodeColor(serializeElement: SerializeElement): Int {
-    var argb = 0
-    if (serializeElement is SerializePrimitive) {
-        if (serializeElement.isString) {
-            argb = Color.decode(serializeElement.asString)
-        } else if (serializeElement.isNumber) {
-            if (Color.isValidColor(serializeElement.asInt.toUInt())) {
-                argb = serializeElement.asInt
+    return serializeElement.checkType<Int> {
+        check<SerializePrimitive> { primitive ->
+            if (primitive.isString) {
+                Color.decode(primitive.asString)
+            } else if (primitive.isNumber) {
+                if (Color.isValidColor(primitive.asInt.toUInt())) {
+                    primitive.asInt
+                }
             }
+            throw IllegalArgumentException("Failed to decode the color. The input primitive should be a valid color string or number.")
         }
-    } else if (serializeElement is SerializeObject) {
-        val obj: SerializeObject = serializeElement
-        if (obj.containsKey("hue", "saturation", "value")) {
-            val alpha = obj.getOr("alpha", 1f).toFloat()
-            val hue = obj["hue"]!!.asFloat
-            val saturation = obj["saturation"]!!.asFloat
-            val value = obj["value"]!!.asFloat
-            argb = HSVColor(hue, saturation, value, alpha).argb
-        } else if (obj.containsKey("red", "green", "blue")) {
-            val alpha = obj.getOr("alpha", 255).toInt()
-            val red = obj["red"]!!.asInt
-            val green = obj["green"]!!.asInt
-            val blue = obj["value"]!!.asInt
-            argb = Color(red, green, blue, alpha).argb
+        check<SerializeObject> { obj ->
+            if (obj.containsKey("hue", "saturation", "value")) {
+                val alpha = obj.getOr("alpha", 1f).toFloat()
+                val hue = obj["hue"]!!.asFloat
+                val saturation = obj["saturation"]!!.asFloat
+                val value = obj["value"]!!.asFloat
+                HSVColor(hue, saturation, value, alpha).argb
+            } else if (obj.containsKey("red", "green", "blue")) {
+                val alpha = obj.getOr("alpha", 255).toInt()
+                val red = obj["red"]!!.asInt
+                val green = obj["green"]!!.asInt
+                val blue = obj["value"]!!.asInt
+                Color(red, green, blue, alpha).argb
+            }
+            throw IllegalArgumentException("Invalid input: couldn't find either HSV (hue, saturation, value) or RGB (red, green, blue) color data in the provided object. Please ensure the input object contains the required keys.")
         }
-    }
-    return argb
+    }.getOrThrow()
 }

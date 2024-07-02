@@ -6,18 +6,6 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 
 interface ConfigContainer : ConfigSerializable {
 
-    companion object {
-
-        operator fun invoke(
-            key: String,
-            autoScan: Boolean = true,
-            descriptionKeyMap: (String) -> String = { "_$it" }
-        ): ConfigContainer {
-            return ConfigContainerImpl(key, autoScan, descriptionKeyMap)
-        }
-
-    }
-
     /**
      * 所有对配置内容的操作都应该在此函数调用之后执行
      */
@@ -25,16 +13,26 @@ interface ConfigContainer : ConfigSerializable {
 
     var needSave: Boolean
 
-    fun configureSerializable()
+    /**
+     * 将所有配置添加到容器中
+     */
+    fun loadConfigs()
 
-    fun initSerializable()
+    /**
+     * 初始化所有配置
+     */
+    fun initConfigs()
 
-    fun allConfigSerializable(): Iterable<ConfigSerializable>
+    /**
+     * 获取所有配置
+     * @return [Collection]<[ConfigSerializable]>
+     */
+    fun configs(): Collection<ConfigSerializable>
 
-    fun <C : ConfigSerializable> addConfigSerializable(configSerializable: C): C
+    fun <C : ConfigSerializable> addConfig(config: C): C
 
     fun deserializationExceptionHandler(
-        configSerializable: ConfigSerializable,
+        config: ConfigSerializable,
         serializeElement: SerializeElement,
         e: DeserializationException
     )

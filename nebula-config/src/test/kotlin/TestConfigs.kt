@@ -1,6 +1,6 @@
 import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.color.HSVColor
 import moe.forpleuvoir.nebula.common.util.format
-import moe.forpleuvoir.nebula.config.annotation.ConfigMeta
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.item.impl.*
 import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
@@ -14,11 +14,11 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : ConfigManagerImpl("test") {
+object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
 
     init {
         components {
-            localConfig({ Path.of("./nebula-config/build/config") }, ::jsonPersistence)
+            localConfig({ Path.of("./build/config") }, ::jsonPersistence)
             autoSave(initialDelay = 5.seconds, period = 5.seconds) { needSave ->
                 println(measureTime {
                     println("当前是否需要保存 ${this.manager.needSave}")
@@ -31,50 +31,45 @@ object TestConfigs : ConfigManagerImpl("test") {
         }
     }
 
-    @ConfigMeta(order = -999)
+    val number = addConfig(Numbers2, description = "数字配置容器测试")
+
     object Numbers2 : ConfigContainerImpl("config_numbers2") {
 
-        @ConfigMeta("整数配置测试")
-        var int by ConfigInt("int", 10)
+        var int by addConfig(ConfigInt("int", 10), description = "整数配置测试")
 
-        @ConfigMeta("浮点数配置测试")
-        var double by ConfigDouble("double", 10.0)
-    }
-
-
-    @ConfigMeta(description = "字符串配置测试")
-    val bool by ConfigBoolean("bool", true)
-
-    @ConfigMeta(description = "颜色配置测试")
-    val color = ConfigColor("color", Color(255, 0, 0))
-
-    @ConfigMeta(description = "字符串配置容器测试", -1)
-    object Strings : ConfigContainerImpl("config_strings", descriptionKeyMap = { "#$it.desc" }) {
-        @ConfigMeta(description = "循环字符串配置测试")
-        var cycleString by ConfigCycleString("cycleString", listOf("一", "二", "三"), defaultValue = "二")
-
-        @ConfigMeta("字符串列表配置测试")
-        var stringList by ConfigStringList("stringList", listOf("element1", "element2", "element3"))
+        var double by addConfig(ConfigDouble("double", 10.0), description = "浮点数配置测试")
 
     }
 
-    @ConfigMeta("枚举配置测试")
-    val enumTest = ConfigEnum("enumTest", TestEnum.E2)
+    val bool by boolean("bool", false)
 
-    @ConfigMeta("日期配置测试")
-    val date = ConfigDate("date", Date())
+    val color = color("color", Color(255, 0, 0))
 
-    @ConfigMeta("时间配置测试")
-    var duration by ConfigDuration("time", 15.minutes)
+    val hsvColor by hsvColor("hsv_color", HSVColor(180f, 1f, 1f))
 
-    @ConfigMeta("整数配置测试")
+    val strings = addConfig(Strings())
+
+    class Strings : ConfigContainerImpl("config_strings") {
+
+        var cycleString by cycleString("cycleString", listOf("一", "二", "三"), defaultValue = "二")
+
+        var stringList by stringList("stringList", listOf("element1", "element2", "element3"))
+
+    }
+
+    val enumTest = enum("enumTest", TestEnum.E2)
+
+    val date = date("date", Date())
+
+    var duration by duration("time", 15.minutes)
+
+    val numbers = addConfig(Numbers)
+
     object Numbers : ConfigContainerImpl("config_numbers") {
 
-        @ConfigMeta("整数配置测试")
-        var int by ConfigInt("int", 10)
+        var int by int("int", 10)
 
-        @ConfigMeta("浮点数配置测试")
-        var double by ConfigDouble("double", 10.0)
+        var double by double("double", 10.0)
     }
 
     enum class TestEnum {

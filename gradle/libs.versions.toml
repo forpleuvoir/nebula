@@ -1,14 +1,19 @@
 [versions]
-nebulaVersion = "0.2.9f"
+nebulaVersion = "0.2.10a"
 shadowVersion = "8.1.1"
 kotlinVersion = "2.0.0"
 kotlinCoroutinesVersion = "1.9.0-RC"
+kotlinpoetVersion = "1.17.0"
+gsonVersion = "2.10"
+
 
 
 [libraries]
 kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinVersion" }
 kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlinVersion" }
 kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutinesVersion" }
+kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoetVersion" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion" }
 
 [bundles]
 kotlin = ["kotlinStdlib", "kotlinReflect", "kotlinCoroutines"]

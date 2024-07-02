@@ -40,33 +40,36 @@ class ConfigMetaTest {
 
     }
 
-}
-
-fun main() {
-    runAsync {
-        Thread.sleep(5000)
-        println("睡了5000")
-    }
-    TestConfigs.onSaved {
-        println("保存耗时$it")
-    }
-    TestConfigs.onLoaded {
-        println("加载耗时$it")
-    }
-    TestConfigs.init()
-
-    runBlocking {
-        runCatching {
-            TestConfigs.load()
-        }.onFailure {
-            TestConfigs.needSave = true
+    @Test
+    fun testConfig() {
+        runAsync {
+            Thread.sleep(5000)
+            println("睡了5000")
         }
-        TestConfigs.forceSave()
+        TestConfigs.onSaved {
+            println("保存耗时$it")
+        }
+        TestConfigs.onLoaded {
+            println("加载耗时$it")
+        }
+        TestConfigs.init()
+
+        runBlocking {
+            runCatching {
+                TestConfigs.load()
+            }.onFailure {
+                TestConfigs.needSave = true
+            }
+            TestConfigs.forceSave()
+        }
+        TestConfigs.init()
+        TestConfigs.duration = 12.seconds
+        Thread.sleep(50000)
     }
-    TestConfigs.init()
-    TestConfigs.duration = 12.seconds
-    Thread.sleep(50000)
+
 }
+
+
 
 fun t() {
     for (memberProperty in T::class.declaredMemberProperties) {

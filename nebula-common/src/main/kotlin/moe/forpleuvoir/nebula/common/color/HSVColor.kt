@@ -12,9 +12,9 @@ class HSVColor(
     value: Float = 1f,
     alpha: Float = 1f,
     private val checkRange: Boolean = true
-) : ARGBColor, Cloneable {
+) : ARGBColor {
 
-    companion object {}
+    companion object;
 
     constructor(argb: Int, checkRange: Boolean = true) : this(checkRange = checkRange) {
         this.argb = argb

@@ -2,7 +2,7 @@ package moe.forpleuvoir.nebula.common.color
 
 import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
 
-interface RGBColor {
+interface RGBColor : Cloneable {
 
     val rgb: Int
 
@@ -19,6 +19,8 @@ interface RGBColor {
     val blueF: Float
 
     val hexStr: String
+
+    public override fun clone(): RGBColor
 
     operator fun plus(other: RGBColor): RGBColor {
         return Color(

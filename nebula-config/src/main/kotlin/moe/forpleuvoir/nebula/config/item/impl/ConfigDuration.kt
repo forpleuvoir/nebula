@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config.item.impl
 
 import moe.forpleuvoir.nebula.config.ConfigBase
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.extensions.deserialization
 import moe.forpleuvoir.nebula.serialization.extensions.serialization
@@ -23,3 +24,4 @@ class ConfigDuration(
 
 }
 
+fun ConfigContainer.duration(key: String, defaultValue: Duration) = addConfig(ConfigDuration(key, defaultValue))

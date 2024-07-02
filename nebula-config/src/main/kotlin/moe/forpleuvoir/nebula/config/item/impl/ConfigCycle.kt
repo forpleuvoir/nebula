@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config.item.impl
 
 import moe.forpleuvoir.nebula.config.ConfigBase
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.config.item.ConfigCycleValue
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 
@@ -39,3 +40,12 @@ class ConfigCycle<T>(
     }
 
 }
+
+fun <T> ConfigContainer.cycle(
+    key: String,
+    items: List<T>,
+    defaultValue: T = items[0],
+    asString: (T) -> String,
+    serializer: (T) -> SerializeElement,
+    deserializer: (SerializeElement) -> T,
+) = addConfig(ConfigCycle(key, items, defaultValue, asString, serializer, deserializer))

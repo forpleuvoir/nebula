@@ -3,8 +3,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 dependencies {
     implementation(project(":nebula-common"))
     implementation(project(":nebula-serialization"))
+    implementation(libs.kotlinpoet)
     testImplementation(project(":nebula-serialization-gson"))
-    testImplementation("com.google.code.gson:gson:2.10")
+    testImplementation(libs.gson)
 }
 
 tasks {

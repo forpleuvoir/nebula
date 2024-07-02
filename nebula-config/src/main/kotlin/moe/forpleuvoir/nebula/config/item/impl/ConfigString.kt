@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config.item.impl
 
 import moe.forpleuvoir.nebula.config.ConfigBase
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 
@@ -18,3 +19,5 @@ class ConfigString(
     }
 
 }
+
+fun ConfigContainer.string(key: String, defaultValue: String) = addConfig(ConfigString(key, defaultValue))

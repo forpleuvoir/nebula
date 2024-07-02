@@ -5,7 +5,7 @@ package moe.forpleuvoir.nebula.common.color
 import moe.forpleuvoir.nebula.common.util.clamp
 import moe.forpleuvoir.nebula.common.util.fillBefore
 
-class Color : ARGBColor, Cloneable {
+class Color : ARGBColor {
 
     companion object {
 
