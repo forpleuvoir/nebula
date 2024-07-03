@@ -1,5 +1,4 @@
 import kotlinx.coroutines.runBlocking
-import moe.forpleuvoir.nebula.common.runAsync
 import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.item.impl.ConfigString
 import moe.forpleuvoir.nebula.config.item.impl.ConfigStringList
@@ -54,7 +53,7 @@ class ConfigMetaTest {
             runCatching {
                 TestConfigs.load()
             }.onFailure {
-                TestConfigs.needSave = true
+                TestConfigs.markSavable()
             }
             TestConfigs.forceSave()
         }

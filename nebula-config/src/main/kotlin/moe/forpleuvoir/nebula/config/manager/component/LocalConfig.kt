@@ -13,11 +13,11 @@ class LocalConfig(
 ) : ConfigManagerComponent {
 
     override suspend fun onSave() {
-        if (!manager().needSave) return
+        if (!manager().savable()) return
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
             writeToFile(persistence().serializeToString(manager().serialization().asObject), file)
-            manager().needSave = false
+            manager().markSaved()
         }
     }
 
@@ -25,7 +25,7 @@ class LocalConfig(
         ConfigUtil.run {
             val file = configFile(persistence().wrapFileName(manager().key), configPath())
             writeToFile(persistence().serializeToString(manager().serialization().asObject), file)
-            manager().needSave = false
+            manager().markSaved()
         }
     }
 

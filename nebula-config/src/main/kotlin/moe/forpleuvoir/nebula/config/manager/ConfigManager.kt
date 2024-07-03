@@ -15,6 +15,24 @@ interface ConfigManager : ConfigContainer {
      */
     override fun init()
 
+    override var configManager: ConfigManager?
+        get() = this
+        set(_) {
+            throw Exception("ConfigManager can not set ConfigManager")
+        }
+
+    /**
+     * 将此配置管理器标记为可以保存的状态
+     */
+    fun markSavable()
+
+    /**
+     * 将此配置标记为以保存的状态
+     */
+    fun markSaved()
+
+    fun savable(): Boolean
+
     /**
      * 添加组件 应该在初始化阶段就完成
      * @param component ConfigManagerComponent
@@ -22,6 +40,10 @@ interface ConfigManager : ConfigContainer {
      */
     fun compose(component: ConfigManagerComponent): ConfigManager
 
+    /**
+     * 保存此配置管理器中的所有配置,只有当[savable]返回`true`时会触发真正的保存
+     * @return Duration 耗时
+     */
     suspend fun save(): Duration
 
     /**
@@ -32,6 +54,10 @@ interface ConfigManager : ConfigContainer {
 
     fun asyncSave(): Deferred<Duration>
 
+    /**
+     *  保存此配置管理器中的所有配置,即使[savable]返回`false`时也会触发保存
+     * @return Duration 耗时
+     */
     suspend fun forceSave(): Duration
 
     fun asyncForceSave(): Deferred<Duration>

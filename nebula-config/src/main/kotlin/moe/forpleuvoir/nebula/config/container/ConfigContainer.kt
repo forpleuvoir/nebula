@@ -11,8 +11,6 @@ interface ConfigContainer : ConfigSerializable {
      */
     override fun init()
 
-    var needSave: Boolean
-
     /**
      * 将所有配置添加到容器中
      */

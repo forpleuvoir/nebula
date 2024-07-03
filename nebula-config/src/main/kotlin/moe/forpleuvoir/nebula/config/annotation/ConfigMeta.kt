@@ -1,8 +1,5 @@
 package moe.forpleuvoir.nebula.config.annotation
 
-import moe.forpleuvoir.nebula.config.ConfigDescription
-import moe.forpleuvoir.nebula.config.ConfigSerializable
-
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ConfigMeta(
@@ -16,11 +13,11 @@ annotation class ConfigMeta(
 
         const val EMPTY_DESC = ""
 
-        fun ConfigMeta.createConfigDescription(configSerializable: ConfigSerializable, descriptionKeyMap: (String) -> String = { "_$it" }): ConfigDescription? {
-            return this.description.takeIf { it.isNotEmpty() }?.let {
-                ConfigDescription(configSerializable, it, descriptionKeyMap)
-            }
-        }
+//        fun ConfigMeta.createConfigDescription(configSerializable: ConfigSerializable, descriptionKeyMap: (String) -> String = { "_$it" }): ConfigDescription? {
+//            return this.description.takeIf { it.isNotEmpty() }?.let {
+//                ConfigDescription(configSerializable, it, descriptionKeyMap)
+//            }
+//        }
 
         /**
          * `merge` 函数用来合并两个 `ConfigMeta` 实例的属性。

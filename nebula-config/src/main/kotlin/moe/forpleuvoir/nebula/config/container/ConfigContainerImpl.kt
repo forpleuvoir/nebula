@@ -1,9 +1,9 @@
 package moe.forpleuvoir.nebula.config.container
 
-import moe.forpleuvoir.nebula.common.api.Notifiable
 import moe.forpleuvoir.nebula.config.ConfigSerializable
 import moe.forpleuvoir.nebula.config.annotation.ConfigMeta
 import moe.forpleuvoir.nebula.config.annotation.ConfigMeta.Companion.merge
+import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
@@ -46,27 +46,16 @@ open class ConfigContainerImpl(
         }
     }
 
+    override var configManager: ConfigManager? = null
+        set(value) {
+            if (field == null && value != null) {
+                field = value
+            }
+        }
+
     private val configs: MutableMap<String, ConfigSerializable> = LinkedHashMap()
 
     private val configMetas: MutableMap<String, ConfigMeta> = LinkedHashMap()
-
-    override var needSave: Boolean = false
-        get() {
-            //如果有任意一个配置需要保存，则返回true
-            return if (!configs().none { it::class.isSubclassOf(ConfigContainer::class) && (it as ConfigContainer).needSave }) true
-            else field
-        }
-        set(value) {
-            field = value
-            if (!value) {
-                configs().filter {
-                    it::class.isSubclassOf(ConfigContainer::class)
-                }.forEach {
-                    it as ConfigContainer
-                    it.needSave = false
-                }
-            }
-        }
 
     override fun init() {
         loadConfigs()
@@ -77,15 +66,9 @@ open class ConfigContainerImpl(
         autoScan()
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun initConfigs() {
         for (config in configs()) {
             config.init()
-            if (config::class.isSubclassOf(Notifiable::class)) {
-                (config as Notifiable<Any>).subscribe {
-                    needSave = true
-                }
-            }
         }
     }
 
@@ -146,6 +129,7 @@ open class ConfigContainerImpl(
 
     override fun <C : ConfigSerializable> addConfig(config: C): C {
         configs[config.key] = config
+        config.configManager = this.configManager
         return config
     }
 
@@ -165,7 +149,7 @@ open class ConfigContainerImpl(
         serializeElement: SerializeElement,
         e: DeserializationException
     ) {
-        needSave = true
+        configManager?.markSavable()
         e.printStackTrace()
     }
 

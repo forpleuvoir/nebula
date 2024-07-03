@@ -20,7 +20,10 @@ class JsonParser private constructor(private val charArray: CharArray) {
 
         private const val ELEMENT_SEPARATOR = ','
 
-        private val STRING_BEGIN = arrayOf('\'', '\"')
+        private val STRING_BEGIN = arrayOf(
+            '\'',
+//            '\"'
+        )
 
         private val NUMBER_BEGIN = arrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-')
 
@@ -115,7 +118,14 @@ class JsonParser private constructor(private val charArray: CharArray) {
                 in STRING_BEGIN  -> parseString()
                 in BOOLEAN_BEGIN -> parseBoolean()
                 in NUMBER_BEGIN  -> parseNumber()
-                else             -> throw JsonParseException("unexpect char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
+                else -> throw JsonParseException(
+                    "unexpect char '$currChar' index:$curr,from '${
+                        charArray.subSequence(
+                            (curr - 30).coerceAtLeast(0),
+                            curr
+                        )
+                    }'"
+                )
             }
         }
         return SerializeNull
@@ -133,7 +143,15 @@ class JsonParser private constructor(private val charArray: CharArray) {
                 val key = parseString().asString
                 skipChar()
                 if (currChar == PAIR_CONNECTION) curr++
-                else throw JsonParseException("expect '$PAIR_CONNECTION',current key '$key',found $currChar index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
+                else throw JsonParseException(
+                    "expect '$PAIR_CONNECTION',current key '$key',found $currChar index:$curr,from '${
+                        charArray.subSequence(
+                            (curr - 30).coerceAtLeast(
+                                0
+                            ), curr
+                        )
+                    }'"
+                )
                 skipChar()
                 key - parseElement()//put in object
                 skipChar()
@@ -141,7 +159,15 @@ class JsonParser private constructor(private val charArray: CharArray) {
                     curr++
                     break
                 } else if (currChar == ELEMENT_SEPARATOR) curr++
-                else throw JsonParseException("expect '$ELEMENT_SEPARATOR' or '$OBJECT_END',found '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
+                else throw JsonParseException(
+                    "expect '$ELEMENT_SEPARATOR' or '$OBJECT_END',found '$currChar' index:$curr,from '${
+                        charArray.subSequence(
+                            (curr - 30).coerceAtLeast(
+                                0
+                            ), curr
+                        )
+                    }'"
+                )
             }
 
         }
@@ -162,7 +188,15 @@ class JsonParser private constructor(private val charArray: CharArray) {
                     curr++
                     break
                 } else if (currChar == ELEMENT_SEPARATOR) curr++
-                else throw JsonParseException("expect '$ELEMENT_SEPARATOR' or '$ARRAY_END',found '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
+                else throw JsonParseException(
+                    "expect '$ELEMENT_SEPARATOR' or '$ARRAY_END',found '$currChar' index:$curr,from '${
+                        charArray.subSequence(
+                            (curr - 30).coerceAtLeast(
+                                0
+                            ), curr
+                        )
+                    }'"
+                )
             }
 
         }
@@ -203,7 +237,15 @@ class JsonParser private constructor(private val charArray: CharArray) {
             builder.append(currChar)
             curr++
         }
-        if (charArray[curr - 1] !in NUMBER_END) throw JsonParseException("unexpect char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
+        if (charArray[curr - 1] !in NUMBER_END) throw JsonParseException(
+            "unexpect char '$currChar' index:$curr,from '${
+                charArray.subSequence(
+                    (curr - 30).coerceAtLeast(
+                        0
+                    ), curr
+                )
+            }'"
+        )
         val str = builder.toString()
         return if ('e' in str || 'E' in str) {
             val value = str.toBigDecimal()

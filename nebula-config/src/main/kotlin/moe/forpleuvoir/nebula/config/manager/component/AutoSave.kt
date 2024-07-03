@@ -36,7 +36,7 @@ open class AutoSave(
             delay(initialDelay)
             while (isActive) {
                 delay(period)
-                saveAction { manager().needSave }
+                saveAction { manager().savable() }
             }
         }
     }

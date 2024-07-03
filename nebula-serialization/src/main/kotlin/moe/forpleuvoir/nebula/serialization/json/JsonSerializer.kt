@@ -44,7 +44,6 @@ class JsonSerializer(
             is SerializeArray     -> arrayDumpAsString(serializeElement)
             is SerializeNull      -> nullDumpAsString(serializeElement)
             is SerializePrimitive -> primitiveDumpAsString(serializeElement)
-            else                  -> throw Exception("expect SerializeElement but found ${serializeElement::class}")
         }
     }
 

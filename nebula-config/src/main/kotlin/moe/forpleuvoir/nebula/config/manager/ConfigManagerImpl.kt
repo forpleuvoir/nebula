@@ -25,6 +25,24 @@ open class ConfigManagerImpl(
         components.forEach { it.afterInit() }
     }
 
+    override var configManager: ConfigManager?
+        get() = super<ConfigManager>.configManager
+        set(value) {
+            super<ConfigManager>.configManager = value
+        }
+
+    private var shouldSave: Boolean = false
+
+    override fun markSavable() {
+        shouldSave = true
+    }
+
+    override fun markSaved() {
+        shouldSave = false
+    }
+
+    override fun savable(): Boolean = shouldSave
+
     override suspend fun save(): Duration {
         measureTime {
             components.forEach { it.onSave() }

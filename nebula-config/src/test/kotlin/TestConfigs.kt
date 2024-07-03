@@ -21,7 +21,7 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
             localConfig({ Path.of("./build/config") }, ::jsonPersistence)
             autoSave(initialDelay = 5.seconds, period = 5.seconds) { needSave ->
                 println(measureTime {
-                    println("当前是否需要保存 ${if (this.manager.needSave) "是" else "否"}")
+                    println("当前是否需要保存 ${if (this.manager.savable()) "是" else "否"}")
                     Numbers.int.setValue(Numbers.int.getValue()+1)
                     println("是否需要保存 ${if (needSave()) "是" else "否"}")
                     if (needSave()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")

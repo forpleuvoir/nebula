@@ -1,5 +1,6 @@
 package moe.forpleuvoir.nebula.config
 
+import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import java.util.function.Consumer
 import kotlin.reflect.KProperty
 
@@ -20,9 +21,15 @@ import kotlin.reflect.KProperty
 @Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
     override fun init() {
-        observers.clear()
         restDefault()
     }
+
+    override var configManager: ConfigManager? = null
+        set(value) {
+            if (field == null && value != null) {
+                field = value
+            }
+        }
 
     protected abstract var configValue: V
 
@@ -64,6 +71,7 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
     }
 
     override fun onChange(value: C) {
+        configManager?.markSavable()
         observers.forEach { it.accept(this as C) }
     }
 
