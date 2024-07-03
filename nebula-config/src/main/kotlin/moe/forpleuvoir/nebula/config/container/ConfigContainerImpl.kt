@@ -23,16 +23,26 @@ import kotlin.reflect.jvm.isAccessible
  */
 open class ConfigContainerImpl(
     override val key: String,
-    private val autoScan: AutoScan = AutoScan(),
+    private val autoScan: AutoScan = AutoScan.all,
 ) : ConfigContainer {
 
     data class AutoScan(
-        val property: Boolean = true,
-        val delegateProperty: Boolean = true,
-        val nestedObject: Boolean = true,
+        val property: Boolean,
+        val delegateProperty: Boolean,
+        val nestedObject: Boolean,
     ) {
         companion object {
+
+            val all = AutoScan(property = true, delegateProperty = true, nestedObject = true)
+
             val close = AutoScan(property = false, delegateProperty = false, nestedObject = false)
+
+            val property = AutoScan(property = true, delegateProperty = false, nestedObject = false)
+
+            val delegateProperty = AutoScan(property = true, delegateProperty = false, nestedObject = false)
+
+            val nestedObject = AutoScan(property = false, delegateProperty = false, nestedObject = false)
+
         }
     }
 

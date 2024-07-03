@@ -68,16 +68,13 @@ fun HSVColor.Companion.deserialization(serializeElement: SerializeElement): HSVC
 }
 
 private fun decodeColor(serializeElement: SerializeElement): Int {
-    return serializeElement.checkType<Int> {
+    return serializeElement.checkType {
         check<SerializePrimitive> { primitive ->
             if (primitive.isString) {
                 Color.decode(primitive.asString)
-            } else if (primitive.isNumber) {
-                if (Color.isValidColor(primitive.asInt.toUInt())) {
-                    primitive.asInt
-                }
-            }
-            throw IllegalArgumentException("Failed to decode the color. The input primitive should be a valid color string or number.")
+            } else if (primitive.isNumber && Color.isValidColor(primitive.asInt.toUInt())) {
+                primitive.asInt
+            } else throw IllegalArgumentException("Failed to decode the color. The input primitive should be a valid color string or number.")
         }
         check<SerializeObject> { obj ->
             if (obj.containsKey("hue", "saturation", "value")) {
@@ -90,10 +87,9 @@ private fun decodeColor(serializeElement: SerializeElement): Int {
                 val alpha = obj.getOr("alpha", 255).toInt()
                 val red = obj["red"]!!.asInt
                 val green = obj["green"]!!.asInt
-                val blue = obj["value"]!!.asInt
+                val blue = obj["blue"]!!.asInt
                 Color(red, green, blue, alpha).argb
-            }
-            throw IllegalArgumentException("Invalid input: couldn't find either HSV (hue, saturation, value) or RGB (red, green, blue) color data in the provided object. Please ensure the input object contains the required keys.")
+            } else throw IllegalArgumentException("Invalid input: couldn't find either HSV (hue, saturation, value) or RGB (red, green, blue) color data in the provided object. Please ensure the input object contains the required keys.")
         }
     }.getOrThrow()
 }

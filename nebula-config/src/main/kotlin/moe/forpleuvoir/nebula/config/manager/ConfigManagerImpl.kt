@@ -9,7 +9,7 @@ import kotlin.time.measureTime
 
 open class ConfigManagerImpl(
     key: String,
-    autoScan: AutoScan = AutoScan(),
+    autoScan: AutoScan = AutoScan.all,
 ) : ConfigManager, ConfigContainerImpl(key, autoScan) {
 
     private val components: MutableSet<ConfigManagerComponent> = mutableSetOf()
