@@ -23,7 +23,7 @@ import kotlin.reflect.jvm.isAccessible
  */
 open class ConfigContainerImpl(
     override val key: String,
-    private val autoScan: AutoScan = AutoScan.all,
+    private val autoScan: AutoScan = AutoScan.close,
 ) : ConfigContainer {
 
     data class AutoScan(
@@ -124,7 +124,9 @@ open class ConfigContainerImpl(
     }
 
     override fun configs(): Collection<ConfigSerializable> {
-        return configs.values
+        return configs.values.sortedBy {
+            configMetas[it.key]?.order ?: ConfigMeta.DEFAULT_ORDER
+        }
     }
 
     override fun <C : ConfigSerializable> addConfig(config: C): C {
@@ -155,24 +157,24 @@ open class ConfigContainerImpl(
 
     override fun serialization(): SerializeElement {
         return serializeObject {
-            for (configSerialize in configs()) {
-                configSerialize.key - configSerialize.serialization()
+            for (config in configs()) {
+                config.key - config.serialization()
             }
         }
     }
 
     override fun deserialization(serializeElement: SerializeElement) {
         serializeElement.checkType<SerializeObject, Unit> {
-            for (configSerialize in configs()) {
+            for (config in configs()) {
                 runCatching {
-                    configSerialize.deserialization(it[configSerialize.key]!!)
+                    config.deserialization(it[config.key]!!)
                 }.onFailure {
-                    var message = "${configSerialize.key}:\"${serializeElement}\" deserialization failed"
+                    var message = "${config.key}:\"${serializeElement}\" deserialization failed"
                     when (it) {
                         is NullPointerException -> message =
-                            "not found key[${configSerialize.key}] from \"${serializeElement}\",the default value will be used"
+                            "not found key[${config.key}] from \"${serializeElement}\",the default value will be used"
                     }
-                    deserializationExceptionHandler(configSerialize, serializeElement, DeserializationException(message, it))
+                    deserializationExceptionHandler(config, serializeElement, DeserializationException(message, it))
                 }
             }
         }
