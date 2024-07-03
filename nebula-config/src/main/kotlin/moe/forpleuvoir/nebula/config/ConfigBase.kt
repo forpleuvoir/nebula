@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
 @Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
 abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
     override fun init() {
-        subscribers.clear()
+        observers.clear()
         restDefault()
     }
 
@@ -57,14 +57,14 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
         setValue(this, this::configValue, defaultValue)
     }
 
-    protected open val subscribers: MutableList<Consumer<C>> = ArrayList()
+    protected open val observers: MutableList<Consumer<C>> = ArrayList()
 
     override fun subscribe(callback: Consumer<C>) {
-        subscribers.add(callback)
+        observers.add(callback)
     }
 
     override fun onChange(value: C) {
-        subscribers.forEach { it.accept(this as C) }
+        observers.forEach { it.accept(this as C) }
     }
 
     override fun matched(regex: Regex): Boolean {

@@ -21,10 +21,10 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
             localConfig({ Path.of("./build/config") }, ::jsonPersistence)
             autoSave(initialDelay = 5.seconds, period = 5.seconds) { needSave ->
                 println(measureTime {
-                    println("当前是否需要保存 ${this.manager.needSave}")
-                    Numbers.int++
+                    println("当前是否需要保存 ${if (this.manager.needSave) "是" else "否"}")
+                    Numbers.int.setValue(Numbers.int.getValue()+1)
                     println("是否需要保存 ${if (needSave()) "是" else "否"}")
-                    if (needSave()) println("${Thread.currentThread().name} 开始保存耗时：${Date().format("HH:mm:ss")}")
+                    if (needSave()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
                     if (needSave()) save()
                 })
             }
@@ -67,7 +67,11 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
 
     object Numbers : ConfigContainerImpl("config_numbers") {
 
-        var int by int("int", 10)
+        var int = int("int", 10).apply {
+            subscribe{
+                println("$it,数值有变!(${it.getValue()})")
+            }
+        }
 
         var double by double("double", 10.0)
     }

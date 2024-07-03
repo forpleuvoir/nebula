@@ -56,7 +56,7 @@ fun HSVColor.serializationAsObject(): SerializeObject =
         "hue" to hue
         "saturation" to saturation
         "value" to value
-        "alpha" to alpha
+        "alpha" to alphaF
     }
 
 fun HSVColor.deserialization(serializeElement: SerializeElement) {

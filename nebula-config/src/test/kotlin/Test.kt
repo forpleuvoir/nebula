@@ -42,10 +42,6 @@ class ConfigMetaTest {
 
     @Test
     fun testConfig() {
-        runAsync {
-            Thread.sleep(5000)
-            println("睡了5000")
-        }
         TestConfigs.onSaved {
             println("保存耗时$it")
         }
