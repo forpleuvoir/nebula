@@ -4,6 +4,8 @@ import moe.forpleuvoir.nebula.common.color.ARGBColor
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.HSVColor
 import moe.forpleuvoir.nebula.common.color.RGBColor
+import moe.forpleuvoir.nebula.serialization.extensions.DateDeserializer
+import moe.forpleuvoir.nebula.serialization.extensions.deserialization
 import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -31,17 +33,30 @@ sealed interface SerializeElement {
 
         internal val serializerCache: MutableMap<KClass<out Any>, (Any) -> SerializeElement> = mutableMapOf()
 
+        internal val deserializerCache: MutableMap<KClass<out Any>, (SerializeElement) -> Any> = mutableMapOf()
+
         init {
-            register<Color>(Color::serialization)
-            register<HSVColor>(HSVColor::serialization)
-            register<RGBColor>(RGBColor::serialization)
-            register<ARGBColor>(ARGBColor::serialization)
-            register<Duration>(Duration::serialization)
-            register<Date>(Date::serialization)
+            _register<Color>(Color::serialization, Color::deserialization)
+            _register<HSVColor>(HSVColor::serialization, HSVColor::deserialization)
+            _registerSerializer<RGBColor>(RGBColor::serialization)
+            _registerSerializer<ARGBColor>(ARGBColor::serialization)
+            _register<Duration>(Duration::serialization, Duration::deserialization)
+            _register<Date>(Date::serialization, DateDeserializer::deserialization)
         }
 
-        @Suppress("UNCHECKED_CAST")
-        private inline fun <reified T : Any> register(noinline func: (T) -> SerializeElement) {
+        @Suppress("FunctionName")
+        private inline fun <reified T : Any> _register(noinline serFunc: (T) -> SerializeElement, noinline desrFunc: (SerializeElement) -> T) {
+            _registerSerializer<T>(serFunc)
+            _registerDeserializer(desrFunc)
+        }
+
+        private inline fun <reified T : Any> register(noinline serFunc: (T) -> SerializeElement, noinline desrFunc: (SerializeElement) -> T) {
+            registerSerializer<T>(serFunc)
+            registerDeserializer(desrFunc)
+        }
+
+        @Suppress("UNCHECKED_CAST", "FunctionName")
+        private inline fun <reified T : Any> _registerSerializer(noinline func: (T) -> SerializeElement) {
             serializerCache[T::class] = func as (Any) -> SerializeElement
         }
 
@@ -52,6 +67,19 @@ sealed interface SerializeElement {
 
         inline fun <reified T : Any> registerSerializer(noinline func: (T) -> SerializeElement) {
             registerSerializer(T::class, func)
+        }
+
+        @Suppress("FunctionName")
+        private inline fun <reified T : Any> _registerDeserializer(noinline func: (SerializeElement) -> T) {
+            deserializerCache[T::class] = func
+        }
+
+        fun <T : Any> registerDeserializer(type: KClass<T>, func: (SerializeElement) -> T) {
+            deserializerCache[type] = func
+        }
+
+        inline fun <reified T : Any> registerDeserializer(noinline func: (SerializeElement) -> T) {
+            registerDeserializer(T::class, func)
         }
 
     }

@@ -6,8 +6,6 @@ kotlinCoroutinesVersion = "1.9.0-RC"
 kotlinpoetVersion = "1.17.0"
 gsonVersion = "2.10"
 
-
-
 [libraries]
 kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinVersion" }
 kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlinVersion" }

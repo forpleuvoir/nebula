@@ -32,15 +32,15 @@ fun Any.toSerializeObject(): SerializeObject {
         return it(this)
     }
     //如果有[Serializable]注解，则调用其注解[Serializable.value]的对象实例的[serialization]方法
-    this::class.findSerializable{
+    this::class.findSerializable {
         return it.getSerializer<Any>().serialization(this).asObject
     }
     //如果有方法名为[serialization]返回值类型为[SerializeObject]的无参方法，则调用该方法
     this::class.declaredFunctions.find {
         it.returnType.jvmErasure.isSubclassOf(SerializeObject::class)
-        && it.name == "serialization"
-        && it.parameters.size == 1
-        && it.parameters[0].type.jvmErasure == this::class
+                && it.name == "serialization"
+                && it.parameters.size == 1
+                && it.parameters[0].type.jvmErasure == this::class
     }?.let {
         return it.call(this) as SerializeObject
     }
@@ -114,6 +114,10 @@ class SerializeObjectScope {
         obj.putAny(this, value)
     }
 
+    operator fun String.invoke(scope: SerializeObjectScope.() -> Unit) {
+        obj[this] = SerializeObjectScope().apply(scope).obj
+    }
+
 }
 
 fun serializeObject(scope: SerializeObjectScope.() -> Unit): SerializeObject {
@@ -172,8 +176,8 @@ fun <T> serializeObject(entries: Set<Map.Entry<String, T>>, entryConverter: (Str
     }
 }
 
-fun <T> SerializeObject.getOr(key: String, or: T, converter: (SerializeElement) -> T): T {
-    return runCatching { converter(this[key]!!) }.getOrDefault(or)
+fun <T> SerializeObject.getOr(key: String, or: T, mapping: (SerializeElement) -> T): T {
+    return runCatching { mapping(this[key]!!) }.getOrDefault(or)
 }
 
 fun SerializeObject.getOr(key: String, or: Number): Number {

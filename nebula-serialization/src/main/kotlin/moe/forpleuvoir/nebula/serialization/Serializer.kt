@@ -18,5 +18,8 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
  */
 @Suppress("unused")
 interface Serializer<T> {
-	fun serialization(target: T): SerializeElement
+
+    companion object
+
+    fun serialization(target: T): SerializeElement
 }

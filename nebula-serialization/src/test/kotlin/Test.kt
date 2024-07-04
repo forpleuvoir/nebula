@@ -1,17 +1,50 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
+import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.Colors
 import moe.forpleuvoir.nebula.common.util.replace
+import moe.forpleuvoir.nebula.serialization.Deserializer
+import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
+import moe.forpleuvoir.nebula.serialization.extensions.deserialization
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
 import kotlin.time.measureTime
+
+
+class SerializationTest {
+
+
+    @Test
+    fun test2() {
+        println(Deserializer.deserialization<Color>(SerializePrimitive("#66CCFF")))
+    }
+
+    @Test
+    fun test1() {
+        SerializationTest::class.companionObject?.let { clazz ->
+            SerializationTest::class.companionObjectInstance!!
+            clazz.declaredFunctions.first().let {
+                println(it.parameters.size)
+                println(it.parameters.last().name)
+                println(it.name)
+                println(it.returnType.classifier == T::class)
+            }
+        }
+        println()
+    }
+
+}
 
 fun main() {
     test3()
@@ -67,6 +100,12 @@ fun test3() {
             return serializeObject {
                 "aa" to aa
                 "bb" to bb
+                "test" {
+                    "test" to "aa"
+                    "aa" {
+
+                    }
+                }
             }
         }
 
@@ -110,13 +149,22 @@ fun test3() {
 //    println(obj.toSerializeObject().dumpAsJson(true))
 }
 
-fun test2() {
-
+class DT {
+    val a: Int = 10
+    val b: Int = 5
 }
 
 
 enum class T {
+
     V1, V2;
+
+    companion object {
+        fun deserialization(serializeElement: SerializeElement): T {
+            return T.valueOf(serializeElement.asString)
+        }
+
+    }
 }
 
 
