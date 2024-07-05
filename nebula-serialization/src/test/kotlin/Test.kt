@@ -3,13 +3,10 @@ import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.Colors
 import moe.forpleuvoir.nebula.common.util.replace
 import moe.forpleuvoir.nebula.serialization.Deserializer
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
+import moe.forpleuvoir.nebula.serialization.annotation.SerializerName
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
-import moe.forpleuvoir.nebula.serialization.extensions.checkType
-import moe.forpleuvoir.nebula.serialization.extensions.deserialization
-import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
-import moe.forpleuvoir.nebula.serialization.extensions.toSerializeObject
+import moe.forpleuvoir.nebula.serialization.extensions.*
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import org.junit.jupiter.api.Test
@@ -26,6 +23,7 @@ import kotlin.time.measureTime
 class SerializationTest {
 
 
+    @OptIn(ExperimentalApi::class)
     @Test
     fun test2() {
         println(Deserializer.deserialization<Color>(SerializePrimitive("#66CCFF")))
@@ -45,14 +43,46 @@ class SerializationTest {
         println()
     }
 
+    data class DT(
+        val name: String,
+        val list: List<String>,
+        val map: Map<String, Any>,
+        @SerializerName("ddd")
+        val dt2: DT2
+    )
+
+    data class DT2(
+        @SerializerName("a_name")
+        val name: String
+    )
+
+    @OptIn(ExperimentalApi::class)
     @Test
     fun test3() {
-        println(Deserializer.deserialization<T>(SerializePrimitive("V2")))
-//        println(Enum.deserialization<T>(SerializePrimitive("V2")))
+        Deserializer.deserialization<DT>(serializeObject {
+            "name" to "forpleuvoir"
+            "list" to serializeArray("aa", "b")
+            "map" {
+                "test_key" to "test_value"
+            }
+            "ddd" {
+                "a_name" to "Guts"
+            }
+        }).let {
+            println(it)
+
+        }
+    }
+
+    @OptIn(ExperimentalApi::class)
+    @Test
+    fun test4() {
+        serializeArray("12", 666, serializeArray("aa", "bb")).deserialization(List::class).apply {
+            println(this)
+        }
     }
 
     fun <E : Enum<E>> a(type: KClass<E>) {
-        println(type)
     }
 
 }

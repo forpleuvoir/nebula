@@ -10,6 +10,8 @@ interface ARGBColor : RGBColor {
 
     val alphaF: Float
 
+    operator fun component4(): Int = alpha
+
     override fun clone(): ARGBColor
 
     operator fun plus(other: ARGBColor): ARGBColor {

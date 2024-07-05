@@ -17,4 +17,6 @@ interface ConfigSerializable : Initializable, Serializable, Deserializable {
 
     var configManager: ConfigManager?
 
+    operator fun component1(): String = key
+
 }

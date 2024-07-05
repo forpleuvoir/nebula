@@ -1,22 +1,30 @@
 package moe.forpleuvoir.nebula.serialization.extensions
 
+import moe.forpleuvoir.nebula.common.api.ExperimentalApi
+import moe.forpleuvoir.nebula.common.valueOf
 import moe.forpleuvoir.nebula.serialization.Deserializer
 import moe.forpleuvoir.nebula.serialization.annotation.Deserializable.Companion.findDeserializable
 import moe.forpleuvoir.nebula.serialization.annotation.Deserializable.Companion.getDeserializer
 import moe.forpleuvoir.nebula.serialization.annotation.SerializerName.Companion.getSerializerName
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
+import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement.Companion.deserializerCache
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.jvmErasure
 
+@ExperimentalApi
 inline fun <reified T : Any> Deserializer.Companion.deserialization(serializeElement: SerializeElement): T {
     return deserialization(T::class, serializeElement)
 }
 
 @Suppress("UNCHECKED_CAST")
+@ExperimentalApi
 fun <T : Any> Deserializer.Companion.deserialization(type: KClass<T>, serializeElement: SerializeElement): T {
     //找到伴生对象
     type.companionObjectInstance?.let { companionObject ->
@@ -57,11 +65,129 @@ fun <T : Any> Deserializer.Companion.deserialization(type: KClass<T>, serializeE
     //如果是普通的类
     return serializeElement.checkType<SerializeObject, T> { obj ->
         type.constructors.find { it.parameters.size == obj.size }?.let { constructor ->
-            for (parameter in constructor.parameters) {
-                parameter.getSerializerName()
+            val parameters = mutableListOf<Any?>()
+            buildList {
+                constructor.parameters.forEach {
+                    it.annotations
+                    val name= it.getSerializerName()
+                    add(obj[name]!!)
+                }
+            }.forEachIndexed { index, parameter ->
+                val a = parameter.deserialization(constructor.parameters[index].type.jvmErasure)
+                parameters.add(a)
             }
-            constructor
+            return constructor.call(*parameters.toTypedArray())
         }
         throw IllegalArgumentException("no suitable constructor found in $type")
     }.getOrThrow()
+}
+
+@ExperimentalApi
+fun SerializeArray.deserialization(kClass: KClass<*>): Any {
+    return when (kClass.javaObjectType) {
+        LinkedList::class.java                  -> LinkedList<Any?>().apply {
+            this@deserialization.forEach {
+                add(it.deserialization(kClass))
+            }
+        }
+
+        ArrayList::class.java, List::class.java -> ArrayList<Any?>().apply {
+            this@deserialization.forEach {
+                add(it.deserialization(kClass))
+            }
+        }
+
+        LinkedHashSet::class.java               -> LinkedHashSet<Any?>().apply {
+            this@deserialization.forEach {
+                add(it.deserialization(kClass))
+            }
+        }
+
+        HashSet::class.java, Set::class.java    -> HashSet<Any?>().apply {
+            this@deserialization.forEach {
+                add(it.deserialization(kClass))
+            }
+        }
+
+        else                                    -> {
+            if (kClass.java.isArray) {
+                buildList {
+                    this@deserialization.forEach {
+                        add(it.deserialization(kClass))
+                    }
+                }.toTypedArray()
+            } else throw IllegalArgumentException("$kClass is not supported array")
+        }
+    }
+}
+
+@OptIn(ExperimentalApi::class)
+fun SerializeElement.deserialization(kClass: KClass<*>): Any? {
+    return when (val s = this) {
+        is SerializePrimitive -> s.deserialization(kClass)
+        is SerializeArray     -> s.deserialization(kClass)
+        is SerializeObject    -> s.deserialization(kClass)
+        SerializeNull         -> null
+    }
+}
+
+fun SerializePrimitive.deserialization(kClass: KClass<*>): Any {
+    return when (kClass) {
+        String::class     -> asString
+        Float::class      -> asFloat
+        Double::class     -> asDouble
+        Short::class      -> asShort
+        Int::class        -> asInt
+        Long::class       -> asLong
+        Boolean::class    -> asBoolean
+        Byte::class       -> asByte
+        BigInteger::class -> asBigInteger
+        BigDecimal::class -> asBigDecimal
+        Number::class     -> asNumber
+        else              -> value
+    }
+}
+
+inline fun <reified E : Enum<*>> Enum.Companion.deserialization(serializeElement: SerializeElement): E {
+    return deserialization(E::class, serializeElement)
+}
+
+fun <E : Enum<*>> Enum.Companion.deserialization(enumType: KClass<out E>, serializeElement: SerializeElement): E {
+    return serializeElement.checkType<SerializePrimitive, E> {
+        Enum.valueOf(enumType, it.asString) ?: throw IllegalArgumentException("cannot deserialize $enumType,no instance named ${it.asString} found")
+    }.getOrThrow()
+}
+
+@OptIn(ExperimentalApi::class)
+fun SerializeObject.deserialization(kClass: KClass<*>): Any {
+    return when (kClass.javaObjectType) {
+        ConcurrentHashMap::class.java -> {
+            ConcurrentHashMap<String, Any?>().apply {
+                this@deserialization.forEach { k, v ->
+                    this[k] = v.deserialization(kClass)
+                }
+            }
+        }
+
+        LinkedHashMap::class.java            -> {
+            LinkedHashMap<String, Any?>().apply {
+                this@deserialization.forEach { k, v ->
+                    this[k] = v.deserialization(kClass)
+                }
+            }
+        }
+
+        HashMap::class.java, Map::class.java -> {
+            HashMap<String, Any?>().apply {
+                this@deserialization.forEach { k, v ->
+                    this[k] = v.deserialization(kClass)
+                }
+            }
+        }
+
+        else                                 -> {
+            Deserializer.deserialization(kClass, this)
+        }
+
+    }
 }

@@ -33,6 +33,10 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
 
     protected abstract var configValue: V
 
+    operator fun component2(): V {
+        return getValue()
+    }
+
     protected open infix fun V.isEquals(other: V): Boolean = this == other
 
     protected open infix fun V.notEquals(other: V): Boolean = !(this isEquals other)

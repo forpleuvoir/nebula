@@ -20,6 +20,12 @@ interface RGBColor : Cloneable {
 
     val hexStr: String
 
+    operator fun component1(): Int = red
+
+    operator fun component2(): Int = green
+
+    operator fun component3(): Int = blue
+
     public override fun clone(): RGBColor
 
     operator fun plus(other: RGBColor): RGBColor {

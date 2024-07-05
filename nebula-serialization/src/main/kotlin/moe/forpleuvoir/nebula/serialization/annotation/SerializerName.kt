@@ -6,7 +6,7 @@ import kotlin.contracts.contract
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 
-@Target(AnnotationTarget.PROPERTY)
+@Target(AnnotationTarget.PROPERTY,AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class SerializerName(val name: String) {
     companion object {
