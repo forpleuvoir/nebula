@@ -3,8 +3,10 @@ package moe.forpleuvoir.nebula.serialization.extensions
 import moe.forpleuvoir.nebula.serialization.Deserializer
 import moe.forpleuvoir.nebula.serialization.annotation.Deserializable.Companion.findDeserializable
 import moe.forpleuvoir.nebula.serialization.annotation.Deserializable.Companion.getDeserializer
+import moe.forpleuvoir.nebula.serialization.annotation.SerializerName.Companion.getSerializerName
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement.Companion.deserializerCache
+import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.declaredFunctions
@@ -52,5 +54,14 @@ fun <T : Any> Deserializer.Companion.deserialization(type: KClass<T>, serializeE
     if (type.java.isEnum) {
         return Enum.deserialization(type as KClass<out Enum<*>>, serializeElement) as T
     }
-    TODO()
+    //如果是普通的类
+    return serializeElement.checkType<SerializeObject, T> { obj ->
+        type.constructors.find { it.parameters.size == obj.size }?.let { constructor ->
+            for (parameter in constructor.parameters) {
+                parameter.getSerializerName()
+            }
+            constructor
+        }
+        throw IllegalArgumentException("no suitable constructor found in $type")
+    }.getOrThrow()
 }

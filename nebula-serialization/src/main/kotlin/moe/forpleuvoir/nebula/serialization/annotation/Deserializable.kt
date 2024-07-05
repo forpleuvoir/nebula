@@ -23,11 +23,11 @@ annotation class Deserializable(val value: KClass<out Deserializer<*>>) {
         }
 
         @OptIn(ExperimentalContracts::class)
-        inline fun <R> KClass<*>.findDeserializable(block: (Deserializable) -> R) {
+        inline fun <R> KClass<*>.findDeserializable(block: (Deserializable) -> R): R? {
             contract {
                 callsInPlace(block, InvocationKind.AT_MOST_ONCE)
             }
-            this.findAnnotation<Deserializable>()?.let {
+            return this.findAnnotation<Deserializable>()?.let {
                 block(it)
             }
         }

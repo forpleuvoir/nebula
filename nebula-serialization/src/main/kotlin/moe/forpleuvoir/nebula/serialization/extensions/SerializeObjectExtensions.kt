@@ -48,6 +48,7 @@ fun Any.toSerializeObject(): SerializeObject {
     val obj = SerializeObject()
     this::class.apply {
         memberProperties.filter {
+            //找到所有属性条件 属性可见性不为 INTERNAL 属性没有被Transient修饰
             it.visibility != INTERNAL && it.findAnnotation<Transient>() == null && it.javaField?.let { field -> !Modifier.isTransient(field.modifiers) } ?: true
         }.forEach { property ->
             property as KProperty1<Any, Any?>

@@ -23,11 +23,11 @@ annotation class Serializable(val value: KClass<out Serializer<*>>) {
         }
 
         @OptIn(ExperimentalContracts::class)
-        inline fun <R> KClass<*>.findSerializable(block: (Serializable) -> R) {
+        inline fun <R> KClass<*>.findSerializable(block: (Serializable) -> R): R? {
             contract {
                 callsInPlace(block, InvocationKind.AT_MOST_ONCE)
             }
-            this.findAnnotation<Serializable>()?.let {
+            return this.findAnnotation<Serializable>()?.let {
                 block(it)
             }
         }
