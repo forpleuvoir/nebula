@@ -27,13 +27,13 @@ fun Any.toSerializeObject(): SerializeObject {
     if (this is Serializable) {
         return this.serialization().asObject
     }
-    //如果有缓存，则直接调用缓存的方法
-    SerializeObject.serializerCache[this::class]?.let {
-        return it(this)
-    }
     //如果有[Serializable]注解，则调用其注解[Serializable.value]的对象实例的[serialization]方法
     this::class.findSerializable {
         return it.getSerializer<Any>().serialization(this).asObject
+    }
+    //如果有缓存，则直接调用缓存的方法
+    SerializeObject.serializerCache[this::class]?.let {
+        return it(this)
     }
     //如果有方法名为[serialization]返回值类型为[SerializeObject]的无参方法，则调用该方法
     this::class.declaredFunctions.find {

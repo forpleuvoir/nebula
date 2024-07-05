@@ -15,6 +15,7 @@ import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.declaredFunctions
@@ -42,6 +43,16 @@ class SerializationTest {
             }
         }
         println()
+    }
+
+    @Test
+    fun test3() {
+        println(Deserializer.deserialization<T>(SerializePrimitive("V2")))
+//        println(Enum.deserialization<T>(SerializePrimitive("V2")))
+    }
+
+    fun <E : Enum<E>> a(type: KClass<E>) {
+        println(type)
     }
 
 }
@@ -159,12 +170,12 @@ enum class T {
 
     V1, V2;
 
-    companion object {
-        fun deserialization(serializeElement: SerializeElement): T {
-            return T.valueOf(serializeElement.asString)
-        }
-
-    }
+//    companion object {
+//        fun deserialization(serializeElement: SerializeElement): T {
+//            return T.valueOf(serializeElement.asString)
+//        }
+//
+//    }
 }
 
 

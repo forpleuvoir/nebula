@@ -4,6 +4,7 @@ import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import moe.forpleuvoir.nebula.serialization.extensions.deserialization
 
 open class ConfigEnum<E : Enum<E>>(
     override val key: String,
@@ -17,7 +18,7 @@ open class ConfigEnum<E : Enum<E>>(
     }
 
     override fun deserialization(serializeElement: SerializeElement) {
-        setValue(java.lang.Enum.valueOf(configValue.javaClass, serializeElement.asString))
+        setValue(Enum.deserialization(configValue::class,serializeElement))
     }
 
 }

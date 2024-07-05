@@ -25,7 +25,6 @@ class DeserializationException : RuntimeException {
             }
         }
 
-        @Suppress("MemberVisibilityCanBePrivate")
         fun illegalType(element: KClass<*>, vararg expectedType: KClass<*>): DeserializationException {
             return DeserializationException("Deserialize type error, expected to be an ${expectedType.map { it.simpleName }}, but was [${element.simpleName}]")
         }

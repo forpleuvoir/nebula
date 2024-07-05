@@ -43,13 +43,13 @@ open class ConfigStringKeyMap<V : Any>(
         }
 
     override fun deserialization(serializeElement: SerializeElement) {
-        configValue = serializeElement.checkType {
+        setValue(serializeElement.checkType {
             check<SerializeObject> {
                 this@ConfigStringKeyMap.map(it.mapValues { (_, value) ->
                     valueDeserializer(value)
                 })
             }
-        }.getOrThrow()
+        }.getOrThrow())
     }
 }
 
