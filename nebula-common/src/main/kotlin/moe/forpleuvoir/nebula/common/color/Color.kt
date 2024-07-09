@@ -28,18 +28,18 @@ class Color : ARGBColor {
         }
 
         @JvmStatic
-        fun isValidColor(color: UInt): Boolean {
+        fun isValidColor(color: Int): Boolean {
             // 检查颜色值是否在0到0xFFFFFFFF之间
-            if (color > 0xFFFFFFFFu) {
+            if (color.toUInt() > 0xFFFFFFFFu) {
                 return false
             }
 
             // 使用位运算符检查颜色值的alpha、红、绿、蓝四个分量是否在0-FF范围内
-            val alpha = (color shr 24) and 0xFFu
-            val red = (color shr 16) and 0xFFu
-            val green = (color shr 8) and 0xFFu
-            val blue = color and 0xFFu
-            return !(alpha < 0u || alpha > 0xFFu || red < 0u || red > 0xFFu || green < 0u || green > 0xFFu || blue < 0u || blue > 0xFFu)
+            val alpha = (color shr 24) and 0xFF
+            val red = (color shr 16) and 0xFF
+            val green = (color shr 8) and 0xFF
+            val blue = color and 0xFF
+            return !(alpha in alphaRange || red in redRange || green in greenRange || blue in blueRange)
         }
 
         internal fun Int.fixValue(

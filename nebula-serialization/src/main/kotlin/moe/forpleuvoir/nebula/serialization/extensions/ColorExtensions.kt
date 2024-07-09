@@ -72,7 +72,7 @@ private fun decodeColor(serializeElement: SerializeElement): Int {
         check<SerializePrimitive> { primitive ->
             if (primitive.isString) {
                 Color.decode(primitive.asString)
-            } else if (primitive.isNumber && Color.isValidColor(primitive.asInt.toUInt())) {
+            } else if (primitive.isNumber && Color.isValidColor(primitive.asInt)) {
                 primitive.asInt
             } else throw IllegalArgumentException("Failed to decode the color. The input primitive should be a valid color string or number.")
         }

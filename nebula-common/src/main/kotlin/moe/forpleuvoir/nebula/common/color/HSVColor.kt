@@ -5,6 +5,7 @@ package moe.forpleuvoir.nebula.common.color
 import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
 import moe.forpleuvoir.nebula.common.util.clamp
 import moe.forpleuvoir.nebula.common.util.fillBefore
+import moe.forpleuvoir.nebula.common.util.lerp
 
 class HSVColor(
     hue: Float = 360f,
@@ -119,6 +120,16 @@ class HSVColor(
      */
     fun opacity(opacity: Float): HSVColor = this.clone().apply { alphaF *= opacity.fixValue(checkRange, "Opacity") }
 
+    fun lerp(to: HSVColor, fraction: Float): HSVColor {
+        check(fraction in 0.0..1.0) { "fraction must be between 0.0 and 1.0" }
+        return HSVColor(
+            lerp(hue, to.hue, fraction),
+            lerp(saturation, to.saturation, fraction),
+            lerp(value, to.value, fraction),
+            lerp(alphaF, to.alphaF, fraction)
+        )
+    }
+
     override operator fun plus(other: ARGBColor): HSVColor {
         return HSVColor(super.plus(other).argb)
     }
@@ -175,7 +186,7 @@ class HSVColor(
         ).argb
     }
 
-    public override fun clone(): HSVColor = HSVColor(hue, saturation, value, alphaF)
+    override fun clone(): HSVColor = HSVColor(hue, saturation, value, alphaF)
 
     override fun toString(): String {
         return "HSBColor(argb=$argb, hexStr='$hexStr', hue=$hue, saturation=$saturation, value=$value, alpha=$alphaF)"

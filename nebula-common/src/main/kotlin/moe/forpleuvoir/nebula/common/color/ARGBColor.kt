@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.common.color
 
 import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
+import moe.forpleuvoir.nebula.common.util.lerp
 
 interface ARGBColor : RGBColor {
 
@@ -13,6 +14,16 @@ interface ARGBColor : RGBColor {
     operator fun component4(): Int = alpha
 
     override fun clone(): ARGBColor
+
+    fun lerp(to: ARGBColor, fraction: Float): ARGBColor {
+        check(fraction in 0.0..1.0) { "fraction must be between 0.0 and 1.0" }
+        return Color(
+            lerp(redF, to.redF, fraction),
+            lerp(greenF, to.greenF, fraction),
+            lerp(blueF, to.blueF, fraction),
+            lerp(alphaF, to.alphaF, fraction)
+        )
+    }
 
     operator fun plus(other: ARGBColor): ARGBColor {
         return Color(

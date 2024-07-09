@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.common.color
 
 import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
+import moe.forpleuvoir.nebula.common.util.lerp
 
 interface RGBColor : Cloneable {
 
@@ -27,6 +28,15 @@ interface RGBColor : Cloneable {
     operator fun component3(): Int = blue
 
     public override fun clone(): RGBColor
+
+    fun lerp(to: RGBColor, fraction: Float): RGBColor {
+        check(fraction in 0.0..1.0) { "fraction must be between 0.0 and 1.0" }
+        return Color(
+            lerp(redF, to.redF, fraction),
+            lerp(greenF, to.greenF, fraction),
+            lerp(blueF, to.blueF, fraction),
+        )
+    }
 
     operator fun plus(other: RGBColor): RGBColor {
         return Color(

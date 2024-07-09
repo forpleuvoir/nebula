@@ -28,6 +28,7 @@ dependencies {
 val subprojectsOrder = listOf(
     project("nebula-common"),
     project("nebula-event"),
+//    project("nebula-script"),
     project("nebula-serialization"),
     project("nebula-serialization-gson"),
     project("nebula-config")

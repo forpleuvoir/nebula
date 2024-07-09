@@ -2,9 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
     implementation(project(":nebula-common"))
-    implementation(project(":nebula-serialization"))
-    testImplementation(project(":nebula-serialization-gson"))
-    testImplementation(libs.gson)
+    implementation(libs.groovy)
 }
 
 tasks {
@@ -14,7 +12,6 @@ tasks {
         archiveClassifier.set("nebula")
         dependencies {
             include(dependency("moe.forpleuvoir:nebula-common"))
-            include(dependency("moe.forpleuvoir:nebula-serialization"))
         }
     }
 
@@ -22,7 +19,7 @@ tasks {
         archiveClassifier.set("nebula-sources")
         from(sourceSets["main"].allSource)
         from(project(":nebula-common").sourceSets["main"].allSource)
-        from(project(":nebula-serialization").sourceSets["main"].allSource)
     }
 
 }
+
