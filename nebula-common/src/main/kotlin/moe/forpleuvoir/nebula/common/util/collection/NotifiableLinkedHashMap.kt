@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.common.util
+package moe.forpleuvoir.nebula.common.util.collection
 
 import moe.forpleuvoir.nebula.common.api.Notifiable
 import java.util.function.BiFunction

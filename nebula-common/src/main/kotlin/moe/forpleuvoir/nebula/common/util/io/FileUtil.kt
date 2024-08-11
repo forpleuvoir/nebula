@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.common.util
+package moe.forpleuvoir.nebula.common.util.io
 
 import java.io.*
 import java.nio.charset.StandardCharsets

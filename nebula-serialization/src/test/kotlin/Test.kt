@@ -1,7 +1,7 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.Colors
-import moe.forpleuvoir.nebula.common.util.replace
+import moe.forpleuvoir.nebula.common.util.primitive.replace
 import moe.forpleuvoir.nebula.serialization.Deserializer
 import moe.forpleuvoir.nebula.serialization.annotation.SerializerName
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
@@ -170,7 +170,7 @@ fun test3() {
         val t = T.V1
     }
 
-    SerializePrimitive(10f).checkType<Int>()
+    SerializePrimitive(10f).checkValue<Int>()
         .check<Float> {
             it.toInt()
         }.getOrThrow().let {

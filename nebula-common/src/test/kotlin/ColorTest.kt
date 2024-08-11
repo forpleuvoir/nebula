@@ -1,5 +1,4 @@
 import moe.forpleuvoir.nebula.common.color.Color
-import moe.forpleuvoir.nebula.common.color.Colors
 import moe.forpleuvoir.nebula.common.color.HSVColor
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -12,7 +11,7 @@ class ColorTest {
 
     @Test
     fun test1() {
-        val (r, g, b, a) = Colors.CYAN
+        println(Color("000000"))
     }
 
 }
@@ -32,7 +31,7 @@ fun test() {
     val randomColor: UInt = ((Math.random() * 0xFFFFFFFFu.toDouble()).toUInt())
     println("随机生成的颜色值：0x${randomColor.toString(16).uppercase(Locale.getDefault())}")
 
-    val isValid = Color.isValidColor(randomColor)
+    val isValid = Color.isValidColor(randomColor.toInt())
     if (isValid) {
         println("该颜色值是有效的。")
     } else {

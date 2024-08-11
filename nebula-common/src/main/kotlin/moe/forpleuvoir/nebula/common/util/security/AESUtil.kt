@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.common.util
+package moe.forpleuvoir.nebula.common.util.security
 
 import java.util.*
 import javax.crypto.Cipher

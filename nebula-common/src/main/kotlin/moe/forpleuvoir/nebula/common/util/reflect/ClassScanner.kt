@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.common.util
+package moe.forpleuvoir.nebula.common.util.reflect
 
 import java.io.File
 import java.io.IOException
@@ -8,13 +8,32 @@ import java.net.URL
 import java.net.URLConnection
 import java.net.URLDecoder
 import java.util.*
+import java.util.function.Predicate
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import kotlin.reflect.KClass
+
 
 /**
  * [使用代码](https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection)
  */
 object ClassScanner {
+
+    fun scanPackage(packageName: String, predicate: Predicate<KClass<*>>): Set<KClass<*>> {
+        return buildSet {
+            for (clazz in getClassesForPackage(packageName)) {
+                clazz.declaredClasses.forEach {
+                    if (predicate.test(it.kotlin)) {
+                        add(it.kotlin)
+                    }
+                }
+                if (predicate.test(clazz.kotlin)) {
+                    add(clazz.kotlin)
+                }
+            }
+        }
+    }
+
     /**
      * Private helper method
      *

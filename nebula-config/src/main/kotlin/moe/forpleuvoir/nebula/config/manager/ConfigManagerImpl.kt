@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.config.manager
 
 import kotlinx.coroutines.Deferred
-import moe.forpleuvoir.nebula.common.ioAsync
+import moe.forpleuvoir.nebula.common.util.ioAsync
 import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
 import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
 import kotlin.time.Duration

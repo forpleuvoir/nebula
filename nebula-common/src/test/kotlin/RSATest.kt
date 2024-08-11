@@ -1,5 +1,4 @@
-import moe.forpleuvoir.nebula.common.scanPackage
-import moe.forpleuvoir.nebula.common.util.RSAUtil
+import moe.forpleuvoir.nebula.common.util.reflect.ClassScanner.scanPackage
 
 fun main() {
     for (clazz in scanPackage("moe.forpleuvoir.nebula.common") {

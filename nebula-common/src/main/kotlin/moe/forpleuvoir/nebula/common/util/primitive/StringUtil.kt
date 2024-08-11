@@ -1,4 +1,4 @@
-package moe.forpleuvoir.nebula.common.util
+package moe.forpleuvoir.nebula.common.util.primitive
 
 /**
  * 如果字符串长度小于[length],则填充字符[fillChar]至长度[length]

@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.common.color
 
 import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
-import moe.forpleuvoir.nebula.common.util.lerp
+import moe.forpleuvoir.nebula.common.util.math.lerp
 
 interface RGBColor : Cloneable {
 

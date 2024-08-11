@@ -2,8 +2,7 @@
 
 package moe.forpleuvoir.nebula.common.color
 
-import moe.forpleuvoir.nebula.common.util.clamp
-import moe.forpleuvoir.nebula.common.util.fillBefore
+import moe.forpleuvoir.nebula.common.util.primitive.fillBefore
 
 class Color : ARGBColor {
 
@@ -51,7 +50,7 @@ class Color : ARGBColor {
             if ((this < minValue || this > maxValue) && checkRange) {
                 throw IllegalArgumentException("[$parameterName : $this]Color parameter outside of expected range[$minValue ~ $maxValue]")
             }
-            return this.clamp(minValue, maxValue)
+            return this.coerceIn(minValue, maxValue)
         }
 
         internal fun Float.fixValue(
@@ -63,7 +62,7 @@ class Color : ARGBColor {
             if ((this < minValue || this > maxValue) && checkRange) {
                 throw IllegalArgumentException("[$parameterName : $this]Color parameter outside of expected range[$minValue ~ $maxValue]")
             }
-            return this.clamp(minValue, maxValue)
+            return this.coerceIn(minValue, maxValue)
         }
 
     }

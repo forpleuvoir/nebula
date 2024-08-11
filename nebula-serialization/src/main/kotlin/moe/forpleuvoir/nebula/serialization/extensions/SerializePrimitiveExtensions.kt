@@ -2,13 +2,10 @@ package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
-import java.math.BigDecimal
-import java.math.BigInteger
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 
 fun SerializePrimitive.toObj(): Any {
     return if (!isNumber) value else {
@@ -23,7 +20,7 @@ fun SerializePrimitive.toObj(): Any {
 }
 
 
-fun <R : Any> SerializePrimitive.checkType(block: SerializePrimitiveCheckTypeResult<R>.() -> Unit = {}): SerializePrimitiveCheckTypeResult<R> {
+fun <R : Any> SerializePrimitive.checkValue(block: SerializePrimitiveCheckTypeResult<R>.() -> Unit = {}): SerializePrimitiveCheckTypeResult<R> {
     return SerializePrimitiveCheckTypeResult<R>(this).apply { block() }
 }
 

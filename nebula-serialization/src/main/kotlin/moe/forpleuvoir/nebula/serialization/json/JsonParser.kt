@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.serialization.json
 
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
-import moe.forpleuvoir.nebula.common.util.subSequence
+import moe.forpleuvoir.nebula.common.util.primitive.subSequence
 import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.extensions.serializeArray
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject

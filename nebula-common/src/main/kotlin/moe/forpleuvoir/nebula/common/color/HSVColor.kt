@@ -3,9 +3,8 @@
 package moe.forpleuvoir.nebula.common.color
 
 import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
-import moe.forpleuvoir.nebula.common.util.clamp
-import moe.forpleuvoir.nebula.common.util.fillBefore
-import moe.forpleuvoir.nebula.common.util.lerp
+import moe.forpleuvoir.nebula.common.util.math.lerp
+import moe.forpleuvoir.nebula.common.util.primitive.fillBefore
 
 class HSVColor(
     hue: Float = 360f,
@@ -33,10 +32,10 @@ class HSVColor(
             val b = value and 0xFF
             val arr = FloatArray(3)
             java.awt.Color.RGBtoHSB(r, g, b, arr)
-            this.hue = (arr[0] * 360).clamp(0f, 360f)
-            this.saturation = arr[1].clamp(0f, 1f)
-            this.value = arr[2].clamp(0f, 1f)
-            this.alphaF = ((value shr 24 and 0xFF) / 255f).clamp(alphaFRange)
+            this.hue = (arr[0] * 360).coerceIn(0f, 360f)
+            this.saturation = arr[1].coerceIn(0f, 1f)
+            this.value = arr[2].coerceIn(0f, 1f)
+            this.alphaF = ((value shr 24 and 0xFF) / 255f).coerceIn(alphaFRange)
         }
 
     override var rgb: Int

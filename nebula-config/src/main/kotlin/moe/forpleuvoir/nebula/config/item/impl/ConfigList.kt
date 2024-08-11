@@ -1,6 +1,6 @@
 package moe.forpleuvoir.nebula.config.item.impl
 
-import moe.forpleuvoir.nebula.common.util.NotifiableArrayList
+import moe.forpleuvoir.nebula.common.util.collection.NotifiableArrayList
 import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.config.item.ConfigMutableListValue

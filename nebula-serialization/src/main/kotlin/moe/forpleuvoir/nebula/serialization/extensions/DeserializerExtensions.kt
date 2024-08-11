@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
-import moe.forpleuvoir.nebula.common.valueOf
+import moe.forpleuvoir.nebula.common.util.valueOf
 import moe.forpleuvoir.nebula.serialization.Deserializer
 import moe.forpleuvoir.nebula.serialization.annotation.Deserializable.Companion.findDeserializable
 import moe.forpleuvoir.nebula.serialization.annotation.Deserializable.Companion.getDeserializer
