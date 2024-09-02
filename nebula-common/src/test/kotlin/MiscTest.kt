@@ -23,6 +23,28 @@ class MiscTest {
         }
     }
 
+    @Test
+    fun t3() {
+        val spacing = 1f
+        val groupOffset = 0f
+        val sizes = listOf(4f, 5f, 5f, 5f, 6f)
+
+        sizes.runningFold(groupOffset) { offset, size ->
+            offset + size + spacing
+        }.dropLast(1).forEach {
+            println(it)
+        }
+
+        var offset = groupOffset
+        sizes.map { size ->
+            val _offset = offset
+            offset += size + spacing
+            _offset
+        }.forEach {
+            println(it)
+        }
+    }
+
 }
 
 fun main() {

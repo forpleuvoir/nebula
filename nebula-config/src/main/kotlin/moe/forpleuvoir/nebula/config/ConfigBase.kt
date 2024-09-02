@@ -24,12 +24,7 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
         restDefault()
     }
 
-    override var configManager: ConfigManager? = null
-        set(value) {
-            if (field == null && value != null) {
-                field = value
-            }
-        }
+    override var configManager: () -> ConfigManager? = { null }
 
     protected abstract var configValue: V
 
@@ -75,7 +70,7 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
     }
 
     override fun onChange(value: C) {
-        configManager?.markSavable()
+        configManager()?.markSavable()
         observers.forEach { it.accept(this as C) }
     }
 

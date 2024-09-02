@@ -46,12 +46,7 @@ open class ConfigContainerImpl(
         }
     }
 
-    override var configManager: ConfigManager? = null
-        set(value) {
-            if (field == null && value != null) {
-                field = value
-            }
-        }
+    override var configManager: () -> ConfigManager? = { null }
 
     private val configs: MutableMap<String, ConfigSerializable> = LinkedHashMap()
 
@@ -131,7 +126,7 @@ open class ConfigContainerImpl(
 
     override fun <C : ConfigSerializable> addConfig(config: C): C {
         configs[config.key] = config
-        config.configManager = this.configManager
+        config.configManager = { this.configManager() }
         return config
     }
 
@@ -151,7 +146,7 @@ open class ConfigContainerImpl(
         serializeElement: SerializeElement,
         e: DeserializationException
     ) {
-        configManager?.markSavable()
+        configManager()?.markSavable()
         e.printStackTrace()
     }
 

@@ -25,11 +25,7 @@ open class ConfigManagerImpl(
         components.forEach { it.afterInit() }
     }
 
-    override var configManager: ConfigManager?
-        get() = super<ConfigManager>.configManager
-        set(value) {
-            super<ConfigManager>.configManager = value
-        }
+    override var configManager: () -> ConfigManager? = { this }
 
     private var shouldSave: Boolean = false
 

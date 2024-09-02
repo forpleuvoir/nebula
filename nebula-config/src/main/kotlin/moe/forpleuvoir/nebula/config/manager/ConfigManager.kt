@@ -15,11 +15,7 @@ interface ConfigManager : ConfigContainer {
      */
     override fun init()
 
-    override var configManager: ConfigManager?
-        get() = this
-        set(_) {
-            throw Exception("ConfigManager can not set ConfigManager")
-        }
+    override var configManager: () -> ConfigManager?
 
     /**
      * 将此配置管理器标记为可以保存的状态
