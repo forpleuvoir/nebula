@@ -358,7 +358,7 @@ class Color : ARGBColor {
      * 获取当前颜色的副本
      * @return [Color] 复制对象
      */
-    public override fun clone(): Color {
+    override fun clone(): Color {
         return Color(argb)
     }
 
@@ -387,10 +387,10 @@ class Color : ARGBColor {
     }
 
     operator fun plusAssign(other: ARGBColor) {
-        redF = (redF + other.redF).fixValue(false, "RED")
-        greenF = (greenF + other.greenF).fixValue(false, "GREEN")
-        blueF = (blueF + other.blueF).fixValue(false, "BLUE")
-        alphaF = (alphaF + other.alphaF).fixValue(false, "ALPHA")
+        red = (red + other.red).coerceIn(redRange)
+        green = (green + other.green).coerceIn(greenRange)
+        blue = (blue + other.blue).coerceIn(blueRange)
+        alpha = (alpha + other.alpha).coerceIn(alphaRange)
     }
 
     override operator fun minus(other: ARGBColor): Color {
@@ -398,10 +398,10 @@ class Color : ARGBColor {
     }
 
     operator fun minusAssign(other: ARGBColor) {
-        redF = (redF - other.redF).fixValue(false, "RED")
-        greenF = (greenF - other.greenF).fixValue(false, "GREEN")
-        blueF = (blueF - other.blueF).fixValue(false, "BLUE")
-        alphaF = (alphaF - other.alphaF).fixValue(false, "ALPHA")
+        red = (red - other.red).coerceIn(redRange)
+        green = (green - other.green).coerceIn(greenRange)
+        blue = (blue - other.blue).coerceIn(blueRange)
+        alpha = (alpha - other.alpha).coerceIn(alphaRange)
     }
 
     override operator fun times(other: ARGBColor): Color {
@@ -409,10 +409,10 @@ class Color : ARGBColor {
     }
 
     operator fun timesAssign(other: ARGBColor) {
-        redF = (redF * other.redF).fixValue(false, "RED")
-        greenF = (greenF * other.greenF).fixValue(false, "GREEN")
-        blueF = (blueF * other.blueF).fixValue(false, "BLUE")
-        alphaF = (alphaF * other.alphaF).fixValue(false, "ALPHA")
+        redF = (redF * other.redF).coerceIn(redFRange)
+        greenF = (greenF * other.greenF).coerceIn(greenFRange)
+        blueF = (blueF * other.blueF).coerceIn(blueFRange)
+        alphaF = (alphaF * other.alphaF).coerceIn(alphaFRange)
     }
 
     override operator fun div(other: ARGBColor): Color {
@@ -420,10 +420,10 @@ class Color : ARGBColor {
     }
 
     operator fun divAssign(other: ARGBColor) {
-        redF = (redF / other.redF).fixValue(false, "RED")
-        greenF = (greenF / other.greenF).fixValue(false, "GREEN")
-        blueF = (blueF / other.blueF).fixValue(false, "BLUE")
-        alphaF = (alphaF / other.alphaF).fixValue(false, "ALPHA")
+        red = (red / other.red).coerceIn(redRange)
+        green = (green / other.green).coerceIn(greenRange)
+        blue = (blue / other.blue).coerceIn(blueRange)
+        alpha = (alpha / other.alpha).coerceIn(alphaRange)
     }
 
     override fun equals(other: Any?): Boolean {

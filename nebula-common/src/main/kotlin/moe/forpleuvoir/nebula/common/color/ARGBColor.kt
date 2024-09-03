@@ -15,6 +15,15 @@ interface ARGBColor : RGBColor {
 
     override fun clone(): ARGBColor
 
+    override fun reverse(): ARGBColor {
+        return Color(
+            red = (255 - red).coerceIn(redRange),
+            green = (255 - green).coerceIn(greenRange),
+            blue = (255 - blue).coerceIn(blueRange),
+            alpha = alpha
+        )
+    }
+
     fun lerp(to: ARGBColor, fraction: Float): ARGBColor {
         check(fraction in 0.0..1.0) { "fraction must be between 0.0 and 1.0" }
         return Color(

@@ -1,6 +1,5 @@
 package moe.forpleuvoir.nebula.common.color
 
-import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
 import moe.forpleuvoir.nebula.common.util.math.lerp
 
 interface RGBColor : Cloneable {
@@ -29,6 +28,14 @@ interface RGBColor : Cloneable {
 
     public override fun clone(): RGBColor
 
+    fun reverse(): RGBColor {
+        return Color(
+            red = (255 - red).coerceIn(redRange),
+            green = (255 - green).coerceIn(greenRange),
+            blue = (255 - blue).coerceIn(blueRange)
+        )
+    }
+
     fun lerp(to: RGBColor, fraction: Float): RGBColor {
         check(fraction in 0.0..1.0) { "fraction must be between 0.0 and 1.0" }
         return Color(
@@ -40,36 +47,36 @@ interface RGBColor : Cloneable {
 
     operator fun plus(other: RGBColor): RGBColor {
         return Color(
-            red = (redF + other.redF).fixValue(false, "Red"),
-            green = (greenF + other.greenF).fixValue(false, "Green"),
-            blue = (blueF + other.blueF).fixValue(false, "Blue"),
+            red = (red + other.red).coerceIn(redRange),
+            green = (green + other.green).coerceIn(greenRange),
+            blue = (blue + other.blue).coerceIn(blueRange),
             checkRange = false
         )
     }
 
     operator fun minus(other: RGBColor): RGBColor {
         return Color(
-            red = (redF - other.redF).fixValue(false, "Red"),
-            green = (greenF - other.greenF).fixValue(false, "Green"),
-            blue = (blueF - other.blueF).fixValue(false, "Blue"),
+            red = (red - other.red).coerceIn(redRange),
+            green = (green - other.green).coerceIn(greenRange),
+            blue = (blue - other.blue).coerceIn(blueRange),
             checkRange = false
         )
     }
 
     operator fun times(other: RGBColor): RGBColor {
         return Color(
-            red = (redF * other.redF).fixValue(false, "Red"),
-            green = (greenF * other.greenF).fixValue(false, "Green"),
-            blue = (blueF * other.blueF).fixValue(false, "Blue"),
+            red = (redF * other.redF).coerceIn(redFRange),
+            green = (greenF * other.greenF).coerceIn(greenFRange),
+            blue = (blueF * other.blueF).coerceIn(blueFRange),
             checkRange = false
         )
     }
 
     operator fun div(other: RGBColor): RGBColor {
         return Color(
-            red = (redF / other.redF).fixValue(false, "Red"),
-            green = (greenF / other.greenF).fixValue(false, "Green"),
-            blue = (blueF / other.blueF).fixValue(false, "Blue"),
+            red = (red / other.red).coerceIn(redRange),
+            green = (green / other.green).coerceIn(greenRange),
+            blue = (blue / other.blue).coerceIn(blueRange),
             checkRange = false
         )
     }
