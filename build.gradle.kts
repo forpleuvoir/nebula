@@ -79,6 +79,7 @@ tasks {
         compilerOptions {
             suppressWarnings = true
             jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs.add("-Xjvm-default=all")
         }
     }
 
@@ -197,6 +198,7 @@ subprojects {
             compilerOptions {
                 suppressWarnings = true
                 jvmTarget.set(JvmTarget.JVM_21)
+                freeCompilerArgs.add("-Xjvm-default=all")
             }
         }
 

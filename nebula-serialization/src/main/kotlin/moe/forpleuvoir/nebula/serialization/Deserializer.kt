@@ -18,8 +18,12 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
  */
 @Suppress("unused")
 interface Deserializer<T> {
-	companion object
+    companion object
 
-	fun deserialization(serializeElement: SerializeElement): T
+    fun deserialization(serializeElement: SerializeElement): T
+
+    fun deserialization(serializeElement: SerializeElement?, default: T): T {
+        return kotlin.runCatching { deserialization(serializeElement!!) }.getOrDefault(default)
+    }
 
 }
