@@ -1,6 +1,7 @@
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.HSVColor
 import org.junit.jupiter.api.Test
+import java.awt.Color.HSBtoRGB
 import java.io.File
 import java.io.FileWriter
 import java.util.*
@@ -11,7 +12,13 @@ class ColorTest {
 
     @Test
     fun test1() {
-        println(Color("000000"))
+        val a = HSVColor(360f, 1f, 1f, 0.5f)
+        val b = HSVColor(360f, 1f, 1f, 1f)
+        print(a)
+        println(a.argb.toUInt().toString(16))
+        print(b)
+        println(b.argb.toUInt().toString(16))
+        println((((0.5 * 255).toInt() shl 24) or HSBtoRGB(1f, 1f, 1f)).toUInt().toString(16))
     }
 
 }

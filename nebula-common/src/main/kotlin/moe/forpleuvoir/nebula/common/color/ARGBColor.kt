@@ -1,6 +1,5 @@
 package moe.forpleuvoir.nebula.common.color
 
-import moe.forpleuvoir.nebula.common.color.Color.Companion.fixValue
 import moe.forpleuvoir.nebula.common.util.math.lerp
 
 interface ARGBColor : RGBColor {
@@ -36,40 +35,40 @@ interface ARGBColor : RGBColor {
 
     operator fun plus(other: ARGBColor): ARGBColor {
         return Color(
-            red = (redF + other.redF).fixValue(false, "Red"),
-            green = (greenF + other.greenF).fixValue(false, "Green"),
-            blue = (blueF + other.blueF).fixValue(false, "Blue"),
-            alpha = (alphaF + other.alphaF).fixValue(false, "Alpha"),
+            red = (redF + other.redF).coerceIn(redFRange),
+            green = (greenF + other.greenF).coerceIn(greenFRange),
+            blue = (blueF + other.blueF).coerceIn(blueFRange),
+            alpha = (alphaF + other.alphaF).coerceIn(alphaFRange),
             checkRange = false
         )
     }
 
     operator fun minus(other: ARGBColor): ARGBColor {
         return Color(
-            red = (redF - other.redF).fixValue(false, "Red"),
-            green = (greenF - other.greenF).fixValue(false, "Green"),
-            blue = (blueF - other.blueF).fixValue(false, "Blue"),
-            alpha = (alphaF - other.alphaF).fixValue(false, "Alpha"),
+            red = (redF - other.redF).coerceIn(redFRange),
+            green = (greenF - other.greenF).coerceIn(greenFRange),
+            blue = (blueF - other.blueF).coerceIn(blueFRange),
+            alpha = (alphaF - other.alphaF).coerceIn(alphaFRange),
             checkRange = false
         )
     }
 
     operator fun times(other: ARGBColor): ARGBColor {
         return Color(
-            red = (redF * other.redF).fixValue(false, "Red"),
-            green = (greenF * other.greenF).fixValue(false, "Green"),
-            blue = (blueF * other.blueF).fixValue(false, "Blue"),
-            alpha = (alphaF * other.alphaF).fixValue(false, "Alpha"),
+            red = (redF * other.redF).coerceIn(redFRange),
+            green = (greenF * other.greenF).coerceIn(greenFRange),
+            blue = (blueF * other.blueF).coerceIn(blueFRange),
+            alpha = (alphaF * other.alphaF).coerceIn(alphaFRange),
             checkRange = false
         )
     }
 
     operator fun div(other: ARGBColor): ARGBColor {
         return Color(
-            red = (redF / other.redF).fixValue(false, "Red"),
-            green = (greenF / other.greenF).fixValue(false, "Green"),
-            blue = (blueF / other.blueF).fixValue(false, "Blue"),
-            alpha = (alphaF / other.alphaF).fixValue(false, "Alpha"),
+            red = (redF / other.redF).coerceIn(redFRange),
+            green = (greenF / other.greenF).coerceIn(greenFRange),
+            blue = (blueF / other.blueF).coerceIn(blueFRange),
+            alpha = (alphaF / other.alphaF).coerceIn(alphaFRange),
             checkRange = false
         )
     }

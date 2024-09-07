@@ -24,7 +24,7 @@ class HSVColor(
 
     override var argb: Int
         get() {
-            return ((alphaF * 255).toInt() shl 24) or java.awt.Color.HSBtoRGB(hue / 360f, saturation, value)
+            return ((alphaF * 255).toInt() shl 24) or (java.awt.Color.HSBtoRGB(hue / 360f, saturation, value) and 0x00FFFFFF)
         }
         set(value) {
             val r = value shr 16 and 0xFF
