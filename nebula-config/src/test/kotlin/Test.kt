@@ -1,5 +1,7 @@
 import kotlinx.coroutines.runBlocking
 import moe.forpleuvoir.nebula.config.Config
+import moe.forpleuvoir.nebula.config.fold
+import moe.forpleuvoir.nebula.config.foldRight
 import moe.forpleuvoir.nebula.config.item.impl.ConfigString
 import moe.forpleuvoir.nebula.config.item.impl.ConfigStringList
 import moe.forpleuvoir.nebula.config.item.impl.ConfigStringMap
@@ -59,11 +61,20 @@ class ConfigMetaTest {
         }
         TestConfigs.init()
         TestConfigs.duration = 12.seconds
+        TestConfigs.strings.stringList2.let {
+            it.fold("") { acc, c ->
+                val pre = if (c.parentContainer != null) "->" else ""
+                acc + pre + c.key
+            }.let(::println)
+            it.foldRight("") { c, acc ->
+                acc + c.key + if (c.parentContainer != null) "->" else ""
+            }.let(::println)
+            println(it.configManager()?.key)
+        }
         Thread.sleep(50000)
     }
 
 }
-
 
 
 fun t() {

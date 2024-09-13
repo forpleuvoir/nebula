@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.config
 
 import moe.forpleuvoir.nebula.common.api.Initializable
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.serialization.Deserializable
 import moe.forpleuvoir.nebula.serialization.Serializable
@@ -15,8 +16,30 @@ interface ConfigSerializable : Initializable, Serializable, Deserializable {
      */
     val key: String
 
-    var configManager: () -> ConfigManager?
+
+    var parentContainer: ConfigContainer?
+
+    val configManager: () -> ConfigManager?
 
     operator fun component1(): String = key
 
 }
+
+fun ConfigSerializable.pathToRoot(): List<ConfigSerializable> {
+    val path = mutableListOf<ConfigSerializable>()
+    var currentNode: ConfigSerializable? = this
+    while (currentNode != null) {
+        path.add(currentNode)
+        currentNode = currentNode.parentContainer
+    }
+    return path.reversed()
+}
+
+inline fun <R> ConfigSerializable.fold(initial: R, operation: (acc: R, ConfigSerializable) -> R) =
+    pathToRoot().fold(initial, operation)
+
+inline fun <R> ConfigSerializable.foldIndexed(initial: R, operation: (index: Int, acc: R, ConfigSerializable) -> R) =
+    pathToRoot().foldIndexed(initial, operation)
+
+inline fun <R> ConfigSerializable.foldRight(initial: R, operation: (ConfigSerializable, acc: R) -> R) =
+    pathToRoot().foldRight(initial, operation)

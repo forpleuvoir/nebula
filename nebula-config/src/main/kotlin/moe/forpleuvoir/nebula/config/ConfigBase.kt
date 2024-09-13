@@ -1,5 +1,6 @@
 package moe.forpleuvoir.nebula.config
 
+import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import java.util.function.Consumer
 import kotlin.reflect.KProperty
@@ -24,7 +25,12 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
         restDefault()
     }
 
-    override var configManager: () -> ConfigManager? = { null }
+    override val configManager: () -> ConfigManager? = {
+        if (parentContainer is ConfigManager) parentContainer as ConfigManager
+        else parentContainer?.configManager?.invoke()
+    }
+
+    override var parentContainer: ConfigContainer? = null
 
     protected abstract var configValue: V
 

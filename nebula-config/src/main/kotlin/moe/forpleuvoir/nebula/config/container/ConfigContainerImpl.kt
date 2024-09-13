@@ -46,7 +46,12 @@ open class ConfigContainerImpl(
         }
     }
 
-    override var configManager: () -> ConfigManager? = { null }
+    override val configManager: () -> ConfigManager? = {
+        if (parentContainer is ConfigManager) parentContainer as ConfigManager
+        else parentContainer?.configManager?.invoke()
+    }
+
+    override var parentContainer: ConfigContainer? = null
 
     private val configs: MutableMap<String, ConfigSerializable> = LinkedHashMap()
 
@@ -126,7 +131,7 @@ open class ConfigContainerImpl(
 
     override fun <C : ConfigSerializable> addConfig(config: C): C {
         configs[config.key] = config
-        config.configManager = { this.configManager() }
+        config.parentContainer = this
         return config
     }
 

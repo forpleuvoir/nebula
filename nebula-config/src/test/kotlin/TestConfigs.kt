@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
+object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all) {
 
     init {
         components {
@@ -22,7 +22,7 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
             autoSave(initialDelay = 5.seconds, period = 5.seconds) { needSave ->
                 println(measureTime {
                     println("当前是否需要保存 ${if (this.manager.savable()) "是" else "否"}")
-                    Numbers.int.setValue(Numbers.int.getValue()+1)
+                    Numbers.int.setValue(Numbers.int.getValue() + 1)
                     println("是否需要保存 ${if (needSave()) "是" else "否"}")
                     if (needSave()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
                     if (needSave()) save()
@@ -55,6 +55,8 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
 
         var stringList by stringList("stringList", listOf("element1", "element2", "element3"))
 
+        var stringList2 = stringList("stringList2", listOf("element1", "element2", "element3"))
+
     }
 
     val enumTest = enum("enumTest", TestEnum.E2)
@@ -68,7 +70,7 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all  ) {
     object Numbers : ConfigContainerImpl("config_numbers") {
 
         var int = int("int", 10).apply {
-            subscribe{
+            subscribe {
                 println("$it,数值有变!(${it.getValue()})")
             }
         }
