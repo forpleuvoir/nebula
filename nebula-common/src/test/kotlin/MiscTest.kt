@@ -8,7 +8,9 @@ class MiscTest {
 
     @Test
     fun t2() {
-        println("为什么中文乱码")
+        val x: IntRange? = null
+        val xx = 3
+        println(x?.let { xx in it } != false)
     }
 
     @Test

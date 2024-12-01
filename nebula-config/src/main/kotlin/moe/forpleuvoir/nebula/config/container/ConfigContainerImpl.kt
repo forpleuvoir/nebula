@@ -5,6 +5,7 @@ import moe.forpleuvoir.nebula.config.annotation.ConfigMeta
 import moe.forpleuvoir.nebula.config.annotation.ConfigMeta.Companion.merge
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.serialization.DeserializationException
+import moe.forpleuvoir.nebula.serialization.SerializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
@@ -146,6 +147,23 @@ open class ConfigContainerImpl(
         return addConfig(config, ConfigMeta(description, order))
     }
 
+    override fun serializationExceptionHandler(config: ConfigSerializable, e: SerializationException) {
+        TODO("Not yet implemented")
+    }
+
+    override fun serialization(): SerializeElement {
+        return serializeObject {
+            for (config in configs()) {
+                runCatching {
+                    config.key - config.serialization()
+                }.onFailure {
+                    val message = "${config.key}:serialization failed"
+                    serializationExceptionHandler(config, SerializationException(message, it))
+                }
+            }
+        }
+    }
+
     override fun deserializationExceptionHandler(
         config: ConfigSerializable,
         serializeElement: SerializeElement,
@@ -153,14 +171,6 @@ open class ConfigContainerImpl(
     ) {
         configManager()?.markSavable()
         e.printStackTrace()
-    }
-
-    override fun serialization(): SerializeElement {
-        return serializeObject {
-            for (config in configs()) {
-                config.key - config.serialization()
-            }
-        }
     }
 
     override fun deserialization(serializeElement: SerializeElement) {

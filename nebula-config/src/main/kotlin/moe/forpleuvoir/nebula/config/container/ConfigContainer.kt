@@ -2,6 +2,7 @@ package moe.forpleuvoir.nebula.config.container
 
 import moe.forpleuvoir.nebula.config.ConfigSerializable
 import moe.forpleuvoir.nebula.serialization.DeserializationException
+import moe.forpleuvoir.nebula.serialization.SerializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 
 interface ConfigContainer : ConfigSerializable {
@@ -35,5 +36,9 @@ interface ConfigContainer : ConfigSerializable {
         e: DeserializationException
     )
 
+    fun serializationExceptionHandler(
+        config: ConfigSerializable,
+        e: SerializationException
+    )
 
 }
