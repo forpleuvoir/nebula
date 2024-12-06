@@ -91,9 +91,6 @@ class JsonSerializer(
                 append(elementDumpAsString(value))
                 if (index != serializeArray.size - 1) {
                     append(',')
-                    humanReadable {
-                        append(indentation)
-                    }
                 }
             }
             indentationLevel--
