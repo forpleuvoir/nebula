@@ -106,6 +106,14 @@ class NotifiableArrayList<T>() : ArrayList<T>(), Notifiable<NotifiableArrayList<
         return false
     }
 
+    override fun set(index: Int, element: T): T {
+        val oldValue = super.set(index, element)
+        if (oldValue != element) {
+            onChange(this)
+        }
+        return oldValue
+    }
+
     override fun clear() {
         super.clear()
         onChange(this)
