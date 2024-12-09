@@ -31,13 +31,13 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all) {
         }
     }
 
-    val number = addConfig(Numbers2, description = "数字配置容器测试")
+    val number = addConfig(Numbers2, comment = "数字配置容器测试")
 
     object Numbers2 : ConfigContainerImpl("config_numbers2") {
 
-        var int by addConfig(ConfigInt("int", 10), description = "整数配置测试")
+        var int by addConfig(ConfigInt("int", 10), comment = "整数配置测试")
 
-        var double by addConfig(ConfigDouble("double", 10.0), description = "浮点数配置测试")
+        var double by addConfig(ConfigDouble("double", 10.0), comment = "浮点数配置测试")
 
     }
 

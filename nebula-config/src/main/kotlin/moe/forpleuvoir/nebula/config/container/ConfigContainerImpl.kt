@@ -143,12 +143,12 @@ open class ConfigContainerImpl(
         return addConfig(config)
     }
 
-    fun <C : ConfigSerializable> addConfig(config: C, order: Int = ConfigMeta.DEFAULT_ORDER, description: String = ConfigMeta.EMPTY_DESC): C {
-        return addConfig(config, ConfigMeta(description, order))
+    fun <C : ConfigSerializable> addConfig(config: C, order: Int = ConfigMeta.DEFAULT_ORDER, comment: String = ConfigMeta.EMPTY_COMMENT): C {
+        return addConfig(config, ConfigMeta(comment, order))
     }
 
     override fun serializationExceptionHandler(config: ConfigSerializable, e: SerializationException) {
-        TODO("Not yet implemented")
+        e.printStackTrace()
     }
 
     override fun serialization(): SerializeElement {

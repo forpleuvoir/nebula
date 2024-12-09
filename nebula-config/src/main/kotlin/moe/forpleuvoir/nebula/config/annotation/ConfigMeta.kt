@@ -3,7 +3,7 @@ package moe.forpleuvoir.nebula.config.annotation
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ConfigMeta(
-    val description: String = EMPTY_DESC,
+    val comment: String = EMPTY_COMMENT,
     val order: Int = DEFAULT_ORDER
 ) {
 
@@ -11,7 +11,7 @@ annotation class ConfigMeta(
 
         const val DEFAULT_ORDER: Int = 0x114514
 
-        const val EMPTY_DESC = ""
+        const val EMPTY_COMMENT = ""
 
 //        fun ConfigMeta.createConfigDescription(configSerializable: ConfigSerializable, descriptionKeyMap: (String) -> String = { "_$it" }): ConfigDescription? {
 //            return this.description.takeIf { it.isNotEmpty() }?.let {
@@ -31,7 +31,7 @@ annotation class ConfigMeta(
          */
         fun ConfigMeta.merge(new: ConfigMeta): ConfigMeta {
             return ConfigMeta(
-                if (new.description != EMPTY_DESC) new.description else this.description,
+                if (new.comment != EMPTY_COMMENT) new.comment else this.comment,
                 if (new.order != DEFAULT_ORDER) new.order else this.order,
             )
         }
