@@ -28,6 +28,14 @@ interface ConfigContainer : ConfigSerializable {
      */
     fun configs(): Collection<ConfigSerializable>
 
+    override fun matched(regex: Regex): Boolean = configs().any { it.matched(regex) }
+
+    override fun isDefault(): Boolean = configs().all { it.isDefault() }
+
+    override fun restDefault() {
+        configs().forEach { it.restDefault() }
+    }
+
     fun <C : ConfigSerializable> addConfig(config: C): C
 
     fun deserializationExceptionHandler(

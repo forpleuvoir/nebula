@@ -20,9 +20,9 @@ open class ConfigManagerImpl(
     }
 
     override fun init() {
-        components.forEach { it.beforeInit() }
+        components.forEach { it.beginInit() }
         super.init()
-        components.forEach { it.afterInit() }
+        components.forEach { it.finishInit() }
     }
 
     override var configManager: () -> ConfigManager? = { this }

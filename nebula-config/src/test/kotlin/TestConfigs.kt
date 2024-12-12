@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
-object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.all) {
+object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
 
     init {
         components {

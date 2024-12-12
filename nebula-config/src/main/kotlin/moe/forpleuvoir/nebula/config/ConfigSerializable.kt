@@ -1,6 +1,8 @@
 package moe.forpleuvoir.nebula.config
 
 import moe.forpleuvoir.nebula.common.api.Initializable
+import moe.forpleuvoir.nebula.common.api.Matchable
+import moe.forpleuvoir.nebula.common.api.Resettable
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
 import moe.forpleuvoir.nebula.serialization.Deserializable
@@ -9,7 +11,7 @@ import moe.forpleuvoir.nebula.serialization.Serializable
 /**
  * 可序列化的配置
  */
-interface ConfigSerializable : Initializable, Serializable, Deserializable {
+interface ConfigSerializable : Initializable, Matchable, Resettable, Serializable, Deserializable {
 
     /**
      * 配置的键

@@ -28,10 +28,10 @@ open class AutoSave(
     var isActive: Boolean = true
         set(value) {
             field = value
-            if (field) afterInit()
+            if (field) finishInit()
         }
 
-    override fun afterInit() {
+    override fun finishInit() {
         ioLaunch {
             delay(initialDelay)
             while (isActive) {

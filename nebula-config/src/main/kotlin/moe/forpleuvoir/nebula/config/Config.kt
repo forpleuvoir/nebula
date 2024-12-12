@@ -1,8 +1,6 @@
 package moe.forpleuvoir.nebula.config
 
-import moe.forpleuvoir.nebula.common.api.Matchable
 import moe.forpleuvoir.nebula.common.api.Notifiable
-import moe.forpleuvoir.nebula.common.api.Resettable
 
 /**
  * 最基础的配置
@@ -18,4 +16,4 @@ import moe.forpleuvoir.nebula.common.api.Resettable
  * @author forpleuvoir
 
  */
-interface Config<V, C : Config<V, C>> : ConfigSerializable, ConfigValue<V>, Resettable, Notifiable<C>, Matchable
+interface Config<V, C : Config<V, C>> : ConfigSerializable, ConfigValue<V>, Notifiable<C>
