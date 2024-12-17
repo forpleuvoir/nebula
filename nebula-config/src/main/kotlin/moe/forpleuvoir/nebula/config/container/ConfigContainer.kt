@@ -28,7 +28,7 @@ interface ConfigContainer : ConfigSerializable {
      */
     fun configs(): Collection<ConfigSerializable>
 
-    override fun matched(regex: Regex): Boolean = configs().any { it.matched(regex) }
+    override fun matched(regex: Regex): Boolean = regex.containsMatchIn(key) || configs().any { it.matched(regex) }
 
     override fun isDefault(): Boolean = configs().all { it.isDefault() }
 

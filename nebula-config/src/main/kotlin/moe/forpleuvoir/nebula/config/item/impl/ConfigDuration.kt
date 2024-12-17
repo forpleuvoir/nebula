@@ -9,10 +9,16 @@ import kotlin.time.Duration
 
 class ConfigDuration(
     override val key: String,
-    override val defaultValue: Duration
+    override val defaultValue: Duration,
+    val minDuration: Duration = Duration.ZERO,
+    val maxDuration: Duration = Duration.INFINITE
 ) : ConfigBase<Duration, ConfigDuration>() {
 
     override var configValue: Duration = defaultValue
+
+    override fun setValue(value: Duration) {
+        super.setValue(value.coerceIn(minDuration, maxDuration))
+    }
 
     override fun deserialization(serializeElement: SerializeElement) {
         setValue(Duration.deserialization(serializeElement))
