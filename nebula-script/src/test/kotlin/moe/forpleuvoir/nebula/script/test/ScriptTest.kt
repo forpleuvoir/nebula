@@ -8,7 +8,8 @@ class ScriptTest {
 
 
     @Test
-    fun test1() = measureTime {
+    fun test1() {
+        val shell = GroovyShell()
         val script = """
             static def call(close){
                 close()
@@ -18,11 +19,14 @@ class ScriptTest {
             call{
                 println("Hello World")
             }
-            print(list)
+            println(list)
         """.trimIndent()
-        GroovyShell().evaluate(script)
-
-    }.let { println(it) }
+        repeat(10) {
+            measureTime {
+                shell.evaluate(script)
+            }.let { println(it) }
+        }
+    }
 
 
 }

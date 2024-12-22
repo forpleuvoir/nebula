@@ -30,4 +30,6 @@ class ConfigDuration(
 
 }
 
-fun ConfigContainer.duration(key: String, defaultValue: Duration) = addConfig(ConfigDuration(key, defaultValue))
+fun ConfigContainer.duration(
+    key: String, defaultValue: Duration, minDuration: Duration = Duration.ZERO, maxDuration: Duration = Duration.INFINITE
+) = addConfig(ConfigDuration(key, defaultValue, minDuration, maxDuration))
