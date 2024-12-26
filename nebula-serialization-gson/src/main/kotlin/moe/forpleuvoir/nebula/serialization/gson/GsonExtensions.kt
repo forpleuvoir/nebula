@@ -29,13 +29,21 @@ import kotlin.reflect.full.memberProperties
  */
 val gson: Gson by lazy { GsonBuilder().setPrettyPrinting().create() }
 
-internal fun JsonObject.toSerializeObject(): SerializeObject {
+fun JsonObject.toSerializeObject(): SerializeObject {
     return serializeObject(this.entrySet()) { key, value ->
         key to value.toSerializeElement()
     }
 }
 
-internal fun JsonElement.toSerializeElement(): SerializeElement {
+fun SerializeObject.toJsonObject(): JsonObject {
+    return JsonObject().apply {
+        for ((key, value) in this@toJsonObject) {
+            add(key, value.toJsonElement())
+        }
+    }
+}
+
+fun JsonElement.toSerializeElement(): SerializeElement {
     return when {
         isJsonPrimitive -> this.asJsonPrimitive.toSerializePrimitive()
         isJsonArray     -> this.asJsonArray.toArray()
@@ -44,7 +52,16 @@ internal fun JsonElement.toSerializeElement(): SerializeElement {
     }
 }
 
-internal fun JsonPrimitive.toSerializePrimitive(): SerializePrimitive {
+fun SerializeElement.toJsonElement(): JsonElement {
+    return when (this) {
+        is SerializeArray     -> TODO()
+        is SerializeObject    -> TODO()
+        is SerializePrimitive -> this.toJsonPrimitive()
+        SerializeNull         -> JsonNull.INSTANCE
+    }
+}
+
+fun JsonPrimitive.toSerializePrimitive(): SerializePrimitive {
     return when {
         isBoolean -> SerializePrimitive(this.asBoolean)
         isNumber  -> SerializePrimitive(this.asNumber)
@@ -53,12 +70,29 @@ internal fun JsonPrimitive.toSerializePrimitive(): SerializePrimitive {
     }
 }
 
-internal fun JsonArray.toArray(): SerializeArray {
+fun SerializePrimitive.toJsonPrimitive(): JsonPrimitive {
+    return when {
+        this.isBoolean -> JsonPrimitive(this.asBoolean)
+        this.isNumber  -> JsonPrimitive(this.asNumber)
+        this.isString  -> JsonPrimitive(this.asString)
+        else           -> JsonPrimitive(this.asString)
+    }
+}
+
+fun JsonArray.toArray(): SerializeArray {
     val result = SerializeArray(this.size())
     for (element in this) {
         result.add(element.toSerializeElement())
     }
     return result
+}
+
+fun SerializeArray.toJsonArray(): JsonArray {
+    return JsonArray().apply {
+        for (element in this@toJsonArray) {
+            add(element.toJsonElement())
+        }
+    }
 }
 
 
@@ -94,6 +128,10 @@ fun JsonObject.getNestedObject(key: String, create: Boolean = false): JsonObject
  */
 fun Any.toJsonStr(): String {
     return gson.toJson(this)
+}
+
+fun SerializeElement.toJsonString(): String {
+    return this.toJsonElement().toString()
 }
 
 fun SerializeObject.toJsonString(): String {

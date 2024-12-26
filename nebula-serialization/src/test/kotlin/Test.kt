@@ -8,6 +8,7 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.*
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
+import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -59,7 +60,7 @@ class SerializationTest {
     @OptIn(ExperimentalApi::class)
     @Test
     fun test3() {
-        Deserializer.deserialization<DT>(serializeObject {
+        serializeObject {
             "name" to "forpleuvoir"
             "list" to serializeArray("aa", "b")
             "map" {
@@ -68,9 +69,8 @@ class SerializationTest {
             "ddd" {
                 "a_name" to "Guts"
             }
-        }).let {
+        }.toJsonString().let {
             println(it)
-
         }
     }
 
