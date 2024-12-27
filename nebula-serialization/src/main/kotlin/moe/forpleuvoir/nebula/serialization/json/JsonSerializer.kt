@@ -103,7 +103,27 @@ class JsonSerializer(
     }
 
     private fun primitiveDumpAsString(serializePrimitive: SerializePrimitive): String {
-        return serializePrimitive.toString()
+        return when (val value = serializePrimitive.value) {  // 获取实际值
+            is String -> "\"${escapeString(value)}\""         // 处理字符串值，添加转义
+            else      -> value.toString()                         // 其他类型直接使用默认的 toString()
+        }
+    }
+
+    private fun escapeString(input: String): String {
+        return buildString {
+            input.forEach { char ->
+                when (char) {
+                    '\"'     -> append("\\\"") // 转义双引号
+                    '\\'     -> append("\\\\") // 转义反斜杠
+                    '\n'     -> append("\\n")  // 转义换行符
+                    '\r'     -> append("\\r")  // 转义回车符
+                    '\t'     -> append("\\t")  // 转义制表符
+                    '\b'     -> append("\\b")  // 转义退格符
+                    '\u000C' -> append("\\f") // 转义换页符
+                    else     -> append(char)    // 其他字符直接追加
+                }
+            }
+        }
     }
 
     private fun nullDumpAsString(serializeNull: SerializeNull): String {

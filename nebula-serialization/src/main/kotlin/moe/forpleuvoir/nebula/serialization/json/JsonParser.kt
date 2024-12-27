@@ -45,14 +45,14 @@ class JsonParser private constructor(private val charArray: CharArray) {
 
         val ESCAPE
             get() = mapOf(
-                "\\\\" to '\\',
-                "\\\n" to '\n',
-                "\\\t" to '\t',
-                "\\\r" to '\r',
-                "\\\'" to '\'',
-                "\\\"" to '\"',
-                "\\\b" to '\b',
-                "\\\u000C" to '\u000C',
+                "\\\\" to '\\',  // 反斜线
+                "\\\"" to '\"',  // 双引号
+                "\\\'" to '\'',  // 单引号
+                "\\n" to '\n',   // 换行
+                "\\r" to '\r',   // 回车
+                "\\t" to '\t',   // 制表符
+                "\\b" to '\b',   // 退格符
+                "\\f" to '\u000C' // 换页符
             )
 
         val ESCAPE_REVERSE
@@ -204,28 +204,38 @@ class JsonParser private constructor(private val charArray: CharArray) {
 
     private fun parseString(): SerializePrimitive {
         val builder = StringBuilder()
-        when (currChar) {
-            '\'' -> {
-                curr++
-                while (!isEnd('\'')) {
-                    builder.append(currChar)
-                    curr++
-                }
-            }
 
-            '"'  -> {
-                curr++
-                while (curr < charArray.size && !isEnd('"')) {
-                    builder.append(currChar)
-                    curr++
-                }
-            }
-
-            else -> {
-                throw JsonParseException("unexpect char '$currChar' index:$curr,from '${charArray.subSequence((curr - 30).coerceAtLeast(0), curr)}'")
-            }
+        val quote = currChar // 记录引号类型（单引号或双引号）
+        if (quote !in STRING_BEGIN) {
+            throw JsonParseException("Unexpected character '$currChar' at index $curr")
         }
-        curr++
+
+        curr++ // 跳过开始引号
+        while (curr < charArray.size && !isEnd(quote)) {
+            when {
+                currChar == ESCAPES -> { // 处理转义字符
+                    curr++ // 跳过反斜杠
+                    if (curr >= charArray.size) {
+                        throw JsonParseException("Unexpected end of input after escape character at index $curr")
+                    }
+                    val escapeSequence = "$ESCAPES${currChar}" // 获取完整的转义字符（如 `\"`, `\\`）
+                    builder.append(
+                        ESCAPE[escapeSequence]
+                            ?: throw JsonParseException("Invalid escape sequence '$escapeSequence' at index $curr")
+                    )
+                }
+
+                else                -> { // 普通字符
+                    builder.append(currChar)
+                }
+            }
+            curr++
+        }
+
+        if (curr >= charArray.size || currChar != quote) {
+            throw JsonParseException("Unterminated string starting at index ${curr - builder.length - 1}")
+        }
+        curr++ // 跳过结束引号
         return SerializePrimitive(builder.toString())
     }
 

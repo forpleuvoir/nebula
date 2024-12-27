@@ -1,8 +1,6 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
-import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.Colors
 import moe.forpleuvoir.nebula.common.util.primitive.replace
-import moe.forpleuvoir.nebula.serialization.Deserializer
 import moe.forpleuvoir.nebula.serialization.annotation.SerializerName
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
@@ -10,6 +8,7 @@ import moe.forpleuvoir.nebula.serialization.extensions.*
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
+import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -27,7 +26,578 @@ class SerializationTest {
     @OptIn(ExperimentalApi::class)
     @Test
     fun test2() {
-        println(Deserializer.deserialization<Color>(SerializePrimitive("#66CCFF")))
+        val a = """
+            {
+              "open_screen": {
+                "keys": [
+                  "key.keyboard.h",
+                  "key.keyboard.s"
+                ],
+                "setting": {
+                  "key_environment": "in_game",
+                  "next_action": "continue",
+                  "exact_match": true,
+                  "trigger_mode": "on_release",
+                  "repeatTriggerInterval": 5,
+                  "long_press_time": 20
+                }
+              },
+              "tutorial_step": "NONE",
+              "pick_player_head_on_creative": true,
+              "render_info_addon": {
+                "show_enchantment_when_switch": {
+                  "key_bind": {
+                    "keys": [
+                    ],
+                    "setting": {
+                      "key_environment": "in_game",
+                      "next_action": "cancel",
+                      "exact_match": true,
+                      "trigger_mode": "on_release",
+                      "repeatTriggerInterval": 5,
+                      "long_press_time": 20
+                    }
+                  },
+                  "value": false
+                },
+                "always_render_barrier": {
+                  "key_bind": {
+                    "keys": [
+                    ],
+                    "setting": {
+                      "key_environment": "in_game",
+                      "next_action": "continue",
+                      "exact_match": true,
+                      "trigger_mode": "on_release",
+                      "repeatTriggerInterval": 5,
+                      "long_press_time": 20
+                    }
+                  },
+                  "value": true
+                },
+                "always_render_light": {
+                  "key_bind": {
+                    "keys": [
+                    ],
+                    "setting": {
+                      "key_environment": "in_game",
+                      "next_action": "continue",
+                      "exact_match": true,
+                      "trigger_mode": "on_release",
+                      "repeatTriggerInterval": 5,
+                      "long_press_time": 20
+                    }
+                  },
+                  "value": true
+                },
+                "disable_scoreboard_sidebar_render": {
+                  "key_bind": {
+                    "keys": [
+                    ],
+                    "setting": {
+                      "key_environment": "in_game",
+                      "next_action": "continue",
+                      "exact_match": true,
+                      "trigger_mode": "on_release",
+                      "repeatTriggerInterval": 5,
+                      "long_press_time": 20
+                    }
+                  },
+                  "value": true
+                },
+                "drop_entity": {
+                  "distance": 500.0,
+                  "enable": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "only_y_rotation": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "experience_orb_value": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "name": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "count": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "map_id": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "additional_tooltip": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "jukebox_playable": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "trim": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "stored_enchantments": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "enchantments": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "dyed_color": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "lore": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "attribute_modifiers": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "unbreakable": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "ominous_bottle_amplifier": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "suspicious_stew_effect": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "can_break": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "can_place_on": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "durability": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "item_id": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": false
+                  },
+                  "components": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": false
+                  }
+                },
+                "tnt": {
+                  "tnt_fuse": "Box",
+                  "only_y_rotation": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": false
+                  }
+                },
+                "gamma_override": {
+                  "enable": {
+                    "key_bind": {
+                      "keys": [
+                        "key.keyboard.h"
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "cancel",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "gamma": 20.0
+                }
+              },
+              "gameplay": {
+                "auto_rebirth": {
+                  "key_bind": {
+                    "keys": [
+                    ],
+                    "setting": {
+                      "key_environment": "in_game",
+                      "next_action": "continue",
+                      "exact_match": true,
+                      "trigger_mode": "on_release",
+                      "repeatTriggerInterval": 5,
+                      "long_press_time": 20
+                    }
+                  },
+                  "value": true
+                }
+              },
+              "chat": {
+                "chat_inject": {
+                  "enable": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "inject_mapping": [
+                    [
+                      "^-?\\d+(\\.\\d+)?${'$'}",
+                      "#{message}"
+                    ]
+                  ]
+                },
+                "chat_filter": {
+                  "enable": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": false
+                  },
+                  "filter_mapping": [
+                    ".*321.*"
+                  ]
+                },
+                "chat_bubble": {
+                  "enable": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "only_y_rotation": {
+                    "key_bind": {
+                      "keys": [
+                      ],
+                      "setting": {
+                        "key_environment": "in_game",
+                        "next_action": "continue",
+                        "exact_match": true,
+                        "trigger_mode": "on_release",
+                        "repeatTriggerInterval": 5,
+                        "long_press_time": 20
+                      }
+                    },
+                    "value": true
+                  },
+                  "offset": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "scale": {
+                    "x": 1.3,
+                    "y": 1.3
+                  },
+                  "max_width": 267,
+                  "texture_color": "#FFFF315D",
+                  "text_color": "#FFFFFFFF",
+                  "duration": "10s",
+                  "fade_in_duration": "250ms",
+                  "fade_out_duration": "250ms",
+                  "match_mapping": [
+                    [
+                      "#single",
+                      "<(?<name>[^>]+)>\\s(?<message>.+)"
+                    ]
+                  ]
+                }
+              }
+            }
+        """.trimIndent()
+        val obj = JsonParser.parse(a).asObject
+        println(obj)
+        println("-************")
+        println(obj["task_manager"]?.asObject["script_common_lib"]?.asString)
+        println(obj.dumpAsJson(true))
+
     }
 
     @Test

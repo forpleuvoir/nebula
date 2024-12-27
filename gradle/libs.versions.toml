@@ -1,5 +1,5 @@
 [versions]
-nebulaVersion = "0.2.15a"
+nebulaVersion = "0.2.15b"
 shadowVersion = "8.1.1"
 kotlinVersion = "2.1.0"
 kotlinCoroutinesVersion = "1.9.0"
