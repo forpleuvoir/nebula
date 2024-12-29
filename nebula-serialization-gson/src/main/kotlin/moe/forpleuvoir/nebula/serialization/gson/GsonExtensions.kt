@@ -54,8 +54,8 @@ fun JsonElement.toSerializeElement(): SerializeElement {
 
 fun SerializeElement.toJsonElement(): JsonElement {
     return when (this) {
-        is SerializeArray     -> TODO()
-        is SerializeObject    -> TODO()
+        is SerializeArray  -> this.toJsonArray()
+        is SerializeObject -> this.toJsonObject()
         is SerializePrimitive -> this.toJsonPrimitive()
         SerializeNull         -> JsonNull.INSTANCE
     }
