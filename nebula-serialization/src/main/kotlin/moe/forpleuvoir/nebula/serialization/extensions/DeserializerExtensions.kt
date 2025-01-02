@@ -69,7 +69,7 @@ fun <T : Any> Deserializer.Companion.deserialization(type: KClass<T>, serializeE
             buildList {
                 constructor.parameters.forEach {
                     it.annotations
-                    val name= it.getSerializerName()
+                    val name = it.getSerializerName()
                     add(obj[name]!!)
                 }
             }.forEachIndexed { index, parameter ->
@@ -81,6 +81,10 @@ fun <T : Any> Deserializer.Companion.deserialization(type: KClass<T>, serializeE
         throw IllegalArgumentException("no suitable constructor found in $type")
     }.getOrThrow()
 }
+
+@ExperimentalApi
+inline fun <reified T : Any> SerializeArray.deserialization(): T =
+    deserialization(T::class) as T
 
 @ExperimentalApi
 fun SerializeArray.deserialization(kClass: KClass<*>): Any {
@@ -121,6 +125,12 @@ fun SerializeArray.deserialization(kClass: KClass<*>): Any {
     }
 }
 
+
+@OptIn(ExperimentalApi::class)
+inline fun <reified T : Any> SerializeElement.deserialization(): T? =
+    deserialization(T::class) as T
+
+
 @OptIn(ExperimentalApi::class)
 fun SerializeElement.deserialization(kClass: KClass<*>): Any? {
     return when (val s = this) {
@@ -130,6 +140,9 @@ fun SerializeElement.deserialization(kClass: KClass<*>): Any? {
         SerializeNull         -> null
     }
 }
+
+inline fun <reified T : Any> SerializePrimitive.deserialization(): T =
+    deserialization(T::class) as T
 
 fun SerializePrimitive.deserialization(kClass: KClass<*>): Any {
     return when (kClass) {
@@ -157,6 +170,9 @@ fun <E : Enum<*>> Enum.Companion.deserialization(enumType: KClass<out E>, serial
         Enum.valueOf(enumType, it.asString) ?: throw IllegalArgumentException("cannot deserialize $enumType,no instance named ${it.asString} found")
     }.getOrThrow()
 }
+
+inline fun <reified T : Any> SerializeObject.deserialization(): T =
+    deserialization(T::class) as T
 
 @OptIn(ExperimentalApi::class)
 fun SerializeObject.deserialization(kClass: KClass<*>): Any {

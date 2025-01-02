@@ -8,7 +8,6 @@ import moe.forpleuvoir.nebula.serialization.extensions.*
 import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
-import moe.forpleuvoir.nebula.serialization.json.JsonSerializer.Companion.dumpAsJson
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -29,15 +28,17 @@ class SerializationTest {
         val a = """
             {
               "task_manager": {
-                "script_common_lib": "var bakamc = \"Bakamc\""
+                "script_common_lib": "var bakamc = \"Bakamc\"",
+                "key":{
+                    "v":"v1"
+                }
               }
             }
         """.trimIndent()
-        val obj = JsonParser.parse(a).asObject
-        println(obj)
-        println("-************")
-        println(obj["task_manager"]?.asObject["script_common_lib"]?.asString)
-        println(obj.dumpAsJson(true))
+        val obj = JsonParser.parse(a)
+        obj.deserialization<Map<String, Any>>()?.apply {
+            println(this)
+        }
 
     }
 
