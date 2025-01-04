@@ -17,7 +17,7 @@ fun SerializeObject.putAny(key: String, value: Any?) {
 }
 
 fun SerializeObject.toMap(): Map<String, Any?> {
-    return buildMap {
+    return LinkedHashMap<String, Any?>().apply {
         for (entry in this@toMap) {
             when (val value = entry.value) {
                 is SerializePrimitive -> this[entry.key] = value.toObj()
