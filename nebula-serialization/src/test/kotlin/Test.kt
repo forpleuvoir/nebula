@@ -2,6 +2,7 @@ import moe.forpleuvoir.nebula.common.api.ExperimentalApi
 import moe.forpleuvoir.nebula.common.color.Colors
 import moe.forpleuvoir.nebula.common.util.primitive.replace
 import moe.forpleuvoir.nebula.serialization.annotation.SerializerName
+import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.*
@@ -20,6 +21,26 @@ import kotlin.time.measureTime
 
 
 class SerializationTest {
+
+    @Test
+    fun test0() {
+        val list = mutableListOf<String>()
+        val element: SerializeElement = serializeObject {
+            "list" to list
+            "shuzi1" to 0
+            "obj" to serializeObject {
+                "name" to "forpleuvoir"
+                "age" to 30
+            }
+        }
+        element.asObject.toMap().apply {
+            println(this)
+        }
+        element.deserialization(MutableMap::class).apply {
+            println(this as MutableMap<String, Any>)
+        }
+
+    }
 
 
     @OptIn(ExperimentalApi::class)

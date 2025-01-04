@@ -23,18 +23,19 @@ import kotlin.reflect.jvm.jvmErasure
 @Suppress("DuplicatedCode")
 fun Any?.toSerializeElement(): SerializeElement {
     return when (this) {
-        null                -> SerializeNull
-        is SerializeElement -> this
-        is String           -> SerializePrimitive(this)
-        is Char             -> SerializePrimitive(this)
-        is Boolean          -> SerializePrimitive(this)
-        is BigInteger       -> SerializePrimitive(this)
-        is BigDecimal       -> SerializePrimitive(this)
-        is Number           -> SerializePrimitive(this)
-        is Map<*, *>        -> this.toSerializeObject()
+        null                        -> SerializeNull
+        is SerializeElement         -> this
+        is String                   -> SerializePrimitive(this)
+        is Char                     -> SerializePrimitive(this)
+        is Boolean                  -> SerializePrimitive(this)
+        is BigInteger               -> SerializePrimitive(this)
+        is BigDecimal               -> SerializePrimitive(this)
+        is Number                   -> SerializePrimitive(this)
+        is Map<*, *>                -> this.toSerializeObject()
         is Array<*>, is Iterable<*> -> {//如果是一个数组或可迭代对象
             val iterable = if (this is Array<*>) this.asIterable() else (this as Iterable<*>).asIterable()
             with(iterable) {
+                if (this.count() == 0) return@with serializeArray()
                 if (this.all { it is Pair<*, *> }) {
                     serializeObject(this.map { (it as Pair<*, *>) }) { it.toString() }
                 } else if (this.all { it is Map.Entry<*, *> }) {
@@ -43,7 +44,7 @@ fun Any?.toSerializeElement(): SerializeElement {
             }
         }
 
-        else                -> {
+        else                        -> {
             //如果实现了[Serializable]接口，则调用其[serialization]方法
             if (this is Serializable) {
                 return this.serialization()

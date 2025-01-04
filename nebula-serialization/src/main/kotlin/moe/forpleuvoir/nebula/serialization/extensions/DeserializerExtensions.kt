@@ -19,6 +19,7 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 @ExperimentalApi
+@JvmName("deserializationInline")
 inline fun <reified T : Any> Deserializer.Companion.deserialization(serializeElement: SerializeElement): T {
     return deserialization(T::class, serializeElement)
 }
@@ -82,6 +83,7 @@ fun <T : Any> Deserializer.Companion.deserialization(type: KClass<T>, serializeE
     }.getOrThrow()
 }
 
+@JvmName("deserializationArrayInline")
 @ExperimentalApi
 inline fun <reified T : Any> SerializeArray.deserialization(): T =
     deserialization(T::class) as T
@@ -91,25 +93,25 @@ fun SerializeArray.deserialization(kClass: KClass<*>): Any {
     return when (kClass.javaObjectType) {
         LinkedList::class.java                  -> LinkedList<Any?>().apply {
             this@deserialization.forEach {
-                add(it.deserialization(kClass))
+                add(it.deserialization())
             }
         }
 
         ArrayList::class.java, List::class.java -> ArrayList<Any?>().apply {
             this@deserialization.forEach {
-                add(it.deserialization(kClass))
+                add(it.deserialization())
             }
         }
 
         LinkedHashSet::class.java               -> LinkedHashSet<Any?>().apply {
             this@deserialization.forEach {
-                add(it.deserialization(kClass))
+                add(it.deserialization())
             }
         }
 
         HashSet::class.java, Set::class.java    -> HashSet<Any?>().apply {
             this@deserialization.forEach {
-                add(it.deserialization(kClass))
+                add(it.deserialization())
             }
         }
 
@@ -117,7 +119,7 @@ fun SerializeArray.deserialization(kClass: KClass<*>): Any {
             if (kClass.java.isArray) {
                 buildList {
                     this@deserialization.forEach {
-                        add(it.deserialization(kClass))
+                        add(it.deserialization())
                     }
                 }.toTypedArray()
             } else throw IllegalArgumentException("$kClass is not supported array")
@@ -125,7 +127,15 @@ fun SerializeArray.deserialization(kClass: KClass<*>): Any {
     }
 }
 
+fun SerializeArray.deserialization(): ArrayList<Any?> {
+    return ArrayList<Any?>().apply {
+        this@deserialization.forEach {
+            add(it.deserialization())
+        }
+    }
+}
 
+@JvmName("deserializationElementInline")
 @OptIn(ExperimentalApi::class)
 inline fun <reified T : Any> SerializeElement.deserialization(): T? =
     deserialization(T::class) as T
@@ -141,6 +151,18 @@ fun SerializeElement.deserialization(kClass: KClass<*>): Any? {
     }
 }
 
+@JvmName("deserializationInline")
+@OptIn(ExperimentalApi::class)
+fun SerializeElement.deserialization(): Any? {
+    return when (val s = this) {
+        is SerializePrimitive -> s.deserialization()
+        is SerializeArray     -> s.deserialization()
+        is SerializeObject    -> s.deserialization()
+        SerializeNull         -> null
+    }
+}
+
+@JvmName("deserializationPrimitiveInline")
 inline fun <reified T : Any> SerializePrimitive.deserialization(): T =
     deserialization(T::class) as T
 
@@ -161,6 +183,24 @@ fun SerializePrimitive.deserialization(kClass: KClass<*>): Any {
     }
 }
 
+fun SerializePrimitive.deserialization(): Any {
+    return when {
+        this.isString -> asString
+        this.isFloat  -> asFloat
+        this.isDouble -> asDouble
+        isShort       -> asShort
+        isInt         -> asInt
+        isLong        -> asLong
+        isBoolean     -> asBoolean
+        isByte        -> asByte
+        isBigInteger  -> asBigInteger
+        isBigDecimal  -> asBigDecimal
+        isNumber      -> asNumber
+        else          -> value
+    }
+}
+
+@JvmName("deserializationEnumInline")
 inline fun <reified E : Enum<*>> Enum.Companion.deserialization(serializeElement: SerializeElement): E {
     return deserialization(E::class, serializeElement)
 }
@@ -171,16 +211,17 @@ fun <E : Enum<*>> Enum.Companion.deserialization(enumType: KClass<out E>, serial
     }.getOrThrow()
 }
 
+@JvmName("deserializationObjectInline")
 inline fun <reified T : Any> SerializeObject.deserialization(): T =
     deserialization(T::class) as T
 
 @OptIn(ExperimentalApi::class)
 fun SerializeObject.deserialization(kClass: KClass<*>): Any {
     return when (kClass.javaObjectType) {
-        ConcurrentHashMap::class.java -> {
+        ConcurrentHashMap::class.java        -> {
             ConcurrentHashMap<String, Any?>().apply {
                 this@deserialization.forEach { k, v ->
-                    this[k] = v.deserialization(kClass)
+                    this[k] = v.deserialization()
                 }
             }
         }
@@ -188,7 +229,7 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
         LinkedHashMap::class.java            -> {
             LinkedHashMap<String, Any?>().apply {
                 this@deserialization.forEach { k, v ->
-                    this[k] = v.deserialization(kClass)
+                    this[k] = v.deserialization()
                 }
             }
         }
@@ -196,7 +237,7 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
         HashMap::class.java, Map::class.java -> {
             HashMap<String, Any?>().apply {
                 this@deserialization.forEach { k, v ->
-                    this[k] = v.deserialization(kClass)
+                    this[k] = v.deserialization()
                 }
             }
         }
@@ -205,5 +246,13 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
             Deserializer.deserialization(kClass, this)
         }
 
+    }
+}
+
+fun SerializeObject.deserialization(): Any {
+    return LinkedHashMap<String, Any?>().apply {
+        this@deserialization.forEach { k, v ->
+            this[k] = v.deserialization()
+        }
     }
 }
