@@ -9,7 +9,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 fun Map<*, *>.toSerializeObject(): SerializeObject {
-    return serializeObject(this.mapKeys { it.toString() })
+    return serializeObject(this.mapKeys { it.key.toString() })
 }
 
 fun SerializeObject.putAny(key: String, value: Any?) {

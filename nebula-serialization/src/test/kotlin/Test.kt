@@ -25,19 +25,22 @@ class SerializationTest {
     @Test
     fun test0() {
         val list = mutableListOf<String>()
-        val element: SerializeElement = serializeObject {
-            "list" to list
-            "shuzi1" to 0
-            "obj" to serializeObject {
-                "name" to "forpleuvoir"
-                "age" to 30
+        val map = buildMap {
+            this["list"] = list
+            this["shuzi1"] = 0
+            this["obj"] = buildMap {
+                this["name"] = "forpleuvoir"
+                this["age"] = 30
             }
         }
+
+        val element: SerializeElement = serializeObject(map)
         element.asObject.toMap().apply {
             println(this)
         }
-        element.deserialization(MutableMap::class).apply {
-            println(this as MutableMap<String, Any>)
+        element.asObject.apply {
+            println(this.toJsonString())
+
         }
 
     }
