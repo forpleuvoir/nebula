@@ -18,12 +18,15 @@ interface ConfigSerializable : Initializable, Matchable, Resettable, Serializabl
      */
     val key: String
 
-
     var parentContainer: ConfigContainer?
 
     val configManager: () -> ConfigManager?
 
     operator fun component1(): String = key
+
+    fun getUserData(key: String): Any?
+
+    fun setUserData(key: String, value: Any)
 
 }
 

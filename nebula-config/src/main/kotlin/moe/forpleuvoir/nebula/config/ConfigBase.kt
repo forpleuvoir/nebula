@@ -32,6 +32,14 @@ abstract class ConfigBase<V, C : Config<V, C>> : Config<V, C> {
 
     override var parentContainer: ConfigContainer? = null
 
+    private val userData: MutableMap<String, Any> = mutableMapOf()
+
+    override fun getUserData(key: String): Any? = userData[key]
+
+    override fun setUserData(key: String, value: Any) {
+        userData.put(key, value)
+    }
+
     protected abstract var configValue: V
 
     operator fun component2(): V {

@@ -58,6 +58,14 @@ open class ConfigContainerImpl(
 
     private val configMetas: MutableMap<String, ConfigMeta> = LinkedHashMap()
 
+    private val userData: MutableMap<String, Any> = mutableMapOf()
+
+    override fun getUserData(key: String): Any? = userData[key]
+
+    override fun setUserData(key: String, value: Any) {
+        userData.put(key, value)
+    }
+
     override fun init() {
         loadConfigs()
         initConfigs()
