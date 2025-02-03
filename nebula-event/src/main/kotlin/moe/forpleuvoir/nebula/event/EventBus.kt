@@ -7,44 +7,44 @@ import kotlin.reflect.KClass
 
 interface EventBus {
 
-	companion object {
+    companion object {
 
-		@JvmStatic
-		val DEFAULT_EVENT_BUS = EventBusImpl()
+        @JvmStatic
+        val DEFAULT_EVENT_BUS = EventBusImpl()
 
-		private val eventBusContainer: HashMap<String, EventBus> = HashMap()
+        private val eventBusContainer: HashMap<String, EventBus> = HashMap()
 
-		init {
-			eventBusContainer["default"] = DEFAULT_EVENT_BUS
-		}
+        init {
+            eventBusContainer["default"] = DEFAULT_EVENT_BUS
+        }
 
-		fun <E : Event> broadcast(event: E) = DEFAULT_EVENT_BUS.broadcast(event)
+        fun <E : Event> broadcast(event: E) = DEFAULT_EVENT_BUS.broadcast(event)
 
-		fun <E : Event> subscribe(channel: KClass<out E>, greedy: Boolean = false, subscriber: Consumer<E>) =
-			DEFAULT_EVENT_BUS.subscribe(channel, greedy, subscriber)
+        fun <E : Event> subscribe(channel: KClass<out E>, greedy: Boolean = false, priority: Int = EventPriority.NORMAL, subscriber: Consumer<E>) =
+            DEFAULT_EVENT_BUS.subscribe(channel, greedy, priority, subscriber)
 
-		inline fun <reified E : Event> subscribe(greedy: Boolean = false, subscriber: Consumer<E>) {
-			subscribe(E::class, greedy, subscriber)
-		}
+        inline fun <reified E : Event> subscribe(greedy: Boolean = false, priority: Int = EventPriority.NORMAL, subscriber: Consumer<E>) {
+            subscribe(E::class, greedy, priority, subscriber)
+        }
 
-		@JvmStatic
-		fun registerEventBus(name: String, eventBus: EventBus) {
-			if (eventBusContainer.containsKey(name)) {
-				throw Exception("this EventBus was existed")
-			}
-			eventBusContainer[name] = eventBus
-		}
+        @JvmStatic
+        fun registerEventBus(name: String, eventBus: EventBus) {
+            if (eventBusContainer.containsKey(name)) {
+                throw Exception("this EventBus was existed")
+            }
+            eventBusContainer[name] = eventBus
+        }
 
-		@JvmStatic
-		operator fun get(name: String): EventBus? = eventBusContainer[name]
-	}
+        @JvmStatic
+        operator fun get(name: String): EventBus? = eventBusContainer[name]
+    }
 
-	fun <E : Event> broadcast(event: E)
+    fun <E : Event> broadcast(event: E)
 
-    fun <E : Event> subscribe(channel: KClass<out E>, greedy: Boolean = false, subscriber: Consumer<E>)
+    fun <E : Event> subscribe(channel: KClass<out E>, greedy: Boolean = false, priority: Int = EventPriority.NORMAL, subscriber: Consumer<E>)
 
 }
 
-inline fun <reified E : Event> EventBus.subscribe(greedy: Boolean = false, subscriber: Consumer<E>) {
-	subscribe(E::class, greedy, subscriber)
+inline fun <reified E : Event> EventBus.subscribe(greedy: Boolean = false, priority: Int = EventPriority.NORMAL, subscriber: Consumer<E>) {
+    subscribe(E::class, greedy, priority, subscriber)
 }
