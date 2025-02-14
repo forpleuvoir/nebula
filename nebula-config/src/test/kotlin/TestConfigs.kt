@@ -12,6 +12,7 @@ import java.nio.file.Path
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
 import kotlin.time.measureTime
 
 object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
@@ -30,6 +31,8 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
             }
         }
     }
+
+    private var mark = TimeSource.Monotonic.markNow()
 
     val number = addConfig(Numbers2, comment = "数字配置容器测试")
 

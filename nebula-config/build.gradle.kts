@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 dependencies {
     implementation(project(":nebula-common"))
@@ -25,4 +26,9 @@ tasks {
         from(project(":nebula-serialization").sourceSets["main"].allSource)
     }
 
+}
+val compileKotlin: KotlinCompile by tasks
+
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xnon-local-break-continue"))
 }

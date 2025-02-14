@@ -15,20 +15,22 @@ open class EventBusImpl : EventBus {
 
     override fun <E : Event> broadcast(event: E) {
         //
-        subscribers[event::class]?.sortedByDescending {
-            it.priority
-        }?.forEach {
-            it.action.accept(event)
-        }
+        subscribers[event::class]?.asSequence()
+            ?.sortedByDescending {
+                it.priority
+            }?.forEach {
+                it.action.accept(event)
+            }
 
         event::class.allSuperclasses.forEach { eventChannel ->
-            subscribers[eventChannel]?.filter {
-                it.greedy
-            }?.sortedByDescending {
-                it.priority
-            }?.forEach { subscriber ->
-                subscriber.action.accept(event)
-            }
+            subscribers[eventChannel]?.asSequence()
+                ?.filter {
+                    it.greedy
+                }?.sortedByDescending {
+                    it.priority
+                }?.forEach { subscriber ->
+                    subscriber.action.accept(event)
+                }
         }
     }
 

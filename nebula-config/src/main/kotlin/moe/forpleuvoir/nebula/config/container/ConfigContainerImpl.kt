@@ -72,6 +72,7 @@ open class ConfigContainerImpl(
     }
 
     override fun loadConfigs() {
+        if (autoScan == AutoScan.close) return
         autoScan()
     }
 
@@ -85,7 +86,12 @@ open class ConfigContainerImpl(
     protected open fun autoScan() {
         val configs = mutableListOf<Pair<ConfigSerializable, ConfigMeta>>()
         for (memberProperty in this::class.declaredMemberProperties) {
-            memberProperty.isAccessible = true
+            runCatching {
+                memberProperty.isAccessible = true
+            }.onFailure {
+                continue
+            }
+
             memberProperty as KProperty1<ConfigContainerImpl, *>
 
             var config: ConfigSerializable? = null
