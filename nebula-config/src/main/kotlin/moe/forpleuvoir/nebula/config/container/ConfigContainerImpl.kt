@@ -1,9 +1,8 @@
 package moe.forpleuvoir.nebula.config.container
 
 import moe.forpleuvoir.nebula.config.ConfigSerializable
-import moe.forpleuvoir.nebula.config.annotation.ConfigMeta
-import moe.forpleuvoir.nebula.config.annotation.ConfigMeta.Companion.merge
 import moe.forpleuvoir.nebula.config.manager.ConfigManager
+import moe.forpleuvoir.nebula.config.userdata.order
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.SerializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
@@ -12,7 +11,6 @@ import moe.forpleuvoir.nebula.serialization.extensions.checkType
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.isAccessible
 
@@ -56,8 +54,6 @@ open class ConfigContainerImpl(
 
     private val configs: MutableMap<String, ConfigSerializable> = LinkedHashMap()
 
-    private val configMetas: MutableMap<String, ConfigMeta> = LinkedHashMap()
-
     private val userData: MutableMap<String, Any> = mutableMapOf()
 
     override fun getUserData(key: String): Any? = userData[key]
@@ -72,8 +68,7 @@ open class ConfigContainerImpl(
     }
 
     override fun loadConfigs() {
-        if (autoScan == AutoScan.close) return
-        autoScan()
+        if (autoScan != AutoScan.close) autoScan()
     }
 
     override fun initConfigs() {
@@ -84,7 +79,7 @@ open class ConfigContainerImpl(
 
     @Suppress("UNCHECKED_CAST")
     protected open fun autoScan() {
-        val configs = mutableListOf<Pair<ConfigSerializable, ConfigMeta>>()
+        val configs = mutableListOf<ConfigSerializable>()
         for (memberProperty in this::class.declaredMemberProperties) {
             runCatching {
                 memberProperty.isAccessible = true
@@ -119,7 +114,7 @@ open class ConfigContainerImpl(
             }
 
             config?.let { c ->
-                configs.add(c to (memberProperty.findAnnotation<ConfigMeta>() ?: ConfigMeta()))
+                configs.add(c)
             }
         }
         if (autoScan.nestedObject) {
@@ -128,37 +123,21 @@ open class ConfigContainerImpl(
                 //判断是否为ConfigSerializable子类的实例对象
                 if (nestedClass.objectInstance != null && nestedClass.isSubclassOf(ConfigSerializable::class)) {
                     (nestedClass.objectInstance as ConfigSerializable).let { configSerializable ->
-                        configs.add(configSerializable to (nestedClass.findAnnotation<ConfigMeta>() ?: ConfigMeta()))
+                        configs.add(configSerializable)
                     }
                 }
             }
         }
-        configs.sortedBy { it.second.order }.forEach { (configSerializable, meta) ->
-            addConfig(configSerializable, meta)
-        }
     }
 
     override fun configs(): Collection<ConfigSerializable> {
-        return configs.values.sortedBy {
-            configMetas[it.key]?.order ?: ConfigMeta.DEFAULT_ORDER
-        }
+        return configs.values.sortedBy { it.order }
     }
 
     override fun <C : ConfigSerializable> addConfig(config: C): C {
         configs[config.key] = config
         config.parentContainer = this
         return config
-    }
-
-    fun <C : ConfigSerializable> addConfig(config: C, meta: ConfigMeta): C {
-        if (configMetas[config.key] != null) {
-            configMetas[config.key] = configMetas[config.key]!!.merge(meta)
-        }
-        return addConfig(config)
-    }
-
-    fun <C : ConfigSerializable> addConfig(config: C, order: Int = ConfigMeta.DEFAULT_ORDER, comment: String = ConfigMeta.EMPTY_COMMENT): C {
-        return addConfig(config, ConfigMeta(comment, order))
     }
 
     override fun serializationExceptionHandler(config: ConfigSerializable, e: SerializationException) {

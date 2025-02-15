@@ -8,6 +8,7 @@ import moe.forpleuvoir.nebula.config.manager.component.autoSave
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
 import moe.forpleuvoir.nebula.config.manager.components
 import moe.forpleuvoir.nebula.config.persistence.jsonPersistence
+import moe.forpleuvoir.nebula.config.userdata.comment
 import java.nio.file.Path
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -34,13 +35,13 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
 
     private var mark = TimeSource.Monotonic.markNow()
 
-    val number = addConfig(Numbers2, comment = "数字配置容器测试")
+    val number = addConfig(Numbers2.comment("数字配置容器测试"))
 
     object Numbers2 : ConfigContainerImpl("config_numbers2") {
 
-        var int by addConfig(ConfigInt("int", 10), comment = "整数配置测试")
+        var int by addConfig(ConfigInt("int", 10).comment("整数配置测试"))
 
-        var double by addConfig(ConfigDouble("double", 10.0), comment = "浮点数配置测试")
+        var double by addConfig(ConfigDouble("double", 10.0).comment("浮点数配置测试"))
 
     }
 
