@@ -35,7 +35,7 @@ object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
 
     private var mark = TimeSource.Monotonic.markNow()
 
-    val number = addConfig(Numbers2.comment("数字配置容器测试"))
+    val number = addConfig(Numbers2).comment("数字配置容器测试")
 
     object Numbers2 : ConfigContainerImpl("config_numbers2") {
 

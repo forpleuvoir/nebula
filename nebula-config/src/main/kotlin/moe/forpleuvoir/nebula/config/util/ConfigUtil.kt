@@ -13,21 +13,20 @@ object ConfigUtil {
     @JvmStatic
     var charset: Charset = StandardCharsets.UTF_8
 
-    suspend fun configFile(configFileName: String, path: Path, create: Boolean = true): File =
-        withContext(Dispatchers.IO) {
-            File(path.toFile(), configFileName).apply {
-                if (!this.exists() && create) {
-                    if (!path.toFile().exists()) {
-                        path.toFile().mkdir()
-                    }
-                    runCatching {
-                        this.createNewFile()
-                    }.onFailure {
-                        throw IOException("${it.message},${this.absolutePath}")
-                    }
+    suspend fun configFile(configFileName: String, path: Path, create: Boolean = true): File = withContext(Dispatchers.IO) {
+        File(path.toFile(), configFileName).apply {
+            if (!this.exists() && create) {
+                if (!path.toFile().exists()) {
+                    path.toFile().mkdir()
+                }
+                runCatching {
+                    this.createNewFile()
+                }.onFailure {
+                    throw IOException("${it.message},${this.absolutePath}")
                 }
             }
         }
+    }
 
 
     suspend fun writeToFile(content: ByteArray, file: File) = withContext(Dispatchers.IO) {

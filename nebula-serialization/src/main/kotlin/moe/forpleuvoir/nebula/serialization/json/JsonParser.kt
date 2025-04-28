@@ -21,7 +21,6 @@ class JsonParser private constructor(private val charArray: CharArray) {
         private const val ELEMENT_SEPARATOR = ','
 
         private val STRING_BEGIN = arrayOf(
-//            '\'',
             '\"'
         )
 
@@ -205,7 +204,7 @@ class JsonParser private constructor(private val charArray: CharArray) {
     private fun parseString(): SerializePrimitive {
         val builder = StringBuilder()
 
-        val quote = currChar // 记录引号类型（单引号或双引号）
+        val quote = currChar
         if (quote !in STRING_BEGIN) {
             throw JsonParseException("Unexpected character '$currChar' at index $curr")
         }

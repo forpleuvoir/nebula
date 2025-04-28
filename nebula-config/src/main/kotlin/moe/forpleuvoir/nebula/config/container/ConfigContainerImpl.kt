@@ -52,6 +52,8 @@ open class ConfigContainerImpl(
 
     override var parentContainer: ConfigContainer? = null
 
+    private val _configsTemp: MutableList<ConfigSerializable> = mutableListOf()
+
     private val configs: MutableMap<String, ConfigSerializable> = LinkedHashMap()
 
     private val userData: MutableMap<String, Any> = mutableMapOf()
@@ -69,10 +71,16 @@ open class ConfigContainerImpl(
 
     override fun loadConfigs() {
         if (autoScan != AutoScan.close) autoScan()
+        _configsTemp
+            .sortedBy { it.order }
+            .forEach { config ->
+                configs[config.key] = config
+            }
+        _configsTemp.clear()
     }
 
     override fun initConfigs() {
-        for (config in configs()) {
+        configs.forEach { (_, config) ->
             config.init()
         }
     }
@@ -131,11 +139,11 @@ open class ConfigContainerImpl(
     }
 
     override fun configs(): Collection<ConfigSerializable> {
-        return configs.values.sortedBy { it.order }
+        return configs.values
     }
 
     override fun <C : ConfigSerializable> addConfig(config: C): C {
-        configs[config.key] = config
+        _configsTemp.add(config)
         config.parentContainer = this
         return config
     }
