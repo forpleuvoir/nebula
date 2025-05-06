@@ -2,15 +2,16 @@
 
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.test.Test
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 class MiscTest {
 
 
     @Test
     fun t2() {
-        val x: IntRange? = null
-        val xx = 3
-        println(x?.let { xx in it } != false)
+        println(365.days)
+        println(Duration.parse("96d"))
     }
 
     @Test
