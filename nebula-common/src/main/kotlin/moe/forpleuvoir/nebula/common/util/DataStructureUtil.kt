@@ -5,7 +5,6 @@ package moe.forpleuvoir.nebula.common.util
  *
  * @param T 泛型类型，表示当前对象及其父级对象的类型。
  * @param parentSupplier 提供当前对象的父级对象。如果返回 null，则表示没有更多的父级对象。
- * @param limit 查找父级的最大数量限制，默认为 Int.MAX_VALUE。当达到此限制时，停止查找。
  * @return 返回满足条件的父级对象数量，包括起始对象本身。
  */
 inline fun <T> T.countParents(parentSupplier: (T) -> T?): Int {
