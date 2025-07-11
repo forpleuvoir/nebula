@@ -21,7 +21,8 @@ object SerializeNull : SerializeElement {
     override fun copy(): SerializeElement = this
 
     override fun equals(other: Any?): Boolean {
-        return other == this
+        return if (other == null) false
+        else other === this
     }
 
     override fun hashCode(): Int {
