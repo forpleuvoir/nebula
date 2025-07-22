@@ -112,12 +112,15 @@ sealed interface SerializeElement {
      */
     val isNull: Boolean get() = this is SerializeNull
 
+    private fun errorType(type: KClass<*>) =
+        UnsupportedOperationException("Cannot convert [${this::class.simpleName}] to [${type.qualifiedName}].")
+
     val asPrimitive: SerializePrimitive
         get() {
             if (this.isPrimitive) {
                 return this as SerializePrimitive
             }
-            throw IllegalStateException("Not a serialization Primitive,type: ${this::class.simpleName}, '${toString()}' ")
+            throw errorType(SerializePrimitive::class)
         }
 
     val asObject: SerializeObject
@@ -125,7 +128,7 @@ sealed interface SerializeElement {
             if (this.isObject) {
                 return this as SerializeObject
             }
-            throw IllegalStateException("Not a serialization Object,type: ${this::class.simpleName}, '${toString()}' ")
+            throw errorType(SerializeObject::class)
         }
 
     val asArray: SerializeArray
@@ -133,7 +136,7 @@ sealed interface SerializeElement {
             if (this.isArray) {
                 return this as SerializeArray
             }
-            throw IllegalStateException("Not a serialization Array,type: ${this::class.simpleName}, '${toString()}' ")
+            throw errorType(SerializeArray::class)
         }
 
     val asNull: SerializeNull
@@ -141,62 +144,62 @@ sealed interface SerializeElement {
             if (this.isNull) {
                 return this as SerializeNull
             }
-            throw IllegalStateException("Not a serialization Null,type: ${this::class.simpleName}, '${toString()}' ")
+            throw errorType(SerializeNull::class)
         }
 
     val asString: String
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(String::class)
         }
 
     val asBoolean: Boolean
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Boolean::class)
         }
 
     val asNumber: Number
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Number::class)
         }
 
     val asInt: Int
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Int::class)
         }
 
     val asLong: Long
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Long::class)
         }
 
     val asShort: Short
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Short::class)
         }
 
     val asByte: Byte
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Byte::class)
         }
 
     val asFloat: Float
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Float::class)
         }
 
     val asDouble: Double
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(Double::class)
         }
 
     val asBigInteger: BigInteger
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(BigInteger::class)
         }
 
     val asBigDecimal: BigDecimal
         get() {
-            throw UnsupportedOperationException(this::class.simpleName)
+            throw errorType(BigDecimal::class)
         }
 
 

@@ -1,9 +1,10 @@
-@file:Suppress("UNUSED")
+@file:Suppress("UNUSED", "OVERRIDE_DEPRECATION")
 
 package moe.forpleuvoir.nebula.serialization.base
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.function.IntFunction
 
 /**
  *
@@ -54,14 +55,14 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             if (this.size == 1) {
                 return this.elements[0].asPrimitive
             }
-            throw IllegalAccessException()
+            return super.asPrimitive
         }
     override val asObject: SerializeObject
         get() {
             if (this.size == 1) {
                 return this.elements[0].asObject
             }
-            throw IllegalAccessException()
+            return super.asObject
         }
 
     override val asNull: SerializeNull
@@ -69,84 +70,84 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             if (this.size == 1) {
                 return this.elements[0].asNull
             }
-            throw IllegalAccessException()
+            return super.asNull
         }
     override val asString: String
         get() {
             if (this.size == 1) {
                 return this.elements[0].asString
             }
-            throw IllegalAccessException()
+            return super.asString
         }
     override val asBoolean: Boolean
         get() {
             if (this.size == 1) {
                 return this.elements[0].asBoolean
             }
-            throw IllegalAccessException()
+            return super.asBoolean
         }
     override val asNumber: Number
         get() {
             if (this.size == 1) {
                 return this.elements[0].asNumber
             }
-            throw IllegalAccessException()
+            return super.asNumber
         }
     override val asInt: Int
         get() {
             if (this.size == 1) {
                 return this.elements[0].asInt
             }
-            throw IllegalAccessException()
+            return super.asInt
         }
     override val asLong: Long
         get() {
             if (this.size == 1) {
                 return this.elements[0].asLong
             }
-            throw IllegalAccessException()
+            return super.asLong
         }
     override val asShort: Short
         get() {
             if (this.size == 1) {
                 return this.elements[0].asShort
             }
-            throw IllegalAccessException()
+            return super.asShort
         }
     override val asByte: Byte
         get() {
             if (this.size == 1) {
                 return this.elements[0].asByte
             }
-            throw IllegalAccessException()
+            return super.asByte
         }
     override val asFloat: Float
         get() {
             if (this.size == 1) {
                 return this.elements[0].asFloat
             }
-            throw IllegalAccessException()
+            return super.asFloat
         }
     override val asDouble: Double
         get() {
             if (this.size == 1) {
                 return this.elements[0].asDouble
             }
-            throw IllegalAccessException()
+            return super.asDouble
         }
     override val asBigInteger: BigInteger
         get() {
             if (this.size == 1) {
                 return this.elements[0].asBigInteger
             }
-            throw IllegalAccessException()
+            return super.asBigInteger
         }
     override val asBigDecimal: BigDecimal
         get() {
             if (this.size == 1) {
                 return this.elements[0].asBigDecimal
             }
-            throw IllegalAccessException()
+            return super.asBigDecimal
         }
 
     operator fun get(index: Int): SerializeElement {
@@ -202,5 +203,9 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
         return elements == other.elements
     }
 
+
+    override fun <T : Any?> toArray(generator: IntFunction<Array<out T?>?>): Array<out T?>? {
+        return super.toArray(generator)
+    }
 
 }
