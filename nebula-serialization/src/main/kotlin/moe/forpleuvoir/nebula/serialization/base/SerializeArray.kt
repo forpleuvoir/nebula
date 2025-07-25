@@ -21,7 +21,7 @@ import java.util.function.IntFunction
 
  */
 class SerializeArray private constructor(private val elements: MutableList<SerializeElement>) : SerializeElement,
-    MutableCollection<SerializeElement> by elements {
+    MutableList<SerializeElement> by elements {
 
     constructor(capacity: Int? = null) : this(if (capacity != null) ArrayList(capacity) else ArrayList())
 
@@ -150,10 +150,6 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             return super.asBigDecimal
         }
 
-    operator fun get(index: Int): SerializeElement {
-        return this.elements[index]
-    }
-
     fun add(string: String): Boolean {
         return this.add(SerializePrimitive(string))
     }
@@ -182,10 +178,6 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
         return this.addAll(array.elements)
     }
 
-    override fun remove(element: SerializeElement): Boolean {
-        return this.remove(element)
-    }
-
     override fun hashCode(): Int {
         return elements.hashCode()
     }
@@ -205,6 +197,7 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
 
 
     override fun <T : Any?> toArray(generator: IntFunction<Array<out T?>?>): Array<out T?>? {
+        @Suppress("DEPRECATION")
         return super.toArray(generator)
     }
 
