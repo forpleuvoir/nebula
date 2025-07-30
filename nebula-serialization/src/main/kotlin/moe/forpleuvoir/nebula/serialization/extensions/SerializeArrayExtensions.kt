@@ -55,13 +55,13 @@ fun serializeArray(elements: Iterable<*>): SerializeArray {
     return serializeArray(elements.iterator())
 }
 
-fun SerializeArray.toList(): List<Any> {
+fun SerializeArray.toList(): List<Any?> {
     return map { e ->
         when (e) {
             is SerializePrimitive -> e.toObj()
             is SerializeObject    -> e.toMap()
             is SerializeArray     -> e.toList()
-            is SerializeNull      -> SerializeNull.toString()
+            is SerializeNull -> null
         }
     }
 }

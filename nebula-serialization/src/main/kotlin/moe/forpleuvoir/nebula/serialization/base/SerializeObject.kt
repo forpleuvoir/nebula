@@ -9,6 +9,7 @@ import moe.forpleuvoir.nebula.common.color.RGBColor
 import moe.forpleuvoir.nebula.serialization.extensions.serializationAsObject
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.*
 import kotlin.reflect.KClass
 
 /**
@@ -26,7 +27,7 @@ import kotlin.reflect.KClass
 
  */
 class SerializeObject
-internal constructor(private val members: LinkedHashMap<String, SerializeElement>) : SerializeElement, MutableMap<String, SerializeElement> by members {
+internal constructor(private val members: LinkedHashMap<String, SerializeElement>) : SerializeElement, SequencedMap<String, SerializeElement> by members {
 
     constructor() : this(members = LinkedHashMap())
 
