@@ -66,19 +66,19 @@ class Color : ARGBColor {
         }
 
         @JvmStatic
-        fun ofRGB(rgb: Int): Color = Color(rgb).alpha(255)
+        fun ofRGB(rgb: Int): Color = Color(argb = rgb, checkRange = false, fixed = false).alpha(255)
 
         @JvmStatic
-        fun ofARGB(argb: Int): Color = Color(argb)
+        fun ofARGB(argb: Int): Color = Color(argb = argb, checkRange = false, fixed = false)
 
         @JvmStatic
-        fun ofARGB(argb: Long): Color = Color(argb.toInt())
+        fun ofARGB(argb: Long): Color = ofARGB(argb.toInt())
 
         @JvmStatic
-        fun ofHSV(hsvColor: HSVColor): Color = Color(hsvColor.argb)
+        fun ofHSV(hsvColor: HSVColor): Color = ofARGB(hsvColor.argb)
 
         @JvmStatic
-        fun ofString(color: String): Color = Color(decode(color))
+        fun ofString(color: String): Color = ofARGB(decode(color))
 
     }
 
@@ -340,7 +340,7 @@ class Color : ARGBColor {
      * @return [Color] 复制对象
      */
     override fun clone(): Color {
-        return Color(argb)
+        return ofARGB(argb)
     }
 
     /**

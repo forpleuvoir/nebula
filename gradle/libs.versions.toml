@@ -2,7 +2,7 @@
 nebulaVersion = "0.2.28"
 #depn
 shadowVersion = "8.1.1"
-kotlinVersion = "2.2.21"
+kotlinVersion = "2.2.20"
 kotlinCoroutinesVersion = "1.10.2"
 gsonVersion = "2.10"
 

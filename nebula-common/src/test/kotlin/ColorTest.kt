@@ -24,7 +24,7 @@ class ColorTest {
 }
 
 fun main() {
-    println(Color(0xFF8CECFF))
+    println(Color.ofARGB(0xFF8CECFF))
 }
 
 fun hsv() {
