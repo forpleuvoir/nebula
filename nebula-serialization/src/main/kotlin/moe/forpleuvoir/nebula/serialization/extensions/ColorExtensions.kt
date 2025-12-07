@@ -45,7 +45,7 @@ fun Color.deserialization(serializeElement: SerializeElement) {
 }
 
 fun Color.Companion.deserialization(serializeElement: SerializeElement): Color {
-    return Color(decodeColor(serializeElement))
+    return Color.ofARGB(decodeColor(serializeElement))
 }
 
 fun HSVColor.serialization(): SerializeElement =

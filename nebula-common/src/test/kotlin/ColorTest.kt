@@ -54,7 +54,7 @@ fun map() {
         val colorStrs = ArrayList<String>(colorCodes.size)
         colorNames.forEachIndexed { index, it ->
             val name = it.replace(" ", "_").replace("-", "_").uppercase()
-            val color = Color(Color.decode(colorCodes[index]))
+            val color = Color.ofString(colorCodes[index])
             colorStrs.add("@JvmStatic\n")
             colorStrs.add("val $name : RGBColor get() = Color(${color.red} ,${color.green} ,${color.blue})\n\n")
         }
