@@ -47,7 +47,7 @@ class Color : ARGBColor {
             minValue: Int = 0,
             maxValue: Int = 255
         ): Int {
-            if ((this < minValue || this > maxValue) && checkRange) {
+            if ((this !in minValue..maxValue) && checkRange) {
                 throw IllegalArgumentException("[$parameterName : $this]Color parameter outside of expected range[$minValue ~ $maxValue]")
             }
             return this.coerceIn(minValue, maxValue)
@@ -59,11 +59,26 @@ class Color : ARGBColor {
             minValue: Float = 0.0F,
             maxValue: Float = 1.0F
         ): Float {
-            if ((this < minValue || this > maxValue) && checkRange) {
+            if ((this !in minValue..maxValue) && checkRange) {
                 throw IllegalArgumentException("[$parameterName : $this]Color parameter outside of expected range[$minValue ~ $maxValue]")
             }
             return this.coerceIn(minValue, maxValue)
         }
+
+        @JvmStatic
+        fun ofRGB(rgb: Int): Color = Color(rgb).alpha(255)
+
+        @JvmStatic
+        fun ofARGB(argb: Int): Color = Color(argb)
+
+        @JvmStatic
+        fun ofARGB(argb: Long): Color = Color(argb.toInt())
+
+        @JvmStatic
+        fun ofHSV(hsvColor: HSVColor): Color = Color(hsvColor.argb)
+
+        @JvmStatic
+        fun ofString(color: String): Color = Color(decode(color))
 
     }
 
@@ -96,36 +111,6 @@ class Color : ARGBColor {
             alpha = alpha.fixValue(checkRange, "Alpha")
         }
     }
-
-    /**
-     * @param argb [Int] 包含ARGB信息的颜色值
-     *
-     * @param checkRange [Boolean]
-     *
-     * &#09;是否严格限制各种值是否合法
-     *
-     * &#09;如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
-     *
-     * &#09;为 false 则只会将值修复到合法范围内
-     *
-     * @constructor
-     */
-    constructor(argb: Int, checkRange: Boolean = true) : this(argb, checkRange, false)
-
-    /**
-     * @param argb [Int] 包含ARGB信息的颜色值
-     *
-     * @param checkRange [Boolean]
-     *
-     * &#09;是否严格限制各种值是否合法
-     *
-     * &#09;如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
-     *
-     * &#09;为 false 则只会将值修复到合法范围内
-     *
-     * @constructor
-     */
-    constructor(argb: Long, checkRange: Boolean = true) : this(argb.toInt(), checkRange, false)
 
     /**
      *
@@ -187,10 +172,6 @@ class Color : ARGBColor {
         (alpha.fixValue(checkRange, "Alpha") * 255).toInt(),
         checkRange
     )
-
-    constructor(hexStr: String) : this(decode(hexStr))
-
-    constructor(hsvColor: HSVColor) : this(hsvColor.argb, false)
 
     /**
      * 获取颜色的ARGB信息
