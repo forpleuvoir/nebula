@@ -18,7 +18,7 @@ class Color : ARGBColor {
          */
         @JvmStatic
         fun decode(color: String): Int {
-            val hex: String = color.replace(Regex("0x|0X"), "").replace("#", "")
+            val hex: String = color.replace(Regex("0x|0X|#"), "")
             return when (hex.length) {
                 8    -> hex.toUInt(16).toInt()
                 6    -> 0xFF000000.toInt() or hex.toUInt(16).toInt()
@@ -120,18 +120,18 @@ class Color : ARGBColor {
      * @param alpha Int 透明的 Range(0 ~ 255)
      * @param checkRange [Boolean]
      *
-     * &#09;是否严格限制各种值是否合法
+     * 是否严格限制各种值是否合法
      *
-     * &#09;如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
+     * 如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
      *
-     * &#09;为 false 则只会将值修复到合法范围内
+     * 为 false 则只会将值修复到合法范围内
      *
      * @constructor
      */
     constructor(
-        red: Int = 255,
-        green: Int = 255,
-        blue: Int = 255,
+        red: Int,
+        green: Int,
+        blue: Int,
         alpha: Int = 255,
         checkRange: Boolean = true
     ) : this(
@@ -151,18 +151,18 @@ class Color : ARGBColor {
      * @param alpha Int 透明的 Range(0.0F ~ 1.0F)
      * @param checkRange [Boolean]
      *
-     * &#09;是否严格限制各种值是否合法
+     * 是否严格限制各种值是否合法
      *
-     * &#09;如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
+     * 如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
      *
-     * &#09;为 false 则只会将值修复到合法范围内
+     * 为 false 则只会将值修复到合法范围内
      *
      * @constructor
      */
     constructor(
-        red: Float = 1.0F,
-        green: Float = 1.0F,
-        blue: Float = 1.0F,
+        red: Float,
+        green: Float,
+        blue: Float,
         alpha: Float = 1.0F,
         checkRange: Boolean = false
     ) : this(
