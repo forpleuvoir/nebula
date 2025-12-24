@@ -4,6 +4,15 @@ import moe.forpleuvoir.nebula.common.util.math.lerp
 
 interface RGBColor : Cloneable {
 
+    companion object {
+        fun equals(color1: RGBColor, color2: RGBColor): Boolean =
+            when (color1) {
+                is ARGBColor if color2 is ARGBColor   -> ARGBColor.equals(color1, color2)
+                !is ARGBColor if color2 !is ARGBColor -> color1.rgb == color2.rgb
+                else                                  -> false
+            }
+    }
+
     val rgb: Int
 
     val red: Int
@@ -94,3 +103,4 @@ val redFRange: ClosedFloatingPointRange<Float> get() = 0f..1f
 val greenFRange: ClosedFloatingPointRange<Float> get() = 0f..1f
 
 val blueFRange: ClosedFloatingPointRange<Float> get() = 0f..1f
+

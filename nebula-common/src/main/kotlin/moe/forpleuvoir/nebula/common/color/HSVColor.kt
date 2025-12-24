@@ -191,6 +191,15 @@ class HSVColor(
         return "HSBColor(argb=$argb, hexStr='$hexStr', hue=$hue, saturation=$saturation, value=$value, alpha=$alphaF)"
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        return argb == (other as HSVColor).argb
+    }
+
+    override fun hashCode(): Int {
+        return argb.hashCode()
+    }
 
 }
 

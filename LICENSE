@@ -20,4 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Some of the modules in this project use Gson and are licensed under the Apache License 2.0.
+-------------------------------------------------------------------------------
+This project contains third-party components:
+
+- Google Gson (Apache License 2.0)
+  Copyright 2008 Google Inc.
+  Licensed under the Apache License 2.0.
+-------------------------------------------------------------------------------

@@ -25,8 +25,12 @@ abstract class ConfigRGBColor<C : RGBColor>(
 
     override var configValue: C = defaultValue.clone() as C
 
+    override fun isDefault(): Boolean {
+        return RGBColor.equals(configValue, defaultValue)
+    }
+
     override fun setValue(value: C) {
-        if (configValue isEquals value) return
+        if (RGBColor.equals(configValue, value)) return
         configValue = value.clone() as C
         onChange(this)
     }

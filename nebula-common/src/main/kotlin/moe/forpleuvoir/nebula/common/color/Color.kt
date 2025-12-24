@@ -410,14 +410,11 @@ class Color : ARGBColor {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
-        other as Color
-
-        return argb == other.argb
+        return argb == (other as Color).argb
     }
 
     override fun hashCode(): Int {
-        return argb
+        return argb.hashCode()
     }
 
     override fun toString(): String {

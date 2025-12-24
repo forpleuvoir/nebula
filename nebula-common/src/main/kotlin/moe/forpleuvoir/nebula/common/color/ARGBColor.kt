@@ -4,6 +4,10 @@ import moe.forpleuvoir.nebula.common.util.math.lerp
 
 interface ARGBColor : RGBColor {
 
+    companion object {
+        fun equals(color1: ARGBColor, color2: ARGBColor): Boolean = color1.argb == color2.argb
+    }
+
     val argb: Int
 
     val alpha: Int
