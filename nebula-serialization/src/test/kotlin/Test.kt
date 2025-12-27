@@ -35,7 +35,7 @@ class SerializationTest {
         }
 
         val element: SerializeElement = serializeObject(map)
-        element.asObject.toMap().apply {
+        element.asObject.toJavaMap().apply {
             println(this)
         }
         element.asObject.apply {

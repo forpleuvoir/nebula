@@ -7,7 +7,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
 
-fun SerializePrimitive.toObj(): Any {
+fun SerializePrimitive.toJavaPrimitive(): Any {
     return if (!isNumber) value else {
         if (value.toString().contains(Regex("[-+]?[0-9]*\\.[0-9]+"))) {
             asDouble
@@ -86,11 +86,9 @@ class SerializePrimitiveCheckTypeResult<R : Any> internal constructor(private va
     }
 
     fun getOrDefault(defaultValue: R): R {
-        return try {
+        return runCatching {
             getOrThrow()
-        } catch (e: Throwable) {
-            return defaultValue
-        }
+        }.getOrDefault(defaultValue)
     }
 
 }

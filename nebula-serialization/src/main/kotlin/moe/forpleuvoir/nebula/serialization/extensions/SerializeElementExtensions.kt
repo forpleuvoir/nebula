@@ -2,6 +2,15 @@ package moe.forpleuvoir.nebula.serialization.extensions
 
 import moe.forpleuvoir.nebula.serialization.base.*
 
+fun SerializeElement.toJavaObject(): Any? {
+    return when (this) {
+        is SerializeArray     -> this.toJavaList()
+        is SerializeObject    -> this.toJavaMap()
+        is SerializePrimitive -> this.toJavaPrimitive()
+        SerializeNull         -> null
+    }
+}
+
 infix fun SerializeElement.completeEquals(target: SerializeElement): Boolean {
     if (this.hashCode() != target.hashCode() || this.javaClass != target.javaClass) return false
     if (this is SerializePrimitive) {

@@ -88,11 +88,9 @@ class SerializeElementCheckTypeResult<R : Any> internal constructor(private val 
     }
 
     fun getOrDefault(defaultValue: R): R {
-        return try {
+        return runCatching {
             getOrThrow()
-        } catch (e: Throwable) {
-            return defaultValue
-        }
+        }.getOrDefault(defaultValue)
     }
 
 }

@@ -16,23 +16,22 @@ fun SerializeObject.putAny(key: String, value: Any?) {
     this[key] = value.toSerializeElement()
 }
 
-fun SerializeObject.toMap(): Map<String, Any?> {
+fun SerializeObject.toJavaMap(): Map<String, Any?> {
     return LinkedHashMap<String, Any?>().apply {
-        for (entry in this@toMap) {
+        for (entry in this@toJavaMap) {
             when (val value = entry.value) {
-                is SerializePrimitive -> this[entry.key] = value.toObj()
-                is SerializeArray     -> this[entry.key] = value.toList()
-                is SerializeObject    -> this[entry.key] = value.toMap()
+                is SerializePrimitive -> this[entry.key] = value.toJavaPrimitive()
+                is SerializeArray     -> this[entry.key] = value.toJavaList()
+                is SerializeObject    -> this[entry.key] = value.toJavaMap()
                 is SerializeNull      -> this[entry.key] = null
             }
         }
     }
 }
 
-class SerializeObjectScope {
+class SerializeObjectBuilder {
 
     internal val obj: SerializeObject = SerializeObject()
-
 
     fun scope(scope: SerializeObject.() -> Unit) {
         obj.apply(scope)
@@ -58,14 +57,14 @@ class SerializeObjectScope {
         obj.putAny(this, value)
     }
 
-    operator fun String.invoke(scope: SerializeObjectScope.() -> Unit) {
-        obj[this] = SerializeObjectScope().apply(scope).obj
+    operator fun String.invoke(scope: SerializeObjectBuilder.() -> Unit) {
+        obj[this] = SerializeObjectBuilder().apply(scope).obj
     }
 
 }
 
-fun serializeObject(scope: SerializeObjectScope.() -> Unit): SerializeObject {
-    return SerializeObjectScope().apply(scope).obj
+fun serializeObject(scope: SerializeObjectBuilder.() -> Unit): SerializeObject {
+    return SerializeObjectBuilder().apply(scope).obj
 }
 
 fun serializeObject(map: Map<String, Any?>): SerializeObject {

@@ -10,7 +10,7 @@ inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
     contract {
         callsInPlace(selector, InvocationKind.UNKNOWN)
     }
-    var sum: Float = 0.toFloat()
+    var sum = 0f
     for (element in this) {
         sum += selector(element)
     }

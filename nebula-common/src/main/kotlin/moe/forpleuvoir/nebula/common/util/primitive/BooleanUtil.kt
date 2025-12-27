@@ -4,26 +4,23 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-
 @OptIn(ExperimentalContracts::class)
-inline fun Boolean?.ifc(block: () -> Unit) {
+inline infix fun Boolean?.onTrue(block: () -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
-    if (this == true) block.invoke()
+    if (this == true) block()
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun Boolean?.notc(block: () -> Unit) {
+inline infix fun Boolean?.onFalse(block: () -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
-    if (this != null) {
-        if (!this) block() else Unit
-    }
+    if (this != true) block()
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <T> Boolean?.pick(v1: T, v2: T): T = if (this == true) v1 else v2
+inline fun <T> Boolean?.either(onTrue: T, onFalse: T): T = if (this == true) onTrue else onFalse
 
-inline fun <R> Boolean?.pick(block: () -> R, block2: () -> R): R = if (this == true) block() else block2()
+inline fun <R> Boolean?.either(onTrue: () -> R, onFalse: () -> R): R = if (this == true) onTrue() else onFalse()

@@ -55,12 +55,12 @@ fun serializeArray(elements: Iterable<*>): SerializeArray {
     return serializeArray(elements.iterator())
 }
 
-fun SerializeArray.toList(): List<Any?> {
+fun SerializeArray.toJavaList(): List<Any?> {
     return map { e ->
         when (e) {
-            is SerializePrimitive -> e.toObj()
-            is SerializeObject    -> e.toMap()
-            is SerializeArray     -> e.toList()
+            is SerializePrimitive -> e.toJavaPrimitive()
+            is SerializeObject    -> e.toJavaMap()
+            is SerializeArray     -> e.toJavaList()
             is SerializeNull -> null
         }
     }

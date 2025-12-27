@@ -7,7 +7,6 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.HttpResponse.BodyHandlers
 
-
 fun <T> httpGet(uri: String, bodyHandler: BodyHandler<T>): HttpHelper<T> {
 	return HttpHelper(uri, bodyHandler).apply { requestBuilder.GET() }
 }

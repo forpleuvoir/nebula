@@ -6,10 +6,8 @@ package moe.forpleuvoir.nebula.serialization.gson
 import com.google.gson.*
 import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
-import moe.forpleuvoir.nebula.serialization.extensions.toMap
+import moe.forpleuvoir.nebula.serialization.extensions.toJavaMap
 import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import kotlin.reflect.KVisibility.PUBLIC
 import kotlin.reflect.full.memberProperties
 
@@ -135,7 +133,7 @@ fun SerializeElement.toJsonString(): String {
 }
 
 fun SerializeObject.toJsonString(): String {
-    return gson.toJson(this.toMap())
+    return gson.toJson(this.toJavaMap())
 }
 
 fun String.jsonStringToObject(): SerializeObject {
@@ -243,9 +241,6 @@ fun jsonObject(map: Map<String, Any>): JsonObject {
 }
 
 fun <T> jsonObject(map: Map<String, T>, converter: (T) -> JsonElement): JsonObject {
-    contract {
-        callsInPlace(converter, InvocationKind.UNKNOWN)
-    }
     return jsonObject {
         for (entry in map) {
             entry.key - converter(entry.value)
@@ -254,9 +249,6 @@ fun <T> jsonObject(map: Map<String, T>, converter: (T) -> JsonElement): JsonObje
 }
 
 fun <T> JsonObject.getOr(key: String, or: T, converter: (JsonElement) -> T): T {
-    contract {
-        callsInPlace(converter, InvocationKind.AT_MOST_ONCE)
-    }
     return runCatching { converter(this[key]!!) }.getOrDefault(or)
 }
 

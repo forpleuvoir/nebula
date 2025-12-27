@@ -185,18 +185,18 @@ fun SerializePrimitive.deserialization(kClass: KClass<*>): Any {
 
 fun SerializePrimitive.deserialization(): Any {
     return when {
-        this.isString -> asString
-        this.isFloat  -> asFloat
-        this.isDouble -> asDouble
-        isShort       -> asShort
-        isInt         -> asInt
-        isLong        -> asLong
-        isBoolean     -> asBoolean
-        isByte        -> asByte
-        isBigInteger  -> asBigInteger
-        isBigDecimal  -> asBigDecimal
-        isNumber      -> asNumber
-        else          -> value
+        isString     -> asString
+        isFloat      -> asFloat
+        isDouble     -> asDouble
+        isShort      -> asShort
+        isInt        -> asInt
+        isLong       -> asLong
+        isBoolean    -> asBoolean
+        isByte       -> asByte
+        isBigInteger -> asBigInteger
+        isBigDecimal -> asBigDecimal
+        isNumber     -> asNumber
+        else         -> value
     }
 }
 
@@ -220,7 +220,7 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
     return when (kClass.javaObjectType) {
         ConcurrentHashMap::class.java        -> {
             ConcurrentHashMap<String, Any?>().apply {
-                this@deserialization.forEach { k, v ->
+                this@deserialization.forEach { (k, v) ->
                     this[k] = v.deserialization()
                 }
             }
@@ -228,7 +228,7 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
 
         LinkedHashMap::class.java            -> {
             LinkedHashMap<String, Any?>().apply {
-                this@deserialization.forEach { k, v ->
+                this@deserialization.forEach { (k, v) ->
                     this[k] = v.deserialization()
                 }
             }
@@ -236,7 +236,7 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
 
         HashMap::class.java, Map::class.java -> {
             HashMap<String, Any?>().apply {
-                this@deserialization.forEach { k, v ->
+                this@deserialization.forEach { (k, v) ->
                     this[k] = v.deserialization()
                 }
             }
@@ -251,7 +251,7 @@ fun SerializeObject.deserialization(kClass: KClass<*>): Any {
 
 fun SerializeObject.deserialization(): Any {
     return LinkedHashMap<String, Any?>().apply {
-        this@deserialization.forEach { k, v ->
+        this@deserialization.forEach { (k, v) ->
             this[k] = v.deserialization()
         }
     }
