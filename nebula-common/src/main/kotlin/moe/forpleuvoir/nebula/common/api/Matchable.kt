@@ -14,7 +14,7 @@ package moe.forpleuvoir.nebula.common.api
  * @author forpleuvoir
 
  */
-interface Matchable {
+fun interface Matchable {
 
 	/**
 	 * 匹配

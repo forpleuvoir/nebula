@@ -1,5 +1,5 @@
 package moe.forpleuvoir.nebula.common.api
 
-interface Initializable {
+fun interface Initializable {
 	fun init()
 }
