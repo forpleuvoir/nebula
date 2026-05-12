@@ -60,6 +60,8 @@ class SerializePrimitive private constructor(internal val value: Any) : Serializ
 
     val isBigDecimal: Boolean get() = value is BigDecimal
 
+    val isChar: Boolean get() = value is Char
+
     override val asChar: Char?
         get() = when (value) {
             is Char   -> value

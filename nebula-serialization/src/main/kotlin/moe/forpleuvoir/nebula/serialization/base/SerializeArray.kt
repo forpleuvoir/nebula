@@ -192,7 +192,7 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
     }
 
     override fun toString(): String {
-        return elements.toString()
+        return elements.joinToString(", ", "[", "]")
     }
 
     override fun equals(other: Any?): Boolean {

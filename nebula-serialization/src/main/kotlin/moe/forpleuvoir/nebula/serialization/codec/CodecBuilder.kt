@@ -731,12 +731,12 @@ internal class CodecImpl<T>(
                 val result = codec.deserialization(obj[f.name]!!)
                 if (result.isSuccess) result.getOrThrow()
                 else if (hasDefault) default
-                else throw IllegalArgumentException("failed to deserialize field ''")
+                else throw IllegalArgumentException("failed to deserialize field '${f.name}'")
             } else if (hasDefault) {
                 default
             } else {
                 codec.deserialization(SerializeNull)
-                    .getOrElse { throw IllegalArgumentException("missing required field ''") }
+                    .getOrElse { throw IllegalArgumentException("missing required field '${f.name}'") }
             }
         }
         construct(args)

@@ -14,7 +14,7 @@ value class Color(val argb: Int) {
 
         @JvmStatic
         fun hex2Int(hex: String): Int {
-            val str = hex.replace("0x|0X|#", "")
+            val str = hex.removePrefix("0x").removePrefix("0X").removePrefix("#")
             return when (str.length) {
                 8    -> str.toInt(16)
                 6    -> (0xFF000000u or str.toUInt(16)).toInt()

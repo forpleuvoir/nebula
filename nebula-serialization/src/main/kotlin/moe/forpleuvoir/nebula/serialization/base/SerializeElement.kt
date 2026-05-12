@@ -49,13 +49,29 @@ sealed interface SerializeElement {
      */
     val isNull: Boolean get() = this is SerializeNull
 
-    val asPrimitive: SerializePrimitive? get() = null
+    val asPrimitive: SerializePrimitive?
+        get() = when (this) {
+            is SerializePrimitive -> this
+            else                  -> null
+        }
 
-    val asObject: SerializeObject? get() = null
+    val asObject: SerializeObject?
+        get() = when (this) {
+            is SerializeObject -> this
+            else               -> null
+        }
 
-    val asArray: SerializeArray? get() = null
+    val asArray: SerializeArray?
+        get() = when (this) {
+            is SerializeArray -> this
+            else              -> null
+        }
 
-    val asNull: SerializeNull? get() = null
+    val asNull: SerializeNull?
+        get() = when (this) {
+            is SerializeNull -> this
+            else             -> null
+        }
 
     val asChar: Char? get() = null
 

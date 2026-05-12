@@ -1,53 +1,61 @@
-import moe.forpleuvoir.nebula.common.api.ExperimentalApi
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.common.color.Colors
-import moe.forpleuvoir.nebula.serialization.annotation.SerializerName
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
-import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
-import moe.forpleuvoir.nebula.serialization.base.ops.build
+import moe.forpleuvoir.nebula.serialization.base.*
+import moe.forpleuvoir.nebula.serialization.base.builder.build
+import moe.forpleuvoir.nebula.serialization.codec.CODEC
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.codec.deserialization
 import moe.forpleuvoir.nebula.serialization.codec.nullable
 import moe.forpleuvoir.nebula.serialization.codec.serialization
-import moe.forpleuvoir.nebula.serialization.extensions.*
-import moe.forpleuvoir.nebula.serialization.gson.toJsonString
-import moe.forpleuvoir.nebula.serialization.json.JsonParser
+import moe.forpleuvoir.nebula.serialization.nebula.decode
+import moe.forpleuvoir.nebula.serialization.nebula.encode
+import moe.forpleuvoir.nebula.serialization.nebula.toKSerializer
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.sql.DriverManager.println
-import kotlin.reflect.KClass
-import kotlin.reflect.full.companionObject
-import kotlin.reflect.full.companionObjectInstance
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
-import kotlin.time.measureTime
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
+
+@Serializable
+data class User(val name: String, val age: Int?) {
+    companion object {
+        val CODEC = Codec.create<User>()
+            .field<String>("name").getter(User::name).default("name").codec(Codec.string)
+            .field<Int?>("age").getter(User::age).skipNull().codec(Codec.int.nullable())
+            .build(::User)
+    }
+}
 
 class SerializationTest {
 
-    data class Student(val name: String, val age: Int) {
+    @Serializable
+    data class Student(val name: String, val age: Int,@Contextual val color: Color) {
         companion object {
             val CODEC = Codec.create<Student>()
                 .field<String>("name").getter(Student::name).default("name").codec(Codec.string)
                 .field<Int>("age").getter(Student::age).skipDefault().default(22).codec(Codec.int)
+                .field<Color>("color").getter(Student::color).default(Colors.RED).codec(Color.CODEC)
                 .build(::Student)
         }
     }
 
-    data class User(val name: String, val age: Int?) {
-        companion object {
-            val CODEC = Codec.create<User>()
-                .field<String>("name").getter(User::name).default("name").codec(Codec.string)
-                .field<Int?>("age").getter(User::age).skipNull().codec(Codec.int.nullable())
-                .build(::User)
-        }
+    object StudentSerializer : KSerializer<Student> by Student.CODEC.toKSerializer()
+
+    @Test
+    fun testSerializer() {
+        val student = Student("forpleuvoir", 22,Colors.ARMY_GREEN)
+//        println(NebulaFormat.encodeToElement(student, StudentSerializer))
+        println(student.encode())
     }
 
     @Test
     fun testCodec() {
         context(Student.CODEC) {
-            val student = Student("forpleuvoir", 22)
+            val student = Student("forpleuvoir", 22,Colors.ARMY_GREEN)
             val element = student.serialization
             println(element)
             println(element.deserialization.getOrThrow())
@@ -68,7 +76,7 @@ class SerializationTest {
             println(element.deserialization.getOrThrow())
             SerializeObject.build {
                 context(Codec.int.nullable(), Codec.string) {
-                    "name" to  "dhwuia"
+                    "name" to "dhwuia"
                 }
             }.let {
                 println(it.deserialization.getOrThrow())
@@ -77,229 +85,90 @@ class SerializationTest {
     }
 
     @Test
-    fun test0() {
-        val list = mutableListOf<String>()
-        val map = buildMap {
-            this["list"] = list
-            this["shuzi1"] = 0
-            this["obj"] = buildMap {
-                this["name"] = "forpleuvoir"
-                this["age"] = 30
-            }
-        }
-
-        val element: SerializeElement = serializeObject(map)
-        element.asObject.toJavaMap().apply {
-            println(this)
-        }
-        element.asObject.apply {
-            println(this.toJsonString())
-
-        }
-
-    }
-
-
-    @OptIn(ExperimentalApi::class)
-    @Test
-    fun test2() {
-        val a = """
-            {
-              "task_manager": {
-                "script_common_lib": "var bakamc = \"Bakamc\"",
-                "key":{
-                    "v":"v1"
-                }
-              }
-            }
-        """.trimIndent()
-        val obj = JsonParser.parse(a)
-        obj.deserialization<Map<String, Any>>()?.apply {
-            println(this)
-        }
-
+    fun `round-trip with non-null fields`() {
+        val user = User("forpleuvoir", 25)
+        val element = user.encode()
+        val decoded = element.decode<User>()
+        assertEquals(user, decoded)
     }
 
     @Test
-    fun test1() {
-        SerializationTest::class.companionObject?.let { clazz ->
-            SerializationTest::class.companionObjectInstance!!
-            clazz.declaredFunctions.first().let {
-                println(it.parameters.size)
-                println(it.parameters.last().name)
-                println(it.name)
-                println(it.returnType.classifier == T::class)
-            }
-        }
-        println()
+    fun `round-trip with null field`() {
+        val user = User("forpleuvoir", null)
+        val element = user.encode()
+        val decoded = element.decode<User>()
+        assertEquals(user, decoded)
     }
 
-    data class DT(
-        val name: String,
-        val list: List<String>,
-        val map: Map<String, Any>,
-        @SerializerName("ddd")
-        val dt2: DT2
-    )
-
-    data class DT2(
-        @SerializerName("a_name")
-        val name: String
-    )
-
-    @OptIn(ExperimentalApi::class)
+    @OptIn(ExperimentalSerializationApi::class)
     @Test
-    fun test3() {
-        serializeObject {
-            "name" to "forpleuvoir"
-            "list" to serializeArray("aa", "b")
-            "map" {
-                "test_key" to "test_value"
-            }
-            "ddd" {
-                "a_name" to "Guts"
-            }
-        }.toJsonString().let {
-            println(it)
+    fun `missing field throws exception`() {
+        val obj = SerializeObject().apply {
+            this["name"] = SerializePrimitive("Bob")
+        }
+        org.junit.jupiter.api.assertThrows<kotlinx.serialization.MissingFieldException> {
+            obj.decode<User>()
         }
     }
 
-    @OptIn(ExperimentalApi::class)
     @Test
-    fun test4() {
-        serializeArray("12", 666, serializeArray("aa", "bb")).deserialization(List::class).apply {
-            println(this)
-        }
+    fun `encode produces array for list`() {
+        val list = listOf("a", "b", "c")
+        val element = list.encode()
+        val decoded = element.decode<List<String>>()
+        assertEquals(list, decoded)
     }
 
-    fun <E : Enum<E>> a(type: KClass<E>) {
+    @Test
+    fun `encode produces object with null for nullable`() {
+        val obj = SerializeObject().apply {
+            this["name"] = SerializePrimitive("test")
+            this["age"] = SerializeNull
+        }
+        val decoded = obj.decode<User>()
+        assertEquals(User("test", null), decoded)
     }
 
-}
-
-fun main() {
-    test1()
-}
-
-@OptIn(ExperimentalApi::class)
-fun test1() {
-    val json = """
-		{
-          "name": "John Doe",
-          "age": 30,
-          "address": {
-            "street": "123 Main St",
-            "city": "Cityville"
-          },
-          "contacts": [
-            {
-              "type": "email",
-              "value": "john.do\"e@example.com"
-            },
-            {
-              "type": "phone",
-              "value": "+1234567890"
-            }
-          ],
-          "notes": " {\"nestedKey\":\"nested\\\"Value\"}",
-          "nestedJson": {
-            "key1": "value1?§aa",
-            "key2": "value2"
-          },
-          "url": "https://maven.forpleuvoir.moe"
-        }
-	""".trimIndent()
-
-    println("耗时:${measureTime { println(JsonParser.parse(json)) }}")
-    measureTime {
-        repeat(5000) {
-            JsonParser.parse(json)
-        }
-    }.let { println("预热5000次,平均耗时:${it / 5000}") }
-
-    measureTime {
-        repeat(100000) {
-            JsonParser.parse(json)
-        }
-    }.let { println("100000次,平均耗时:${it / 100000}") }
-
-}
-
-@OptIn(ExperimentalApi::class, ExperimentalReflectionOnLambdas::class)
-fun test3() {
-    val o = object {
-        var aa = 65
-        var bb = "bb"
-
-        fun serialization(): SerializeObject {
-            return serializeObject {
-                "aa" to aa
-                "bb" to bb
-                "test" {
-                    "test" to "aa"
-                    "aa" {
-
-                    }
-                }
-            }
-        }
-
-        override fun toString(): String {
-            return "(aa=$aa, bb='$bb')"
-        }
-
+    @Test
+    fun `round-trip nested data class`() {
+        val team = Team("dev", listOf(User("alice", 30), User("bob", null)), 16.seconds)
+        val element = team.encode()
+        println(element)
+        val decoded = element.decode<Team>()
+        assertEquals(team, decoded)
     }
 
-    val obj = object {
-        private val a = 65
-        val b = 'b'
-        val c = "ccc"
-        val d = true
-        val e = BigInteger.valueOf(4544)
-        val f = BigDecimal.valueOf(45.11145)
-        val g = null
-        val h = arrayOf(6, "c", "asdas", o)
-        val j = o
-        val color = Colors.BLACK
-        val t = T.V1
+    @Test
+    fun `round-trip enum`() {
+        val item = Item(Status.ACTIVE, "active item")
+        val element = item.encode()
+        val decoded = element.decode<Item>()
+        assertEquals(item, decoded)
     }
 
-    SerializePrimitive(10f).checkValue<Int>()
-        .check<Float> {
-            it.toInt()
-        }.getOrThrow().let {
-            println(it)
-        }
+    @Test
+    fun `round-trip map string to int`() {
+        val map = mapOf("x" to 1, "y" to 2)
+        val element = map.encode()
+        val decoded = element.decode<Map<String, Int>>()
+        assertEquals(map, decoded)
+    }
 
-//    (serializeArray(1, 2, 3, 4) as SerializeElement)
-    obj.toSerializeObject()
-        .checkType<SerializeObject, String> {
-            it["t"].toString()
-        }.getOrThrow().let {
-            println(it)
-        }
-//    o.toSerializeObject().let {
-//        println(it.toString())
-//    }
-//    println(obj.toSerializeObject().dumpAsJson(true))
+    @Test
+    fun `testCodec2`() {
+        val user = User("forpleuvoir", null)
+        val element = user.encode()
+        println(element)
+        println(element.decode<User>())
+    }
 }
 
-class DT {
-    val a: Int = 10
-    val b: Int = 5
-}
+@Serializable
+enum class Status { ACTIVE, INACTIVE, PENDING }
 
+@Serializable
+data class Item(val status: Status, val name: String)
 
-enum class T {
-
-    V1, V2;
-
-//    companion object {
-//        fun deserialization(serializeElement: SerializeElement): T {
-//            return T.valueOf(serializeElement.asString)
-//        }
-//
-//    }
-}
-
+@Serializable
+data class Team(val name: String, val members: List<User>, val duration: Duration)
 

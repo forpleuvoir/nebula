@@ -98,7 +98,9 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
     }
 
     override fun toString(): String {
-        return members.toString()
+        return members.entries.joinToString(", ", "{", "}"){
+            "${it.key}: ${it.value}"
+        }
     }
 
 

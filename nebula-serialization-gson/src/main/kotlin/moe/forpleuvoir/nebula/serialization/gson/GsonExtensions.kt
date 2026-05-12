@@ -5,8 +5,8 @@ package moe.forpleuvoir.nebula.serialization.gson
 
 import com.google.gson.*
 import moe.forpleuvoir.nebula.serialization.base.*
-import moe.forpleuvoir.nebula.serialization.extensions.serializeObject
-import moe.forpleuvoir.nebula.serialization.extensions.toJavaMap
+import moe.forpleuvoir.nebula.serialization.base.builder.build
+import moe.forpleuvoir.nebula.serialization.extensions.toJava
 import kotlin.contracts.ExperimentalContracts
 import kotlin.reflect.KVisibility.PUBLIC
 import kotlin.reflect.full.memberProperties
@@ -28,8 +28,10 @@ import kotlin.reflect.full.memberProperties
 val gson: Gson by lazy { GsonBuilder().setPrettyPrinting().create() }
 
 fun JsonObject.toSerializeObject(): SerializeObject {
-    return serializeObject(this.entrySet()) { key, value ->
-        key to value.toSerializeElement()
+    return SerializeObject.build {
+        this@toSerializeObject.entrySet().forEach { (k, v) ->
+            k to v.toSerializeElement()
+        }
     }
 }
 
@@ -52,8 +54,8 @@ fun JsonElement.toSerializeElement(): SerializeElement {
 
 fun SerializeElement.toJsonElement(): JsonElement {
     return when (this) {
-        is SerializeArray  -> this.toJsonArray()
-        is SerializeObject -> this.toJsonObject()
+        is SerializeArray     -> this.toJsonArray()
+        is SerializeObject    -> this.toJsonObject()
         is SerializePrimitive -> this.toJsonPrimitive()
         SerializeNull         -> JsonNull.INSTANCE
     }
@@ -133,7 +135,7 @@ fun SerializeElement.toJsonString(): String {
 }
 
 fun SerializeObject.toJsonString(): String {
-    return gson.toJson(this.toJavaMap())
+    return gson.toJson(this.toJava())
 }
 
 fun String.jsonStringToObject(): SerializeObject {

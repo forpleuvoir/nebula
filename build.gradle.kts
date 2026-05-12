@@ -8,6 +8,7 @@ plugins {
     signing
     alias(libs.plugins.kotlin)
     alias(libs.plugins.shadow)
+    alias(libs.plugins.kotlinSerialization) apply false
     id("maven-publish")
 }
 
@@ -167,6 +168,7 @@ subprojects {
     apply(plugin = "signing")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "maven-publish")
+    apply(plugin = rootProject.libs.plugins.kotlinSerialization.get().pluginId)
 
     group = rootProject.group
     version = rootProject.version

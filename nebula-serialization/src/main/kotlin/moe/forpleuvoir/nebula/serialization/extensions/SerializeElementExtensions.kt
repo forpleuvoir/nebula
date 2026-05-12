@@ -10,17 +10,9 @@ infix fun SerializeElement.completeEquals(target: SerializeElement): Boolean {
     } else if (this is SerializeNull) {
         return true
     } else if (this is SerializeArray && this.size == (target as SerializeArray).size) {
-        var result = false
-        forEachIndexed { index, element ->
-            result = element completeEquals target[index]
-        }
-        return result
+        return indices.all { index -> this[index] completeEquals target[index] }
     } else if (this is SerializeObject && this.size == (target as SerializeObject).size && this.keys == target.keys) {
-        var result = false
-        forEach { k, v ->
-            result = v completeEquals target[k]!!
-        }
-        return result
+        return entries.all { (k, v) -> v completeEquals target[k]!! }
     } else return false
 }
 

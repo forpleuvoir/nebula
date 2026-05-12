@@ -26,14 +26,14 @@ object PrimitiveCodec {
     }
 
     private fun <T> create(range: ClosedRange<T>, f: (SerializeElement) -> T): Codec<T> where  T : Comparable<T> {
-        require(range.start >= range.endInclusive) { "max(${range.start}) must be greater than min(${range.endInclusive})" }
+        require(range.start <= range.endInclusive) { "max(${range.start}) must be greater than min(${range.endInclusive})" }
         return create {
             f(it).coerceIn(range)
         }
     }
 
     private fun <T> create(default: T, range: ClosedRange<T>, f: (SerializeElement) -> T): Codec<T> where T : Number, T : Comparable<T> {
-        require(range.start >= range.endInclusive) { "max(${range.start}) must be greater than min(${range.endInclusive})" }
+        require(range.start <= range.endInclusive) { "max(${range.start}) must be greater than min(${range.endInclusive})" }
         return create {
             val value = runCatching { f(it) }.getOrDefault(default)
             value.coerceIn(range)

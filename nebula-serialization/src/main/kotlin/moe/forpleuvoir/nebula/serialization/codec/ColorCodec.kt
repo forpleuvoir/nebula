@@ -1,11 +1,15 @@
 package moe.forpleuvoir.nebula.serialization.codec
 
+import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
-import moe.forpleuvoir.nebula.serialization.extensions.getOr
+import moe.forpleuvoir.nebula.serialization.extensions.getAsFloat
+import moe.forpleuvoir.nebula.serialization.extensions.getInt
+import moe.forpleuvoir.nebula.serialization.extensions.getOrElse
+import moe.forpleuvoir.nebula.serialization.nebula.toKSerializer
 
 val Color.Companion.CODEC: Codec<Color> by lazy {
     object : Codec<Color> {
@@ -15,6 +19,8 @@ val Color.Companion.CODEC: Codec<Color> by lazy {
         override fun deserialization(element: SerializeElement): Result<Color> = decodeColor(element)
     }
 }
+
+object ColorSerializer : KSerializer<Color> by Color.CODEC.toKSerializer()
 
 inline val Codec.Companion.color: Codec<Color> get() = Color.CODEC
 
@@ -29,16 +35,16 @@ private fun decodeColor(serializeElement: SerializeElement): Result<Color> =
         }
         check<SerializeObject> { obj ->
             if (obj.containsKey("hue", "saturation", "value")) {
-                val alpha = obj.getOr("alpha", 1f).toFloat()
-                val hue = obj["hue"]!!.asFloat!!
-                val saturation = obj["saturation"]!!.asFloat!!
-                val value = obj["value"]!!.asFloat!!
+                val alpha = obj.getOrElse("alpha", 255)
+                val hue = obj.getAsFloat("hue")!!
+                val saturation = obj.getAsFloat("saturation")!!
+                val value = obj.getAsFloat("value")!!
                 Color.fromHSV(hue, saturation, value, alpha)
             } else if (obj.containsKey("red", "green", "blue")) {
-                val alpha = obj.getOr("alpha", 255).toInt()
-                val red = obj["red"]!!.asInt!!
-                val green = obj["green"]!!.asInt!!
-                val blue = obj["blue"]!!.asInt!!
+                val alpha = obj.getOrElse("alpha", 255)
+                val red = obj.getInt("red") ?: obj.getAsFloat("red")!!
+                val green = obj.getInt("green") ?: obj.getAsFloat("green")!!
+                val blue = obj.getInt("blue") ?: obj.getAsFloat("blue")!!
                 Color.fromARGB(red, green, blue, alpha)
             } else throw IllegalArgumentException("Invalid input: couldn't find either HSV (hue, saturation, value) or RGB (red, green, blue) color data in the provided object. Please ensure the input object contains the required keys.")
         }
