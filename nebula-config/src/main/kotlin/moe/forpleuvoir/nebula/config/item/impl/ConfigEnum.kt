@@ -4,7 +4,7 @@ import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
-import moe.forpleuvoir.nebula.serialization.extensions.deserialization
+import moe.forpleuvoir.nebula.serialization.codec.deserialization
 
 open class ConfigEnum<E : Enum<E>>(
     override val key: String,

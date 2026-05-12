@@ -1,425 +1,217 @@
-@file:Suppress("UNUSED", "MemberVisibilityCanBePrivate")
-
 package moe.forpleuvoir.nebula.common.color
 
-import moe.forpleuvoir.nebula.common.util.primitive.fillBefore
+import moe.forpleuvoir.nebula.common.util.math.lerp
 
-class Color : ARGBColor {
+@Suppress("NOTHING_TO_INLINE", "unused")
+@JvmInline
+value class Color(val argb: Int) {
 
     companion object {
 
+        @JvmStatic
+        fun isValidColor(color: Int): Boolean =
+            color.toUInt() <= 0xFFFFFFFFu
+
+        @JvmStatic
+        fun hex2Int(hex: String): Int {
+            val str = hex.replace("0x|0X|#", "")
+            return when (str.length) {
+                8    -> str.toInt(16)
+                6    -> (0xFF000000u or str.toUInt(16)).toInt()
+                else -> throw IllegalArgumentException("Invalid hex color string: $hex")
+            }
+        }
+
+        @JvmStatic
+        fun normalize(value: Number): Int = when (value) {
+            is Double -> (value.toFloat().coerceIn(0f, 1f) * 255).toInt()
+            is Float  -> (value.coerceIn(0f, 1f) * 255).toInt()
+            else      -> value.toInt().coerceIn(0, 255)
+        }
+
+        @JvmStatic
+        fun normalizeHSV(value: Number): Float = value.toFloat().coerceIn(0f, 1f)
+
+        @JvmStatic
+        fun fromARGB(red: Number, green: Number, blue: Number, alpha: Number = 255): Color {
+            val r = normalize(red)
+            val g = normalize(green)
+            val b = normalize(blue)
+            val a = normalize(alpha)
+            return Color((a shl 24) or (r shl 16) or (g shl 8) or b)
+        }
+
+        @JvmStatic
+        inline fun fromARGB(argb: Int): Color = Color(argb)
+
+        @JvmStatic
+        inline fun fromARGB(argb: UInt): Color = Color(argb.toInt())
+
+        @JvmStatic
+        inline fun fromRGB(rgb: Int): Color =
+            Color((0xFF000000u or (rgb.toUInt() and 0x00FFFFFFu)).toInt())
+
+
         /**
-         * 解码字符串颜色 AARRGGBB 十六进制字符串
-         *
-         * 格式: 0xFFFFFFFF,0xFFFFFFFF,#FFFFFFFF
-         *
-         * @param color String
-         * @return Int
+         * 从HSV中获取颜色
+         * @param hue 0-1 色相
+         * @param saturation 0-1 饱和度
+         * @param value 0-1 亮度
+         * @param alpha float 0-1 ,int 0-255 透明度
          */
         @JvmStatic
-        fun decode(color: String): Int {
-            val hex: String = color.replace(Regex("0x|0X|#"), "")
-            return when (hex.length) {
-                8    -> hex.toUInt(16).toInt()
-                6    -> 0xFF000000.toInt() or hex.toUInt(16).toInt()
-                else -> throw IllegalArgumentException("Unable to parse color information from [${color}]")
-            }
+        fun fromHSV(hue: Float, saturation: Float, value: Float, alpha: Number = 255): Color {
+            val h = normalizeHSV(hue)
+            val s = normalizeHSV(saturation)
+            val v = normalizeHSV(value)
+            return fromRGB(HSVHelper.getOrPut(h, s, v)).alpha(alpha)
         }
 
         @JvmStatic
-        fun isValidColor(color: Int): Boolean {
-            // 检查颜色值是否在0到0xFFFFFFFF之间
-            if (color.toUInt() > 0xFFFFFFFFu) {
-                return false
-            }
-
-            // 使用位运算符检查颜色值的alpha、红、绿、蓝四个分量是否在0-FF范围内
-            val alpha = (color shr 24) and 0xFF
-            val red = (color shr 16) and 0xFF
-            val green = (color shr 8) and 0xFF
-            val blue = color and 0xFF
-            return !(alpha in alphaRange || red in redRange || green in greenRange || blue in blueRange)
-        }
-
-        internal fun Int.fixValue(
-            checkRange: Boolean,
-            parameterName: String,
-            minValue: Int = 0,
-            maxValue: Int = 255
-        ): Int {
-            if ((this !in minValue..maxValue) && checkRange) {
-                throw IllegalArgumentException("[$parameterName : $this]Color parameter outside of expected range[$minValue ~ $maxValue]")
-            }
-            return this.coerceIn(minValue, maxValue)
-        }
-
-        internal fun Float.fixValue(
-            checkRange: Boolean,
-            parameterName: String,
-            minValue: Float = 0.0F,
-            maxValue: Float = 1.0F
-        ): Float {
-            if ((this !in minValue..maxValue) && checkRange) {
-                throw IllegalArgumentException("[$parameterName : $this]Color parameter outside of expected range[$minValue ~ $maxValue]")
-            }
-            return this.coerceIn(minValue, maxValue)
-        }
-
-        @JvmStatic
-        fun ofRGB(rgb: Int): Color = Color(argb = rgb, checkRange = false, fixed = false).alpha(255)
-
-        @JvmStatic
-        fun ofARGB(argb: Int): Color = Color(argb = argb, checkRange = false, fixed = false)
-
-        @JvmStatic
-        fun ofARGB(argb: Long): Color = ofARGB(argb.toInt())
-
-        @JvmStatic
-        fun ofHSV(hsvColor: HSVColor): Color = ofARGB(hsvColor.argb)
-
-        @JvmStatic
-        fun ofString(color: String): Color = ofARGB(decode(color))
+        fun fromHexString(hex: String): Color = Color(hex2Int(hex))
 
     }
 
-    /**
-     * 检查值得范围是否合法
-     */
-    private var checkRange: Boolean
+    val hexStr: String
+        get() = if (alpha == 255) "#%06X".format(argb and 0xFFFFFF)
+        else "#%08X".format(argb)
 
-    /**
-     * @param argb [Int] 包含ARGB信息的颜色值
-     *
-     * @param checkRange [Boolean]
-     *
-     * &#09;是否严格限制各种值是否合法
-     *
-     * &#09;如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
-     *
-     * &#09;为 false 则只会将值修复到合法范围内
-     *
-     * @param fixed [Boolean] 是否为已经修复过的值
-     * @constructor
-     */
-    private constructor(argb: Int, checkRange: Boolean, fixed: Boolean) {
-        this.argb = argb
-        this.checkRange = checkRange
-        if (!fixed) {
-            red = red.fixValue(checkRange, "Red")
-            green = green.fixValue(checkRange, "Green")
-            blue = blue.fixValue(checkRange, "Blue")
-            alpha = alpha.fixValue(checkRange, "Alpha")
-        }
-    }
+    override fun toString(): String =
+        "Color(hex: $hexStr, alpha: $alpha, rgb: [$red, $green, $blue], hsv: [$hue, $saturation, $value])"
 
-    /**
-     *
-     * @param red Int 红色值 Range(0 ~ 255)
-     * @param green Int 绿色值 Range(0 ~ 255)
-     * @param blue Int 蓝色值 Range(0 ~ 255)
-     * @param alpha Int 透明的 Range(0 ~ 255)
-     * @param checkRange [Boolean]
-     *
-     * 是否严格限制各种值是否合法
-     *
-     * 如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
-     *
-     * 为 false 则只会将值修复到合法范围内
-     *
-     * @constructor
-     */
-    constructor(
-        red: Int,
-        green: Int,
-        blue: Int,
-        alpha: Int = 255,
-        checkRange: Boolean = true
-    ) : this(
-        ((alpha.fixValue(checkRange, "Alpha") and 0xFF) shl 24) or
-                ((red.fixValue(checkRange, "Red") and 0xFF) shl 16) or
-                ((green.fixValue(checkRange, "Green") and 0xFF) shl 8) or
-                ((blue.fixValue(checkRange, "Blue") and 0xFF)),
-        checkRange,
-        true
+    //region RGB
+    inline val rgb: Int get() = argb and 0x00FFFFFF
+
+    inline fun rgb(rgb: Int): Color = Color(((argb.toUInt() and 0xFF000000u) or (rgb.toUInt() and 0x00FFFFFFu)).toInt())
+
+    inline val red: Int get() = argb shr 16 and 0xFF
+
+    inline val redF: Float get() = red / 255f
+
+    inline fun red(red: Number): Color = Color(
+        ((normalize(red) shl 16) or (argb.toUInt() and 0xFF00FFFFu).toInt())
     )
 
-    /**
-     *
-     * @param red Int 红色值 Range(0.0F ~ 1.0F)
-     * @param green Int 绿色值 Range(0.0F ~ 1.0F)
-     * @param blue Int 蓝色值 Range(0.0F ~ 1.0F)
-     * @param alpha Int 透明的 Range(0.0F ~ 1.0F)
-     * @param checkRange [Boolean]
-     *
-     * 是否严格限制各种值是否合法
-     *
-     * 如果为 true 则出现非法值会直接抛出异常[IllegalArgumentException]
-     *
-     * 为 false 则只会将值修复到合法范围内
-     *
-     * @constructor
-     */
-    constructor(
-        red: Float,
-        green: Float,
-        blue: Float,
-        alpha: Float = 1.0F,
-        checkRange: Boolean = false
-    ) : this(
-        (red.fixValue(checkRange, "Red") * 255).toInt(),
-        (green.fixValue(checkRange, "Green") * 255).toInt(),
-        (blue.fixValue(checkRange, "Blue") * 255).toInt(),
-        (alpha.fixValue(checkRange, "Alpha") * 255).toInt(),
-        checkRange
+    inline val green: Int get() = argb shr 8 and 0xFF
+
+    inline val greenF: Float get() = green / 255f
+
+    inline fun green(green: Number): Color = Color(
+        ((normalize(green) shl 8) or (argb.toUInt() and 0xFFFF00FFu).toInt())
     )
 
+    inline val blue: Int get() = argb and 0xFF
+
+    inline val blueF: Float get() = blue / 255f
+
+    inline fun blue(blue: Number): Color = Color(
+        ((normalize(blue) and 0xFF) or (argb.toUInt() and 0xFFFFFF00u).toInt())
+    )
+
+    inline val alpha: Int get() = argb shr 24 and 0xFF
+
+    inline val alphaF: Float get() = alpha / 255f
+
+    inline fun alpha(alpha: Number): Color = Color(
+        ((normalize(alpha) shl 24) or (argb.toUInt() and 0x00FFFFFFu).toInt())
+    )
+    //endregion
+
+
+    //region HSV
     /**
-     * 获取颜色的ARGB信息
-     *
-     * Blue 0-7 bit
-     *
-     * Green 8-15 bit
-     *
-     * Red 16-23 bit
-     *
-     * Alpha 24-31 bit
+     * 色相 范围 0-1
      */
-    override var argb: Int
-
-    override var rgb: Int
-        get() = argb and 0xFFFFFF
-        set(value) {
-            argb = argb and 0xFF000000.toInt() or value
-        }
-
-    override val hexStr: String get() = "#${argb.toUInt().toString(16).fillBefore(8, '0').uppercase()}"
-
-    /**
-     * 红色值 Range(0 ~ 255)
-     */
-    override var red: Int
-        get() = argb shr 16 and 0xFF
-        set(value) {
-            argb = (alpha and 0xFF shl 24) or (value.fixValue(
-                checkRange,
-                "Red"
-            ) and 0xFF shl 16) or (green and 0xFF shl 8) or (blue and 0xFF)
-        }
+    val hue: Float get() = HSVHelper.getHue(this)
 
     /**
-     * 红色值 Range(0.0F ~ 1.0F)
+     * 设置色相
+     * @param hue 范围 0-1
      */
-    override var redF: Float
-        get() = red.toFloat() / 255
-        set(value) {
-            red = (value.fixValue(checkRange, "Red") * 255).toInt()
-        }
-
+    fun hue(hue: Float): Color =
+        HSVHelper.setHue(this, normalizeHSV(hue))
 
     /**
-     * 获取修改[red]之后的对象
-     * @param red [Int] Range(0 ~ 255)
-     * @return [Color] 原始对象
+     * 饱和度 0-1
      */
-    fun red(red: Int): Color = this.apply { this.red = red }
+    val saturation: Float get() = HSVHelper.getSaturation(this)
 
     /**
-     * 获取修改[redF]之后的对象
-     * @param red [Float] Range(0.0F ~ 1.0F)
-     * @return [Color] 原始对象
+     * 设置饱和度
+     * @param saturation 0-1
      */
-    fun red(red: Float): Color = this.apply { this.redF = red }
+    fun saturation(saturation: Float): Color =
+        HSVHelper.setSaturation(this, normalizeHSV(saturation))
 
     /**
-     * 绿色值 Range(0 ~ 255)
+     * 亮度 0-1
      */
-    override var green: Int
-        get() = argb shr 8 and 0xFF
-        set(value) {
-            argb = (alpha and 0xFF shl 24) or (red and 0xFF shl 16) or (value.fixValue(
-                checkRange,
-                "Green"
-            ) and 0xFF shl 8) or (blue and 0xFF)
-        }
+    val value: Float get() = HSVHelper.getValue(this)
 
     /**
-     * 绿色值 Range(0.0F ~ 1.0F)
+     * 设置亮度
+     * @param value 0-1
      */
-    override var greenF: Float
-        get() = green.toFloat() / 255
-        set(value) {
-            green = (value.fixValue(checkRange, "Green") * 255).toInt()
-        }
+    fun value(value: Float): Color =
+        HSVHelper.setValue(this, normalizeHSV(value))
+    //endregion
 
-    /**
-     * 获取修改[green]之后的对象
-     * @param green [Int] Range(0 ~ 255)
-     * @return [Color] 原始对象
-     */
-    fun green(green: Int): Color = this.apply { this.green = green }
-
-    /**
-     * 获取修改[greenF]之后的对象
-     * @param green [Float] Range(0.0F ~ 1.0F)
-     * @return [Color] 原始对象
-     */
-    fun green(green: Float): Color = this.apply { this.greenF = green }
-
-    /**
-     * 蓝色值 Range(0 ~ 255)
-     */
-    override var blue: Int
-        get() = argb shr 0 and 0xFF
-        set(value) {
-            argb = (alpha and 0xFF shl 24) or (red and 0xFF shl 16) or (green and 0xFF shl 8) or (value.fixValue(
-                checkRange,
-                "Blue"
-            ) and 0xFF)
-        }
-
-    /**
-     * 蓝色值 Range(0.0F ~ 1.0F)
-     */
-    override var blueF: Float
-        get() = blue.toFloat() / 255
-        set(value) {
-            blue = (value.fixValue(checkRange, "Blue") * 255).toInt()
-        }
-
-    /**
-     * 获取修改[blue]之后的对象
-     * @param blue [Int] Range(0 ~ 255)
-     * @return [Color] 原始对象
-     */
-    fun blue(blue: Int): Color = this.apply { this.blue = blue }
-
-    /**
-     * 获取修改[blueF]之后的对象
-     * @param blue [Float] Range(0.0F ~ 1.0F)
-     * @return [Color] 原始对象
-     */
-    fun blue(blue: Float): Color = this.apply { this.blueF = blue }
-
-    /**
-     * 不透明度 Range(0 ~ 255)
-     */
-    override var alpha: Int
-        get() = argb shr 24 and 0xFF
-        set(value) {
-            argb = (value.fixValue(
-                checkRange,
-                "Alpha"
-            ) and 0xFF shl 24) or (red and 0xFF shl 16) or (green and 0xFF shl 8) or (blue and 0xFF)
-        }
-
-    /**
-     * 不透明度 Range(0.0F ~ 1.0F)
-     */
-    override var alphaF: Float
-        get() = alpha.toFloat() / 255
-        set(value) {
-            alpha = (value.fixValue(checkRange, "Alpha") * 255).toInt()
-        }
-
-    /**
-     * 获取修改[alpha]之后的对象
-     * @param alpha [Int] Range(0 ~ 255)
-     * @return [Color] 原始对象
-     */
-    fun alpha(alpha: Int): Color = this.apply { this.alpha = alpha }
-
-    /**
-     * 获取修改[alpha]之后的对象
-     * @param alpha [Float] Range(0.0F ~ 1.0F)
-     * @return [Color] 原始对象
-     */
-    fun alpha(alpha: Float): Color = this.apply { this.alphaF = alpha }
-
-    /**
-     * 获取当前颜色的副本
-     * @return [Color] 复制对象
-     */
-    override fun clone(): Color {
-        return ofARGB(argb)
+    fun lerp(to: Color, fraction: Float, alpha: Boolean = false): Color {
+        val r = this.red.lerp(to.red, fraction)
+        val g = this.green.lerp(to.green, fraction)
+        val b = this.blue.lerp(to.blue, fraction)
+        val a = if (alpha) this.alpha.lerp(to.alpha, fraction) else this.alpha
+        return fromARGB(r, g, b, a)
     }
 
-    /**
-     * 获取调整不透明度之后的颜色复制对象
-     *
-     * 不透明度 = 当前不透明度 * opacity
-     *
-     * @param opacity [Float] Range(0.0F ~ 1.0F)
-     * @return [Color] 复制对象
-     */
-    fun opacity(opacity: Float): Color = this.clone().apply { alphaF *= opacity.fixValue(checkRange, "Opacity") }
-
-    /**
-     * 获取调整不透明度之后的颜色复制对象
-     *
-     * 不透明度 = 当前不透明度 * opacity
-     *
-     * @param opacity [Float] Range(0 ~ 255)
-     * @return [Color] 复制对象
-     */
-    fun opacity(opacity: Int): Color = this.clone().apply { alpha = (alpha * (opacity.fixValue(checkRange, "Opacity") / 255f)).toInt() }
-
-    override operator fun plus(other: ARGBColor): Color {
-        return super.plus(other) as Color
+    fun hsvLerp(to: Color, fraction: Float, alpha: Boolean = false): Color {
+        val self = HSVHelper.getOrPut(this.rgb)
+        val toHSV = HSVHelper.getOrPut(to.rgb)
+        val h = self.hue.lerp(toHSV.hue, fraction)
+        val s = self.saturation.lerp(toHSV.saturation, fraction)
+        val v = self.value.lerp(toHSV.value, fraction)
+        val a = if (alpha) this.alpha.lerp(to.alpha, fraction) else this.alpha
+        return fromHSV(h, s, v, a)
     }
 
-    operator fun plusAssign(other: ARGBColor) {
-        red = (red + other.red).coerceIn(redRange)
-        green = (green + other.green).coerceIn(greenRange)
-        blue = (blue + other.blue).coerceIn(blueRange)
-        alpha = (alpha + other.alpha).coerceIn(alphaRange)
+    fun reverse(alpha: Boolean = false): Color {
+        val r = 255 - red
+        val g = 255 - green
+        val b = 255 - blue
+        val a = if (alpha) 255 - this.alpha else this.alpha
+        return fromARGB(r, g, b, a)
     }
 
-    override operator fun minus(other: ARGBColor): Color {
-        return super.minus(other) as Color
+    operator fun plus(other: Color): Color {
+        val red = (this.red + other.red).coerceIn(0, 255)
+        val green = (this.green + other.green).coerceIn(0, 255)
+        val blue = (this.blue + other.blue).coerceIn(0, 255)
+        val alpha = (this.alpha + other.alpha).coerceIn(0, 255)
+        return fromARGB(red, green, blue, alpha)
     }
 
-    operator fun minusAssign(other: ARGBColor) {
-        red = (red - other.red).coerceIn(redRange)
-        green = (green - other.green).coerceIn(greenRange)
-        blue = (blue - other.blue).coerceIn(blueRange)
-        alpha = (alpha - other.alpha).coerceIn(alphaRange)
+    operator fun minus(other: Color): Color {
+        val red = (this.red - other.red).coerceIn(0, 255)
+        val green = (this.green - other.green).coerceIn(0, 255)
+        val blue = (this.blue - other.blue).coerceIn(0, 255)
+        val alpha = (this.alpha - other.alpha).coerceIn(0, 255)
+        return fromARGB(red, green, blue, alpha)
     }
 
-    override operator fun times(other: ARGBColor): Color {
-        return super.times(other) as Color
+    operator fun times(other: Color): Color {
+        val red = this.redF * other.redF
+        val green = this.greenF * other.greenF
+        val blue = this.blueF * other.blueF
+        val alpha = this.alphaF * other.alphaF
+        return fromARGB(red, green, blue, alpha)
     }
 
-    operator fun timesAssign(other: ARGBColor) {
-        redF = (redF * other.redF).coerceIn(redFRange)
-        greenF = (greenF * other.greenF).coerceIn(greenFRange)
-        blueF = (blueF * other.blueF).coerceIn(blueFRange)
-        alphaF = (alphaF * other.alphaF).coerceIn(alphaFRange)
+    operator fun div(other: Color): Color {
+        val red = (this.redF / other.redF).coerceIn(0f, 1f)
+        val green = (this.greenF / other.greenF).coerceIn(0f, 1f)
+        val blue = (this.blueF / other.blueF).coerceIn(0f, 1f)
+        val alpha = (this.alphaF / other.alphaF).coerceIn(0f, 1f)
+        return fromARGB(red, green, blue, alpha)
     }
-
-    override operator fun div(other: ARGBColor): Color {
-        return super.div(other) as Color
-    }
-
-    operator fun divAssign(other: ARGBColor) {
-        red = (red / other.red).coerceIn(redRange)
-        green = (green / other.green).coerceIn(greenRange)
-        blue = (blue / other.blue).coerceIn(blueRange)
-        alpha = (alpha / other.alpha).coerceIn(alphaRange)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        return argb == (other as Color).argb
-    }
-
-    override fun hashCode(): Int {
-        return argb.hashCode()
-    }
-
-    override fun toString(): String {
-        return "Color(argb=$argb, hexStr='$hexStr', red=$red, green=$green, blue=$blue, alpha=$alpha)"
-    }
-
 
 }

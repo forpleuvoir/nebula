@@ -3,7 +3,7 @@ package moe.forpleuvoir.nebula.config.item.impl
 import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.extensions.serialization
+import moe.forpleuvoir.nebula.serialization.codec.serialization
 import java.util.*
 
 class ConfigDate(

@@ -93,4 +93,8 @@ class SerializeElementCheckTypeResult<R : Any> internal constructor(private val 
         }.getOrDefault(defaultValue)
     }
 
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun toResult(): Result<R> = runCatching { getOrThrow() }
+
+
 }

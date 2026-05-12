@@ -2,15 +2,9 @@
 
 package moe.forpleuvoir.nebula.serialization.base
 
-import moe.forpleuvoir.nebula.common.color.ARGBColor
-import moe.forpleuvoir.nebula.common.color.Color
-import moe.forpleuvoir.nebula.common.color.HSVColor
-import moe.forpleuvoir.nebula.common.color.RGBColor
-import moe.forpleuvoir.nebula.serialization.extensions.serializationAsObject
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
-import kotlin.reflect.KClass
 
 /**
  *
@@ -31,32 +25,7 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
 
     constructor() : this(members = LinkedHashMap())
 
-    companion object {
-
-        internal val serializerCache: MutableMap<KClass<out Any>, (Any) -> SerializeObject> = mutableMapOf()
-
-        init {
-            register<Color>(Color::serializationAsObject)
-            register<HSVColor>(HSVColor::serializationAsObject)
-            register<RGBColor>(RGBColor::serializationAsObject)
-            register<ARGBColor>(ARGBColor::serializationAsObject)
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        private inline fun <reified T : Any> register(noinline func: (T) -> SerializeObject) {
-            serializerCache[T::class] = func as (Any) -> SerializeObject
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun <T : Any> registerSerializer(type: KClass<T>, func: (T) -> SerializeObject) {
-            serializerCache[type] = func as (Any) -> SerializeObject
-        }
-
-        inline fun <reified T : Any> registerSerializer(noinline func: (T) -> SerializeObject) {
-            registerSerializer(T::class, func)
-        }
-
-    }
+    companion object;
 
     override fun deepCopy(): SerializeObject {
         if (this.isEmpty()) return SerializeObject()

@@ -1,20 +1,20 @@
 [versions]
-nebulaVersion = "0.2.31"
+nebulaVersion = "0.3.0"
 #depn
-shadowVersion = "8.1.1"
-kotlinVersion = "2.2.20"
-kotlinCoroutinesVersion = "1.10.2"
-gsonVersion = "2.10"
+shadow = "9.4.1"
+kotlin = "2.3.21"
+kotlinCoroutines = "1.11.0"
+gson = "2.10"
 
 [libraries]
-kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinVersion" }
-kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlinVersion" }
-kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutinesVersion" }
-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion" }
+kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlinReflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+kotlinCoroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [bundles]
 kotlin = ["kotlinStdlib", "kotlinReflect", "kotlinCoroutines"]
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVersion" }
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadowVersion" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

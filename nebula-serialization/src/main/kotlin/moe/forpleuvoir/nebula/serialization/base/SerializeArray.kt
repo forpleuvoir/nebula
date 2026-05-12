@@ -32,6 +32,8 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             }
         else ArrayList())
 
+    companion object;
+
     override fun deepCopy(): SerializeArray {
         if (this.isNotEmpty()) {
             val result = SerializeArray(elements.size)
@@ -50,14 +52,14 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
         return SerializeArray()
     }
 
-    override val asPrimitive: SerializePrimitive
+    override val asPrimitive: SerializePrimitive?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asPrimitive
             }
             return super.asPrimitive
         }
-    override val asObject: SerializeObject
+    override val asObject: SerializeObject?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asObject
@@ -65,84 +67,91 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             return super.asObject
         }
 
-    override val asNull: SerializeNull
+    override val asNull: SerializeNull?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asNull
             }
             return super.asNull
         }
-    override val asString: String
+    override val asChar: Char?
+        get() {
+            if (this.size == 1) {
+                return this.elements[0].asChar
+            }
+            return super.asChar
+        }
+    override val asString: String?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asString
             }
             return super.asString
         }
-    override val asBoolean: Boolean
+    override val asBoolean: Boolean?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asBoolean
             }
             return super.asBoolean
         }
-    override val asNumber: Number
+    override val asNumber: Number?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asNumber
             }
             return super.asNumber
         }
-    override val asInt: Int
+    override val asInt: Int?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asInt
             }
             return super.asInt
         }
-    override val asLong: Long
+    override val asLong: Long?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asLong
             }
             return super.asLong
         }
-    override val asShort: Short
+    override val asShort: Short?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asShort
             }
             return super.asShort
         }
-    override val asByte: Byte
+    override val asByte: Byte?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asByte
             }
             return super.asByte
         }
-    override val asFloat: Float
+    override val asFloat: Float?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asFloat
             }
             return super.asFloat
         }
-    override val asDouble: Double
+    override val asDouble: Double?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asDouble
             }
             return super.asDouble
         }
-    override val asBigInteger: BigInteger
+    override val asBigInteger: BigInteger?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asBigInteger
             }
             return super.asBigInteger
         }
-    override val asBigDecimal: BigDecimal
+    override val asBigDecimal: BigDecimal?
         get() {
             if (this.size == 1) {
                 return this.elements[0].asBigDecimal
@@ -196,7 +205,7 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
     }
 
 
-    override fun <T : Any?> toArray(generator: IntFunction<Array<out T?>?>): Array<out T?>? {
+    override fun <T> toArray(generator: IntFunction<Array<out T?>?>): Array<out T?>? {
         @Suppress("DEPRECATION")
         return super.toArray(generator)
     }

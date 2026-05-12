@@ -1,5 +1,5 @@
 import moe.forpleuvoir.nebula.common.color.Color
-import moe.forpleuvoir.nebula.common.color.HSVColor
+import moe.forpleuvoir.nebula.common.color.HSVHelper
 import org.junit.jupiter.api.Test
 import java.awt.Color.HSBtoRGB
 import java.io.File
@@ -12,37 +12,27 @@ class ColorTest {
 
     @Test
     fun test1() {
-        val a = HSVColor(360f, 1f, 1f, 0.5f)
-        val b = HSVColor(360f, 1f, 1f, 1f)
+        val a = Color.fromHSV(1f, 1f, 1f, 0.5f)
+        val b = Color.fromHSV(1f, 1f, 1f, 1f)
         print(a)
-        println(a.argb.toUInt().toString(16))
+        println(a.rgb)
         print(b)
-        println(b.argb.toUInt().toString(16))
-        println((((0.5 * 255).toInt() shl 24) or HSBtoRGB(1f, 1f, 1f)).toUInt().toString(16))
+        println(b.rgb)
+        println(Color.fromARGB(1f, 1f, 1f) == Color.fromARGB(1f, 1f, 1f))
+        HSVHelper.cache.toList().forEach { (k, v) -> println("${k.toString(16)} -> $v -> ${Color.fromHSV(v.hue, v.saturation, v.value)}") }
     }
 
-}
+    @Test
+    fun test() {
+        val randomColor: UInt = ((Math.random() * 0xFFFFFFFFu.toDouble()).toUInt())
+        println("随机生成的颜色值：0x${randomColor.toString(16).uppercase(Locale.getDefault())}")
 
-fun main() {
-    println(Color.ofARGB(0xFF8CECFF))
-}
-
-fun hsv() {
-    val c = HSVColor(hue = 123f, saturation = 0.23f, value = 0.66f)
-    println(c)
-    c.argb = 0xfffff
-    println(c)
-}
-
-fun test() {
-    val randomColor: UInt = ((Math.random() * 0xFFFFFFFFu.toDouble()).toUInt())
-    println("随机生成的颜色值：0x${randomColor.toString(16).uppercase(Locale.getDefault())}")
-
-    val isValid = Color.isValidColor(randomColor.toInt())
-    if (isValid) {
-        println("该颜色值是有效的。")
-    } else {
-        println("该颜色值是无效的。")
+        val isValid = Color.isValidColor(randomColor.toInt())
+        if (isValid) {
+            println("该颜色值是有效的。${Color.fromARGB(randomColor)}")
+        } else {
+            println("该颜色值是无效的。")
+        }
     }
 }
 
@@ -54,7 +44,7 @@ fun map() {
         val colorStrs = ArrayList<String>(colorCodes.size)
         colorNames.forEachIndexed { index, it ->
             val name = it.replace(" ", "_").replace("-", "_").uppercase()
-            val color = Color.ofString(colorCodes[index])
+            val color = Color.fromHexString(colorCodes[index])
             colorStrs.add("@JvmStatic\n")
             colorStrs.add("val $name : RGBColor get() = Color(${color.red} ,${color.green} ,${color.blue})\n\n")
         }

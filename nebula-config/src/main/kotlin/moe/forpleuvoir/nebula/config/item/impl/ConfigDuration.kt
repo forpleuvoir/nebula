@@ -3,8 +3,8 @@ package moe.forpleuvoir.nebula.config.item.impl
 import moe.forpleuvoir.nebula.config.ConfigBase
 import moe.forpleuvoir.nebula.config.container.ConfigContainer
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.extensions.deserialization
-import moe.forpleuvoir.nebula.serialization.extensions.serialization
+import moe.forpleuvoir.nebula.serialization.codec.deserialization
+import moe.forpleuvoir.nebula.serialization.codec.serialization
 import kotlin.time.Duration
 
 class ConfigDuration(

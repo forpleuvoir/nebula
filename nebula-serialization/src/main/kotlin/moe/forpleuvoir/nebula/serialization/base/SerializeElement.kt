@@ -1,17 +1,7 @@
 package moe.forpleuvoir.nebula.serialization.base
 
-import moe.forpleuvoir.nebula.common.color.ARGBColor
-import moe.forpleuvoir.nebula.common.color.Color
-import moe.forpleuvoir.nebula.common.color.HSVColor
-import moe.forpleuvoir.nebula.common.color.RGBColor
-import moe.forpleuvoir.nebula.serialization.extensions.DateDeserializer
-import moe.forpleuvoir.nebula.serialization.extensions.deserialization
-import moe.forpleuvoir.nebula.serialization.extensions.serialization
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.*
-import kotlin.reflect.KClass
-import kotlin.time.Duration
 
 /**
  *
@@ -29,60 +19,7 @@ import kotlin.time.Duration
  */
 sealed interface SerializeElement {
 
-    companion object {
-
-        internal val serializerCache: MutableMap<KClass<out Any>, (Any) -> SerializeElement> = mutableMapOf()
-
-        internal val deserializerCache: MutableMap<KClass<out Any>, (SerializeElement) -> Any> = mutableMapOf()
-
-        init {
-            _register<Color>(Color::serialization, Color::deserialization)
-            _register<HSVColor>(HSVColor::serialization, HSVColor::deserialization)
-            _registerSerializer<RGBColor>(RGBColor::serialization)
-            _registerSerializer<ARGBColor>(ARGBColor::serialization)
-            _register<Duration>(Duration::serialization, Duration::deserialization)
-            _register<Date>(Date::serialization, DateDeserializer::deserialization)
-        }
-
-        @Suppress("FunctionName")
-        private inline fun <reified T : Any> _register(noinline serFunc: (T) -> SerializeElement, noinline desrFunc: (SerializeElement) -> T) {
-            _registerSerializer<T>(serFunc)
-            _registerDeserializer(desrFunc)
-        }
-
-        private inline fun <reified T : Any> register(noinline serFunc: (T) -> SerializeElement, noinline desrFunc: (SerializeElement) -> T) {
-            registerSerializer<T>(serFunc)
-            registerDeserializer(desrFunc)
-        }
-
-        @Suppress("UNCHECKED_CAST", "FunctionName")
-        private inline fun <reified T : Any> _registerSerializer(noinline func: (T) -> SerializeElement) {
-            serializerCache[T::class] = func as (Any) -> SerializeElement
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun <T : Any> registerSerializer(type: KClass<T>, func: (T) -> SerializeElement) {
-            serializerCache[type] = func as (Any) -> SerializeElement
-        }
-
-        inline fun <reified T : Any> registerSerializer(noinline func: (T) -> SerializeElement) {
-            registerSerializer(T::class, func)
-        }
-
-        @Suppress("FunctionName")
-        private inline fun <reified T : Any> _registerDeserializer(noinline func: (SerializeElement) -> T) {
-            deserializerCache[T::class] = func
-        }
-
-        fun <T : Any> registerDeserializer(type: KClass<T>, func: (SerializeElement) -> T) {
-            deserializerCache[type] = func
-        }
-
-        inline fun <reified T : Any> registerDeserializer(noinline func: (SerializeElement) -> T) {
-            registerDeserializer(T::class, func)
-        }
-
-    }
+    companion object;
 
     fun deepCopy(): SerializeElement
 
@@ -112,95 +49,37 @@ sealed interface SerializeElement {
      */
     val isNull: Boolean get() = this is SerializeNull
 
-    private fun errorType(type: KClass<*>) =
-        UnsupportedOperationException("Cannot convert [${this::class.simpleName}] to [${type.qualifiedName}].")
+    val asPrimitive: SerializePrimitive? get() = null
 
-    val asPrimitive: SerializePrimitive
-        get() {
-            if (this.isPrimitive) {
-                return this as SerializePrimitive
-            }
-            throw errorType(SerializePrimitive::class)
-        }
+    val asObject: SerializeObject? get() = null
 
-    val asObject: SerializeObject
-        get() {
-            if (this.isObject) {
-                return this as SerializeObject
-            }
-            throw errorType(SerializeObject::class)
-        }
+    val asArray: SerializeArray? get() = null
 
-    val asArray: SerializeArray
-        get() {
-            if (this.isArray) {
-                return this as SerializeArray
-            }
-            throw errorType(SerializeArray::class)
-        }
+    val asNull: SerializeNull? get() = null
 
-    val asNull: SerializeNull
-        get() {
-            if (this.isNull) {
-                return this as SerializeNull
-            }
-            throw errorType(SerializeNull::class)
-        }
+    val asChar: Char? get() = null
 
-    val asString: String
-        get() {
-            throw errorType(String::class)
-        }
+    val asString: String? get() = null
 
-    val asBoolean: Boolean
-        get() {
-            throw errorType(Boolean::class)
-        }
+    val asBoolean: Boolean? get() = null
 
-    val asNumber: Number
-        get() {
-            throw errorType(Number::class)
-        }
+    val asNumber: Number? get() = null
 
-    val asInt: Int
-        get() {
-            throw errorType(Int::class)
-        }
+    val asInt: Int? get() = null
 
-    val asLong: Long
-        get() {
-            throw errorType(Long::class)
-        }
+    val asLong: Long? get() = null
 
-    val asShort: Short
-        get() {
-            throw errorType(Short::class)
-        }
+    val asShort: Short? get() = null
 
-    val asByte: Byte
-        get() {
-            throw errorType(Byte::class)
-        }
+    val asByte: Byte? get() = null
 
-    val asFloat: Float
-        get() {
-            throw errorType(Float::class)
-        }
+    val asFloat: Float? get() = null
 
-    val asDouble: Double
-        get() {
-            throw errorType(Double::class)
-        }
+    val asDouble: Double? get() = null
 
-    val asBigInteger: BigInteger
-        get() {
-            throw errorType(BigInteger::class)
-        }
+    val asBigInteger: BigInteger? get() = null
 
-    val asBigDecimal: BigDecimal
-        get() {
-            throw errorType(BigDecimal::class)
-        }
+    val asBigDecimal: BigDecimal? get() = null
 
 
 }

@@ -79,7 +79,7 @@ tasks {
         compilerOptions {
             suppressWarnings = true
             jvmTarget.set(JvmTarget.JVM_21)
-            freeCompilerArgs.add("-Xjvm-default=all")
+            freeCompilerArgs.addAll("-Xjvm-default=all", "-Xcontext-parameters")
         }
     }
 
@@ -198,7 +198,10 @@ subprojects {
             compilerOptions {
                 suppressWarnings = true
                 jvmTarget.set(JvmTarget.JVM_21)
-                freeCompilerArgs.add("-Xjvm-default=all")
+                freeCompilerArgs.addAll(
+                    "-Xjvm-default=all",
+                    "-Xcontext-parameters"
+                )
             }
         }
 

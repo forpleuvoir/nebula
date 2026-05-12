@@ -7,18 +7,6 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
 
-fun SerializePrimitive.toJavaPrimitive(): Any {
-    return if (!isNumber) value else {
-        if (value.toString().contains(Regex("[-+]?[0-9]*\\.[0-9]+"))) {
-            asDouble
-        } else if (value.toString().contains(Regex("^-?[0-9]*\$"))) {
-            asInt
-        } else {
-            asString
-        }
-    }
-}
-
 
 fun <R : Any> SerializePrimitive.checkValue(block: SerializePrimitiveCheckTypeResult<R>.() -> Unit = {}): SerializePrimitiveCheckTypeResult<R> {
     return SerializePrimitiveCheckTypeResult<R>(this).apply { block() }
@@ -26,7 +14,7 @@ fun <R : Any> SerializePrimitive.checkValue(block: SerializePrimitiveCheckTypeRe
 
 class SerializePrimitiveCheckTypeResult<R : Any> internal constructor(private val element: SerializePrimitive) {
 
-    private var expectedTypes = mutableListOf<KClass<*>>()
+    private val expectedTypes = mutableListOf<KClass<*>>()
 
     private lateinit var result: Any
 
@@ -90,5 +78,8 @@ class SerializePrimitiveCheckTypeResult<R : Any> internal constructor(private va
             getOrThrow()
         }.getOrDefault(defaultValue)
     }
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun toResult(): Result<R> = runCatching { getOrThrow() }
 
 }

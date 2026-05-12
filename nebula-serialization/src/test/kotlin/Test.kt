@@ -1,17 +1,21 @@
 import moe.forpleuvoir.nebula.common.api.ExperimentalApi
 import moe.forpleuvoir.nebula.common.color.Colors
-import moe.forpleuvoir.nebula.common.util.primitive.replace
 import moe.forpleuvoir.nebula.serialization.annotation.SerializerName
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import moe.forpleuvoir.nebula.serialization.base.ops.build
+import moe.forpleuvoir.nebula.serialization.codec.Codec
+import moe.forpleuvoir.nebula.serialization.codec.deserialization
+import moe.forpleuvoir.nebula.serialization.codec.nullable
+import moe.forpleuvoir.nebula.serialization.codec.serialization
 import moe.forpleuvoir.nebula.serialization.extensions.*
-import moe.forpleuvoir.nebula.serialization.gson.parseToJsonObject
 import moe.forpleuvoir.nebula.serialization.gson.toJsonString
 import moe.forpleuvoir.nebula.serialization.json.JsonParser
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.sql.DriverManager.println
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
@@ -21,6 +25,56 @@ import kotlin.time.measureTime
 
 
 class SerializationTest {
+
+    data class Student(val name: String, val age: Int) {
+        companion object {
+            val CODEC = Codec.create<Student>()
+                .field<String>("name").getter(Student::name).default("name").codec(Codec.string)
+                .field<Int>("age").getter(Student::age).skipDefault().default(22).codec(Codec.int)
+                .build(::Student)
+        }
+    }
+
+    data class User(val name: String, val age: Int?) {
+        companion object {
+            val CODEC = Codec.create<User>()
+                .field<String>("name").getter(User::name).default("name").codec(Codec.string)
+                .field<Int?>("age").getter(User::age).skipNull().codec(Codec.int.nullable())
+                .build(::User)
+        }
+    }
+
+    @Test
+    fun testCodec() {
+        context(Student.CODEC) {
+            val student = Student("forpleuvoir", 22)
+            val element = student.serialization
+            println(element)
+            println(element.deserialization.getOrThrow())
+
+            SerializeObject.build {
+                context(Codec.string) {
+                    "name" to "forpleuvoir"
+                    "age" to "怎么是字符串"
+                }
+            }.deserialization.let {
+                println(it.getOrThrow())
+            }
+        }
+        context(User.CODEC) {
+            val user = User("forpleuvoir", null)
+            val element = user.serialization
+            println(element)
+            println(element.deserialization.getOrThrow())
+            SerializeObject.build {
+                context(Codec.int.nullable(), Codec.string) {
+                    "name" to  "dhwuia"
+                }
+            }.let {
+                println(it.deserialization.getOrThrow())
+            }
+        }
+    }
 
     @Test
     fun test0() {
@@ -124,7 +178,7 @@ class SerializationTest {
 }
 
 fun main() {
-    test3()
+    test1()
 }
 
 @OptIn(ExperimentalApi::class)
@@ -155,16 +209,20 @@ fun test1() {
           "url": "https://maven.forpleuvoir.moe"
         }
 	""".trimIndent()
-    val obj: SerializeObject
+
+    println("耗时:${measureTime { println(JsonParser.parse(json)) }}")
     measureTime {
-        obj = JsonParser.parse(json).asObject
-    }.let { println(it) }
-//    println(obj)
-//    println(obj["notes"]?.asString?.replace(JsonParser.ESCAPE))
-    println(JsonParser.parse(obj["notes"]!!.asString.replace(JsonParser.ESCAPE)).asObject["nestedKey"]!!.asString)
-    println(json.parseToJsonObject.get("notes").asString)
-//    println(obj.dumpAsJson(true))
-//    println(obj["contacts"]?.dumpAsJson(true))
+        repeat(5000) {
+            JsonParser.parse(json)
+        }
+    }.let { println("预热5000次,平均耗时:${it / 5000}") }
+
+    measureTime {
+        repeat(100000) {
+            JsonParser.parse(json)
+        }
+    }.let { println("100000次,平均耗时:${it / 100000}") }
+
 }
 
 @OptIn(ExperimentalApi::class, ExperimentalReflectionOnLambdas::class)

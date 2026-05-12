@@ -61,7 +61,7 @@ open class ConfigContainerImpl(
     override fun getUserData(key: String): Any? = userData[key]
 
     override fun setUserData(key: String, value: Any) {
-        userData.put(key, value)
+        userData[key] = value
     }
 
     override fun init() {

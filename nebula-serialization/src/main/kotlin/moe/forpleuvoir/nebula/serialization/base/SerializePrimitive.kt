@@ -32,7 +32,7 @@ class SerializePrimitive private constructor(internal val value: Any) : Serializ
 
     constructor(bigDecimal: BigDecimal) : this(bigDecimal as Any)
 
-    constructor(char: Char) : this(char.toString())
+    constructor(char: Char) : this(char as Any)
 
     override fun deepCopy(): SerializePrimitive = SerializePrimitive(this.value)
 
@@ -60,68 +60,108 @@ class SerializePrimitive private constructor(internal val value: Any) : Serializ
 
     val isBigDecimal: Boolean get() = value is BigDecimal
 
-    override val asString: String
-        get() {
-            return if (this.isNumber) {
-                this.asNumber.toString()
-            } else {
-                if (this.isBoolean) (value as Boolean).toString() else (value as String)
+    override val asChar: Char?
+        get() = when (value) {
+            is Char   -> value
+            is String -> value.toCharArray().firstOrNull()
+            else      -> value.toString().toCharArray().firstOrNull()
+        }
+
+    override val asString: String?
+        get() = when (value) {
+            is String -> value
+            else      -> value.toString()
+        }
+
+    override val asBoolean: Boolean?
+        get() = when (value) {
+            is Boolean -> value
+            else       -> value.toString().toBooleanStrictOrNull()
+        }
+
+    override val asNumber: Number?
+        get() = when (value) {
+            is Number -> value
+            is String -> LazilyParsedNumber(value)
+            else      -> null
+        }
+
+    override val asInt: Int?
+        get() = when (value) {
+            is Number -> value.toInt()
+            else      -> value.toString().toIntOrNull()
+        }
+
+    override val asLong: Long?
+        get() = when (value) {
+            is Number -> value.toLong()
+            else      -> value.toString().toLongOrNull()
+        }
+
+    override val asShort: Short?
+        get() = when (value) {
+            is Number -> value.toShort()
+            else      -> value.toString().toShortOrNull()
+        }
+
+    override val asByte: Byte?
+        get() = when (value) {
+            is Number -> value.toByte()
+            else      -> value.toString().toByteOrNull()
+        }
+
+    override val asFloat: Float?
+        get() = when (value) {
+            is Number -> value.toFloat()
+            else      -> value.toString().toFloatOrNull()
+        }
+
+    override val asDouble: Double?
+        get() = when (value) {
+            is Number -> value.toDouble()
+            else      -> value.toString().toDoubleOrNull()
+        }
+
+    override val asBigInteger: BigInteger?
+        get() = when (value) {
+            is BigInteger -> value
+            else          -> runCatching { BigInteger(value.toString()) }.getOrNull()
+        }
+
+    override val asBigDecimal: BigDecimal?
+        get() = when (value) {
+            is BigDecimal -> value
+            else          -> runCatching { BigDecimal(value.toString()) }.getOrNull()
+        }
+
+    override fun toString(): String = when (value) {
+        is String -> "\"${escape(value)}\""
+        is Char   -> "\'${escape(value.toString())}\'"
+        else      -> value.toString()
+    }
+
+    private fun escape(s: String): String {
+        val sb = StringBuilder()
+        s.forEach { c ->
+            when (c) {
+                '"'      -> sb.append("\\\"")
+                '\\'     -> sb.append("\\\\")
+                '\b'     -> sb.append("\\b")
+                '\u000C' -> sb.append("\\f")
+                '\n'     -> sb.append("\\n")
+                '\r'     -> sb.append("\\r")
+                '\t'     -> sb.append("\\t")
+                else     -> {
+                    if (c.isISOControl()) {
+                        // 处理控制字符，转为 \u00XX 格式
+                        sb.append("\\u%04x".format(c.code))
+                    } else {
+                        sb.append(c)
+                    }
+                }
             }
         }
-
-    override val asBoolean: Boolean
-        get() {
-            return if (this.isBoolean) (value as Boolean) else asString.toBoolean()
-        }
-
-    override val asNumber: Number
-        get() {
-            return if (this.isString) LazilyParsedNumber(asString) else value as Number
-        }
-
-    override val asInt: Int
-        get() {
-            return if (this.isNumber) asNumber.toInt() else asString.toInt()
-        }
-
-    override val asLong: Long
-        get() {
-            return if (this.isNumber) asNumber.toLong() else asString.toLong()
-        }
-
-    override val asShort: Short
-        get() {
-            return if (this.isNumber) asNumber.toShort() else asString.toShort()
-        }
-
-    override val asByte: Byte
-        get() {
-            return if (this.isNumber) asNumber.toByte() else asString.toByte()
-        }
-
-    override val asFloat: Float
-        get() {
-            return if (this.isNumber) asNumber.toFloat() else asString.toFloat()
-        }
-
-    override val asDouble: Double
-        get() {
-            return if (this.isNumber) asNumber.toDouble() else asString.toDouble()
-        }
-
-    override val asBigInteger: BigInteger
-        get() {
-            return if (this.isBigInteger) value as BigInteger else BigInteger(asString)
-        }
-
-    override val asBigDecimal: BigDecimal
-        get() {
-            return if (this.isBigDecimal) value as BigDecimal else BigDecimal(asString)
-        }
-
-    override fun toString(): String {
-        if (isString) return "\"${asString}\""
-        return value.toString()
+        return sb.toString()
     }
 
     override fun hashCode(): Int {
