@@ -1,61 +1,49 @@
+@file:Suppress("unused")
+
 package moe.forpleuvoir.nebula.config.manager.component
 
-import moe.forpleuvoir.nebula.config.manager.ConfigManager
-import moe.forpleuvoir.nebula.config.manager.ConfigManagerComponentScope
-import moe.forpleuvoir.nebula.config.persistence.ConfigManagerPersistence
+import moe.forpleuvoir.nebula.config.ConfigManager
+import moe.forpleuvoir.nebula.config.DeserializationException
+import moe.forpleuvoir.nebula.config.persistence.ConfigPersistence
 import moe.forpleuvoir.nebula.config.util.ConfigUtil
 import java.nio.file.Path
 
 class LocalConfig(
-    val manager: () -> ConfigManager,
     val configPath: () -> Path,
-    val persistence: () -> ConfigManagerPersistence
+    val persistence: () -> ConfigPersistence,
+    override val manager: ConfigManager,
 ) : ConfigManagerComponent {
 
     override suspend fun onSave() {
-        if (!manager().savable()) return
-        ConfigUtil.run {
-            val file = configFile(persistence().wrapFileName(manager().key), configPath())
-            writeToFile(persistence().serializeToString(manager().serialization().asObject), file)
-            manager().markSaved()
-        }
+        if (!manager.savable()) return
+        onForcedSave()
     }
 
     override suspend fun onForcedSave() {
-        ConfigUtil.run {
-            val file = configFile(persistence().wrapFileName(manager().key), configPath())
-            writeToFile(persistence().serializeToString(manager().serialization().asObject), file)
-            manager().markSaved()
-        }
+        val file = ConfigUtil.configFile(persistence().wrapFileName(manager.name), configPath())
+        ConfigUtil.writeToFile(persistence().encode(manager.serialization()), file)
+        manager.markSaved()
     }
 
     override suspend fun onLoad() {
-        ConfigUtil.run {
-            val file = configFile(persistence().wrapFileName(manager().key), configPath())
-            persistence().stringToSerialization(readFileToString(file)).apply {
-                manager().deserialization(this)
+        val file = ConfigUtil.configFile(persistence().wrapFileName(manager.name), configPath())
+        persistence().decode(ConfigUtil.readFileToString(file))
+            .onSuccess {
+                manager.deserialization(it)
+            }.onFailure {
+                manager.exceptionHandler.onDeserializationException(manager, DeserializationException("Failed to load config file", it))
             }
-        }
     }
-
 }
 
-fun ConfigManager.localConfig(
+context(manager: ConfigManager)
+fun localConfig(
     configPath: () -> Path,
-    persistence: () -> ConfigManagerPersistence
-) = LocalConfig({ this }, configPath, persistence)
+    persistence: () -> ConfigPersistence,
+) = LocalConfig(configPath, persistence, manager).also { manager.compose(it) }
 
-fun ConfigManagerComponentScope.localConfig(
-    configPath: () -> Path,
-    persistence: () -> ConfigManagerPersistence
-) = LocalConfig({ this.manager }, configPath, persistence).also { compose(it) }
-
-fun ConfigManager.localConfig(
+context(manager: ConfigManager)
+fun localConfig(
     configPath: Path,
-    persistence: ConfigManagerPersistence
-) = LocalConfig({ this }, { configPath }, { persistence })
-
-fun ConfigManagerComponentScope.localConfig(
-    configPath: Path,
-    persistence: ConfigManagerPersistence
-) = LocalConfig({ this.manager }, { configPath }, { persistence }).also { compose(it) }
+    persistence: ConfigPersistence,
+) = localConfig({ configPath }, { persistence })

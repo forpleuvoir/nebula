@@ -30,5 +30,5 @@ tasks {
 val compileKotlin: KotlinCompile by tasks
 
 compileKotlin.compilerOptions {
-    freeCompilerArgs.set(listOf("-Xnon-local-break-continue"))
+    freeCompilerArgs.add("-Xnon-local-break-continue")
 }

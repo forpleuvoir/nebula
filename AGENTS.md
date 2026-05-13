@@ -85,18 +85,28 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 - **解析扩展**: `String.parseToJsonArray/parseToJsonObject/parseToJsonElement`
 
 ### `:nebula-config` — 配置管理
-- **架构**: `Config<V, C>` → `ConfigBase<V, C>` → 各类 ConfigItem
-- **配置项类型**:
-  - `ConfigString`, `ConfigBoolean`, `ConfigNumber`, `ConfigEnum`, `ConfigDate`, `ConfigDuration`, `ConfigColor`
-  - `ConfigList`, `ConfigStringList`, `ConfigNumberList`
-  - `ConfigStringKeyMap` (String→Any Map)
-  - `ConfigCycle` / `ConfigCycleString` (循环值)
-- **容器**: `ConfigContainer` → `ConfigContainerImpl`, `ConfigManager`
-- **管理器**: `ConfigManagerImpl` — save/load 生命周期, `markSavable`/`markSaved`, `forceSave`
-- **持久化**: `ConfigManagerPersistence` → `JsonConfigManagerPersistence` (JSON 文件存储)
-- **组件**: `ConfigManagerComponent` → `LocalConfig`(文件路径), `AutoSave`(定时/防抖自动保存)
-- **观察者**: `subscribe(callback)`, `onChange`, `onSaved`, `onLoaded`
-- **运算符**: `getValue`/`setValue` 支持 Kotlin 委托属性
+- **核心接口** (`config/`):
+  - `ConfigNode` — 节点基接口 (name, parent, root, metadata, path, comment), 继承 `Initializable` + `Matchable` + `Serde`
+  - `ConfigValued<C>` — 值语义 (defaultValue, getValue/setValue, asString, 委托运算符)
+  - `ConfigSerde<C>` — 序列化策略 (sealed: `ViaCodec<C>` / `ViaKSerializer<C>`)
+- **抽象基类**:
+  - `ConfigItem<C>` — 组合 Node + Valued + Resettable + Notifiable, `_value` 存储, 变更通知
+  - `Config<C>` — Codec/KSerializer 驱动的通用配置项, 一行构造
+- **容器**:
+  - `ConfigGroup` — 显式 `addConfig()` 注册, children LinkedHashMap, ser/des 迭代
+  - `ConfigManager` — 继承 Group, 添加 `components` 和 save/load 生命周期
+- **配置项类型** (`item/`):
+  - `ConfigString`, `ConfigBoolean`, `ConfigNumber<T>`(clamp), `ConfigByte/Short/Int/Long/Float/Double`
+  - `ConfigList<T>` — 实现 `MutableList<T>`, 变更自动通知
+  - `ConfigMap<V>` — 实现 `MutableMap<String,V>`, 变更自动通知
+  - `ConfigJavaEnum<E>`, `ConfigEnum<T>`
+  - `ConfigColor` (via ColorCodec/KSerializer), `ConfigDuration` (via DurationSerializer)
+- **持久化** (`persistence/`): `ConfigPersistence` → `JsonConfigPersistence` (内嵌 JSON 编码器)
+- **组件** (`component/`): `ConfigManagerComponent`(含 `manager`) → `LocalConfig`, `AutoSave`
+- **异常处理**: `ExceptionHandler` (Terminal/Throw 策略), `SerializationException`, `DeserializationException`
+- **Builder DSL**: `SerializeObject.build { }` / `SerializeArray()` — 构建 SerializeElement
+- **运算符**: `getValue`/`setValue` 委托属性, `invoke()` 取值
+- **扩展**: `comment`/`path`/`pathWithRoot`/`isRoot`/`flat`/`items`/`groups`/`startup()`
 
 ## 开发流程
 

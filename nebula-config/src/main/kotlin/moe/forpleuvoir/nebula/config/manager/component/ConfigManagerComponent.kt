@@ -1,6 +1,10 @@
 package moe.forpleuvoir.nebula.config.manager.component
 
+import moe.forpleuvoir.nebula.config.ConfigManager
+
 interface ConfigManagerComponent {
+
+    val manager: ConfigManager
 
     fun beginInit() = Unit
 

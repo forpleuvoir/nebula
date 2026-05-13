@@ -5,27 +5,22 @@ package moe.forpleuvoir.nebula.serialization.nebula
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.StructureKind
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.buildSerialDescriptor
-import kotlinx.serialization.encoding.CompositeEncoder
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encoding.encodeCollection
-import kotlinx.serialization.encoding.encodeStructure
-import moe.forpleuvoir.nebula.serialization.base.SerializeArray
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.base.SerializeNull
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
-import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
+import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 
 fun <T : Any> Codec<T>.toKSerializer(): KSerializer<T> = CodecKSerializer(this)
 
-class CodecKSerializer<T : Any>(
+fun <T> KSerializer<T>.toCodec(): Codec<T> = object : Codec<T> {
+    override fun serialization(target: T): SerializeElement =
+        NebulaFormat.encodeToElement(target, this@toCodec)
+
+    override fun deserialization(element: SerializeElement): Result<T> =
+        runCatching { NebulaFormat.decodeFromElement(element, this@toCodec) }
+}
+
+internal class CodecKSerializer<T : Any>(
     val codec: Codec<T>
 ) : KSerializer<T> {
 

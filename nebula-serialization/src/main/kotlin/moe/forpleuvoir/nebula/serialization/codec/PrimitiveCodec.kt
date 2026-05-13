@@ -40,14 +40,19 @@ object PrimitiveCodec {
         }
     }
 
+    private inline fun <T : Comparable<T>> byIntRange(int: IntRange, crossinline f: (Int) -> T): ClosedRange<T> = object : ClosedRange<T> {
+        override val start: T get() = f(int.first)
+        override val endInclusive: T get() = f(int.last)
+    }
+
     //region Byte
     val byte = create { it.asInt!!.toByte() }
 
     fun byte(default: Byte) = create(default) { it.asInt!!.toByte() }
 
-    fun byte(range: ClosedRange<Byte>) = create(range) { it.asInt!!.toByte() }
+    fun byte(range: IntRange) = create(byIntRange(range) { it.toByte() }) { it.asByte!! }
 
-    fun byte(default: Byte, range: ClosedRange<Byte>) = create(default, range) { it.asInt!!.toByte() }
+    fun byte(default: Byte, range: IntRange) = create(default, byIntRange(range) { it.toByte() }) { it.asInt!!.toByte() }
     //endregion
 
     //region Int
@@ -65,9 +70,9 @@ object PrimitiveCodec {
 
     fun short(default: Short) = create(default) { it.asShort!! }
 
-    fun short(range: ClosedRange<Short>) = create(range) { it.asShort!! }
+    fun short(range: IntRange) = create(byIntRange(range) { it.toShort() }) { it.asShort!! }
 
-    fun short(default: Short, range: ClosedRange<Short>) = create(default, range) { it.asShort!! }
+    fun short(default: Short, range: IntRange) = create(default, byIntRange(range) { it.toShort() }) { it.asShort!! }
     //endregion
 
     //region Long

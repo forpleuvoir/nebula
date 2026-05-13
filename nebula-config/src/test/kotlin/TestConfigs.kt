@@ -1,89 +1,84 @@
 import moe.forpleuvoir.nebula.common.color.Color
-import moe.forpleuvoir.nebula.common.color.HSVColor
-import moe.forpleuvoir.nebula.common.util.format
-import moe.forpleuvoir.nebula.config.container.ConfigContainerImpl
-import moe.forpleuvoir.nebula.config.item.impl.*
-import moe.forpleuvoir.nebula.config.manager.ConfigManagerImpl
-import moe.forpleuvoir.nebula.config.manager.component.autoSave
+import moe.forpleuvoir.nebula.config.ConfigGroup
+import moe.forpleuvoir.nebula.config.ConfigManager
+import moe.forpleuvoir.nebula.config.comment
+import moe.forpleuvoir.nebula.config.item.*
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
-import moe.forpleuvoir.nebula.config.manager.components
-import moe.forpleuvoir.nebula.config.persistence.jsonPersistence
-import moe.forpleuvoir.nebula.config.userdata.comment
+import moe.forpleuvoir.nebula.config.persistence.toml
+import moe.forpleuvoir.nebula.serialization.codec.Codec
 import java.nio.file.Path
-import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.TimeSource
-import kotlin.time.measureTime
 
-object TestConfigs : ConfigManagerImpl("test", autoScan = AutoScan.close) {
+object TestConfigs : ConfigManager("test") {
 
     init {
-        components {
-            localConfig({ Path.of("./build/config") }, ::jsonPersistence)
-            autoSave(initialDelay = 5.seconds, period = 5.seconds) { needSave ->
-                println(measureTime {
-                    println("当前是否需要保存 ${if (this.manager.savable()) "是" else "否"}")
-                    Numbers.int.setValue(Numbers.int.getValue() + 1)
-                    println("是否需要保存 ${if (needSave()) "是" else "否"}")
-                    if (needSave()) println("${Thread.currentThread().name} 开始保存：${Date().format("HH:mm:ss")}")
-                    if (needSave()) save()
-                })
-            }
+        localConfig(Path.of("./build/config"), toml())
+    }
+
+
+    private val numbers2 = Numbers2
+
+    object Numbers2 : ConfigGroup("config_numbers2", this) {
+        init {
+            comment("数字配置容器测试")
         }
+
+        val int = int("int", 10).comment("整数配置测试")
+        val double = double("double", 10.0).comment("浮点数配置测试")
     }
 
-    private var mark = TimeSource.Monotonic.markNow()
+    val bool = boolean("bool", false)
 
-    val number = addConfig(Numbers2).comment("数字配置容器测试")
+    val color = color("color", Color.fromARGB(0xFFFF0000))
 
-    object Numbers2 : ConfigContainerImpl("config_numbers2") {
+    val strings = Strings()
 
-        var int by addConfig(ConfigInt("int", 10).comment("整数配置测试"))
-
-        var double by addConfig(ConfigDouble("double", 10.0).comment("浮点数配置测试"))
-
-    }
-
-    val bool by boolean("bool", false)
-
-    val color = color("color", Color(255, 0, 0))
-
-    val hsvColor by hsvColor("hsv_color", HSVColor(180f, 1f, 1f))
-
-    val strings = addConfig(Strings())
-
-    class Strings : ConfigContainerImpl("config_strings") {
-
-        var cycleString by cycleString("cycleString", listOf("一", "二", "三"), defaultValue = "二")
-
-        var stringList by stringList("stringList", listOf("element1", "element2", "element3"))
-
-        var stringList2 = stringList("stringList2", listOf("element1", "element2", "element3"))
-
+    class Strings : ConfigGroup("config_strings", this) {
+        val stringList = list("stringList", listOf("element1", "element2", "element3"), Codec.string)
     }
 
     val enumTest = enum("enumTest", TestEnum.E2)
 
-    val date = date("date", Date())
+    val enumTest2 = enum("enumTest2", TimeUnit.MICROSECONDS)
 
     var duration by duration("time", 15.minutes)
 
-    val numbers = addConfig(Numbers)
+    private val numbers = Numbers
 
-    object Numbers : ConfigContainerImpl("config_numbers") {
-
-        var int = int("int", 10).apply {
+    object Numbers : ConfigGroup("config_numbers", this) {
+        val int = int("int", 10).apply {
             subscribe {
-                println("$it,数值有变!(${it.getValue()})")
+                println("$it, 数值有变!(${it.getValue()})")
             }
-        }
+        }.comment("这是int的注释")
 
-        var double by double("double", 10.0)
+        val double = double("double", 10.0)
+
+        private val numbers = Numbers
+
+        object Numbers : ConfigGroup("config_numbers", this) {
+            val int = int("int", 10).apply {
+                subscribe {
+                    println("$it, 数值有变!(${it.getValue()})")
+                }
+            }.comment("这是int的注释")
+
+            val double = double("double", 10.0)
+        }
     }
 
+    val map by map(
+        "map", mapOf(
+            "key1" to "value1",
+            "key2" to "value2",
+            "key3" to "value3",
+            "user" to "forpleuvoir"
+        ), Codec.string
+    )
+
     enum class TestEnum {
-        E1, E2, E3;
+        E1, E2, E3
     }
 
 }

@@ -19,6 +19,10 @@ internal sealed interface Token {
 
         interface Special : Token
 
+        data class TableHeader(val path: List<String>, override val pos: TokenPos) : Special
+
+        data class ArrayOfTablesHeader(val path: List<String>, override val pos: TokenPos) : Special
+
     }
 }
 

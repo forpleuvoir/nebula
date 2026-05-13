@@ -22,10 +22,10 @@ interface Codec<T> : Serializer<T>, Deserializer<T> {
         inline fun byte(default: Byte): Codec<Byte> = PrimitiveCodec.byte(default)
 
         @JvmStatic
-        inline fun byte(range: ClosedRange<Byte>): Codec<Byte> = PrimitiveCodec.byte(range)
+        inline fun byte(range: IntRange): Codec<Byte> = PrimitiveCodec.byte(range)
 
         @JvmStatic
-        inline fun byte(default: Byte, range: ClosedRange<Byte>): Codec<Byte> = PrimitiveCodec.byte(default, range)
+        inline fun byte(default: Byte, range: IntRange): Codec<Byte> = PrimitiveCodec.byte(default, range)
         //endregion
 
         //region Short
@@ -36,10 +36,10 @@ interface Codec<T> : Serializer<T>, Deserializer<T> {
         inline fun short(default: Short): Codec<Short> = PrimitiveCodec.short(default)
 
         @JvmStatic
-        inline fun short(range: ClosedRange<Short>): Codec<Short> = PrimitiveCodec.short(range)
+        inline fun short(range: IntRange): Codec<Short> = PrimitiveCodec.short(range)
 
         @JvmStatic
-        inline fun short(default: Short, range: ClosedRange<Short>): Codec<Short> = PrimitiveCodec.short(default, range)
+        inline fun short(default: Short, range: IntRange): Codec<Short> = PrimitiveCodec.short(default, range)
         //endregion
 
         //region Int
@@ -166,6 +166,23 @@ fun <T> Codec<T>.nullable(): Codec<T?> = object : Codec<T?> {
         else             -> this@nullable.deserialization(element).map { it as T? }
     }
 }
+
+fun <T : Any> Codec<T>.default(default: T): Codec<T> = object : Codec<T> {
+    override fun serialization(target: T): SerializeElement = this@default.serialization(target)
+    override fun deserialization(element: SerializeElement): Result<T> = Result.success(this@default.deserialization(element, default))
+}
+
+fun <T : Comparable<T>> Codec<T>.range(start: T, end: T): Codec<T> = object : Codec<T> {
+    init {
+        require(start <= end) { "start must be less than end" }
+    }
+
+    override fun serialization(target: T): SerializeElement = this@range.serialization(target.coerceIn(start, end))
+    override fun deserialization(element: SerializeElement): Result<T> = runCatching {
+        this@range.deserialization(element).getOrThrow().coerceIn(start, end)
+    }
+}
+
 
 context(codec: Codec<T>)
 inline val <T> T.serialization: SerializeElement get() = codec.serialization(this)

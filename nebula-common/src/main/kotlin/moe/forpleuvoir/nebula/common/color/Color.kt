@@ -45,6 +45,9 @@ value class Color(val argb: Int) {
         inline fun fromARGB(argb: Int): Color = Color(argb)
 
         @JvmStatic
+        inline fun fromARGB(argb: Long): Color = Color(argb.toInt())
+
+        @JvmStatic
         inline fun fromARGB(argb: UInt): Color = Color(argb.toInt())
 
         @JvmStatic
