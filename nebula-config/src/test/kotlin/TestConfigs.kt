@@ -24,51 +24,51 @@ object TestConfigs : ConfigManager("test") {
             comment("数字配置容器测试")
         }
 
-        val int = int("int", 10).comment("整数配置测试")
-        val double = double("double", 10.0).comment("浮点数配置测试")
+        val int = configInt("int", 10).comment("整数配置测试")
+        val double = configDouble("double", 10.0).comment("浮点数配置测试")
     }
 
-    val bool = boolean("bool", false)
+    val bool = configBoolean("bool", false)
 
-    val color = color("color", Color.fromARGB(0xFFFF0000))
+    val color = configColor("color", Color.fromARGB(0xFFFF0000))
 
     val strings = Strings()
 
     class Strings : ConfigGroup("config_strings", this) {
-        val stringList = list("stringList", listOf("element1", "element2", "element3"), Codec.string)
+        val stringList = configList("stringList", listOf("element1", "element2", "element3"), Codec.string)
     }
 
-    val enumTest = enum("enumTest", TestEnum.E2)
+    val enumTest = configEnum("enumTest", TestEnum.E2)
 
-    val enumTest2 = enum("enumTest2", TimeUnit.MICROSECONDS)
+    val enumTest2 = configEnum("enumTest2", TimeUnit.MICROSECONDS)
 
-    var duration by duration("time", 15.minutes)
+    var duration by configDuration("time", 15.minutes)
 
     private val numbers = Numbers
 
     object Numbers : ConfigGroup("config_numbers", this) {
-        val int = int("int", 10).apply {
+        val int = configInt("int", 10).apply {
             subscribe {
                 println("$it, 数值有变!(${it.getValue()})")
             }
         }.comment("这是int的注释")
 
-        val double = double("double", 10.0)
+        val double = configDouble("double", 10.0)
 
         private val numbers = Numbers
 
         object Numbers : ConfigGroup("config_numbers", this) {
-            val int = int("int", 10).apply {
+            val int = configInt("int", 10).apply {
                 subscribe {
                     println("$it, 数值有变!(${it.getValue()})")
                 }
             }.comment("这是int的注释")
 
-            val double = double("double", 10.0)
+            val double = configDouble("double", 10.0)
         }
     }
 
-    val map by map(
+    val map by configMap(
         "map", mapOf(
             "key1" to "value1",
             "key2" to "value2",

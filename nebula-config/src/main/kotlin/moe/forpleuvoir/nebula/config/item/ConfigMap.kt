@@ -74,14 +74,14 @@ class ConfigMap<V>(
 }
 
 context(group: ConfigGroup)
-fun <V> map(name: String, defaultValue: Map<String, V>, serde: ConfigSerde<V>) =
+fun <V> configMap(name: String, defaultValue: Map<String, V>, serde: ConfigSerde<V>) =
     group.addConfig(ConfigMap(name, defaultValue, serde))
 
 
 context(group: ConfigGroup)
-fun <V> map(name: String, defaultValue: Map<String, V>, codec: Codec<V>) =
-    map(name, defaultValue, ConfigSerde.of(codec))
+fun <V> configMap(name: String, defaultValue: Map<String, V>, codec: Codec<V>) =
+    configMap(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <V> map(name: String, defaultValue: Map<String, V>, serializer: KSerializer<V>) =
-    map(name, defaultValue, ConfigSerde.of(serializer))
+fun <V> configMap(name: String, defaultValue: Map<String, V>, serializer: KSerializer<V>) =
+    configMap(name, defaultValue, ConfigSerde.of(serializer))

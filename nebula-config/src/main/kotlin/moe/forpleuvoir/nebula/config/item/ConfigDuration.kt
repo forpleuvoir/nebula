@@ -12,7 +12,7 @@ import moe.forpleuvoir.nebula.serialization.codec.range
 import kotlin.time.Duration
 
 context(group: ConfigGroup)
-fun duration(name: String, defaultValue: Duration) =
+fun configDuration(name: String, defaultValue: Duration) =
     config(name, defaultValue, ConfigSerde.of(Codec.duration.default(defaultValue)))
 
 context(group: ConfigGroup)

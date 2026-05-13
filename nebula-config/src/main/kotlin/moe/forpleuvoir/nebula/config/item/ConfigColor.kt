@@ -7,5 +7,5 @@ import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.codec.color
 
 context(group: ConfigGroup)
-fun color(name: String, defaultValue: Color) =
+fun configColor(name: String, defaultValue: Color) =
     config(name, defaultValue, Codec.color)

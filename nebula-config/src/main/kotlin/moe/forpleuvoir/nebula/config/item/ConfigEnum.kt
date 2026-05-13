@@ -8,5 +8,5 @@ import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.codec.enum
 
 context(group: ConfigGroup)
-inline fun <reified T : Enum<T>> enum(name: String, default: T) =
+inline fun <reified T : Enum<T>> configEnum(name: String, default: T) =
     config(name, default, Codec.enum())

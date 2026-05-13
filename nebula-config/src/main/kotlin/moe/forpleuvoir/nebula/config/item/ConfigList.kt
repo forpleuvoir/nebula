@@ -79,13 +79,13 @@ class ConfigList<T>(
 }
 
 context(group: ConfigGroup)
-fun <T> list(name: String, defaultValue: List<T>, serde: ConfigSerde<T>): ConfigList<T> =
+fun <T> configList(name: String, defaultValue: List<T>, serde: ConfigSerde<T>): ConfigList<T> =
     group.addConfig(ConfigList(name, defaultValue, serde))
 
 context(group: ConfigGroup)
-fun <T> list(name: String, defaultValue: List<T>, codec: Codec<T>): ConfigList<T> =
-    list(name, defaultValue, ConfigSerde.of(codec))
+fun <T> configList(name: String, defaultValue: List<T>, codec: Codec<T>): ConfigList<T> =
+    configList(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <T> list(name: String, defaultValue: List<T>, serializer: KSerializer<T>): ConfigList<T> =
-    list(name, defaultValue, ConfigSerde.of(serializer))
+fun <T> configList(name: String, defaultValue: List<T>, serializer: KSerializer<T>): ConfigList<T> =
+    configList(name, defaultValue, ConfigSerde.of(serializer))
