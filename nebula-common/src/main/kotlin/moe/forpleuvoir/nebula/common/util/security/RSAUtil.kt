@@ -27,9 +27,9 @@ object RSAUtil {
         val privateKey: PrivateKey = keyPair.private //得到私钥
         val publicKey: PublicKey = keyPair.public //得到公钥
         //得到公钥字符串
-        val publicKeyString = String(Base64.getEncoder().encode(publicKey.encoded))
+        val publicKeyString = String(Base64.getEncoder().encode(publicKey.encoded), Charsets.UTF_8)
         //得到私钥字符串
-        val privateKeyString = String(Base64.getEncoder().encode(privateKey.encoded))
+        val privateKeyString = String(Base64.getEncoder().encode(privateKey.encoded), Charsets.UTF_8)
         return KeyPair(publicKeyString, privateKeyString)
     }
 
@@ -76,6 +76,6 @@ object RSAUtil {
         //RSA解密
         val cipher: Cipher = Cipher.getInstance("RSA")
         cipher.init(Cipher.DECRYPT_MODE, priKey)
-        return String(cipher.doFinal(inputByte))
+        return String(cipher.doFinal(inputByte), Charsets.UTF_8)
     }
 }

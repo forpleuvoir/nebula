@@ -32,8 +32,10 @@ object FileUtil {
         return StringBuilder().apply {
             BufferedReader(InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8)).use { buffer ->
                 var s: String?
+                var first = true
                 while (buffer.readLine().also { s = it } != null) {
-                    this.append(System.lineSeparator()).append(s)
+                    if (first) first = false else this.append(System.lineSeparator())
+                    this.append(s)
                 }
             }
         }.toString()
@@ -69,11 +71,9 @@ object FileUtil {
      */
     @Throws(IOException::class)
     fun createFile(file: File): File {
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-            if (!file.exists()) {
-                file.createNewFile()
-            }
+        file.parentFile.mkdirs()
+        if (!file.exists()) {
+            file.createNewFile()
         }
         return file
     }
@@ -88,12 +88,10 @@ object FileUtil {
      */
     @Throws(Exception::class)
     fun writeFile(file: File, content: String): File {
-        return runCatching {
-            val fileWriter = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
+        OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8).use { fileWriter ->
             fileWriter.write(content)
-            fileWriter.close()
-            file
-        }.getOrDefault(createFile(file))
+        }
+        return file
     }
 
 }

@@ -109,7 +109,7 @@ fun Any.toJsonObject(): JsonObject {
 }
 
 fun JsonObject.getNestedObject(key: String, create: Boolean = false): JsonObject? {
-    return if (!this.has(key) || this[key].isJsonObject) {
+    return if (!this.has(key) || !this[key].isJsonObject) {
         if (!create) {
             return null
         }

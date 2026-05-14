@@ -61,7 +61,7 @@ inline val Codec.Companion.uLongRange get() = ULongRange.CODEC
 
 object ULongRangeSerializer : KSerializer<ULongRange> by ULongRange.CODEC.toKSerializer()
 
-private val charRangeCodec = numberRangeCodec({ it.toCharArray()[0] }, { it.start..it.endInclusive })
+private val charRangeCodec = numberRangeCodec({ it.single() }, { it.start..it.endInclusive })
 
 val CharRange.Companion.CODEC get() = charRangeCodec
 

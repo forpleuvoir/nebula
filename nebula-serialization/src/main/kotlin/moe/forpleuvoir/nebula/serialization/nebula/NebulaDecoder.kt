@@ -10,7 +10,11 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
+import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.*
+
+private inline fun <T> SerializeElement.require(crossinline getter: SerializeElement.() -> T?): T =
+    DeserializationException.require(getter()) { "Expected value for $this" }
 
 class NebulaDecoder(
     val element: SerializeElement,
@@ -21,15 +25,15 @@ class NebulaDecoder(
 
     override fun decodeNull(): Nothing? = null
 
-    override fun decodeBoolean(): Boolean = element.asBoolean!!
-    override fun decodeByte(): Byte = element.asByte!!
-    override fun decodeShort(): Short = element.asShort!!
-    override fun decodeInt(): Int = element.asInt!!
-    override fun decodeLong(): Long = element.asLong!!
-    override fun decodeFloat(): Float = element.asFloat!!
-    override fun decodeDouble(): Double = element.asDouble!!
-    override fun decodeChar(): Char = element.asChar!!
-    override fun decodeString(): String = element.asString!!
+    override fun decodeBoolean(): Boolean = element.require { asBoolean }
+    override fun decodeByte(): Byte = element.require { asByte }
+    override fun decodeShort(): Short = element.require { asShort }
+    override fun decodeInt(): Int = element.require { asInt }
+    override fun decodeLong(): Long = element.require { asLong }
+    override fun decodeFloat(): Float = element.require { asFloat }
+    override fun decodeDouble(): Double = element.require { asDouble }
+    override fun decodeChar(): Char = element.require { asChar }
+    override fun decodeString(): String = element.require { asString }
 
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
         val name = element.asString ?: error("Expected string for enum, got $element")
@@ -43,11 +47,11 @@ class NebulaDecoder(
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         return when (descriptor.kind) {
             is StructureKind.CLASS, is StructureKind.OBJECT ->
-                NebulaObjectDecoder(element.asObject!!, serializersModule)
+                NebulaObjectDecoder(element.require { asObject }, serializersModule)
             is StructureKind.MAP ->
-                NebulaMapDecoder(element.asObject!!, serializersModule)
+                NebulaMapDecoder(element.require { asObject }, serializersModule)
             is StructureKind.LIST ->
-                NebulaArrayDecoder(element.asArray!!, serializersModule)
+                NebulaArrayDecoder(element.require { asArray }, serializersModule)
             else -> error("NebulaFormat does not support structure kind: ${descriptor.kind}")
         }
     }
@@ -91,31 +95,31 @@ private class NebulaObjectDecoder(
     }
 
     override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean =
-        elementAt(index).asBoolean!!
+        elementAt(index).require { asBoolean }
 
     override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte =
-        elementAt(index).asByte!!
+        elementAt(index).require { asByte }
 
     override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short =
-        elementAt(index).asShort!!
+        elementAt(index).require { asShort }
 
     override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int =
-        elementAt(index).asInt!!
+        elementAt(index).require { asInt }
 
     override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long =
-        elementAt(index).asLong!!
+        elementAt(index).require { asLong }
 
     override fun decodeFloatElement(descriptor: SerialDescriptor, index: Int): Float =
-        elementAt(index).asFloat!!
+        elementAt(index).require { asFloat }
 
     override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double =
-        elementAt(index).asDouble!!
+        elementAt(index).require { asDouble }
 
     override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char =
-        elementAt(index).asChar!!
+        elementAt(index).require { asChar }
 
     override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String =
-        elementAt(index).asString!!
+        elementAt(index).require { asString }
 
     override fun <T : Any?> decodeSerializableElement(
         descriptor: SerialDescriptor,
@@ -175,31 +179,31 @@ private class NebulaMapDecoder(
     private fun valueAt(index: Int): SerializeElement = entries[index / 2].value
 
     override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean =
-        if (index % 2 == 0) keyAt(index).asBoolean!! else valueAt(index).asBoolean!!
+        if (index % 2 == 0) keyAt(index).require { asBoolean } else valueAt(index).require { asBoolean }
 
     override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte =
-        if (index % 2 == 0) keyAt(index).asByte!! else valueAt(index).asByte!!
+        if (index % 2 == 0) keyAt(index).require { asByte } else valueAt(index).require { asByte }
 
     override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short =
-        if (index % 2 == 0) keyAt(index).asShort!! else valueAt(index).asShort!!
+        if (index % 2 == 0) keyAt(index).require { asShort } else valueAt(index).require { asShort }
 
     override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int =
-        if (index % 2 == 0) keyAt(index).asInt!! else valueAt(index).asInt!!
+        if (index % 2 == 0) keyAt(index).require { asInt } else valueAt(index).require { asInt }
 
     override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long =
-        if (index % 2 == 0) keyAt(index).asLong!! else valueAt(index).asLong!!
+        if (index % 2 == 0) keyAt(index).require { asLong } else valueAt(index).require { asLong }
 
     override fun decodeFloatElement(descriptor: SerialDescriptor, index: Int): Float =
-        if (index % 2 == 0) keyAt(index).asFloat!! else valueAt(index).asFloat!!
+        if (index % 2 == 0) keyAt(index).require { asFloat } else valueAt(index).require { asFloat }
 
     override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double =
-        if (index % 2 == 0) keyAt(index).asDouble!! else valueAt(index).asDouble!!
+        if (index % 2 == 0) keyAt(index).require { asDouble } else valueAt(index).require { asDouble }
 
     override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char =
-        if (index % 2 == 0) keyAt(index).asChar!! else valueAt(index).asChar!!
+        if (index % 2 == 0) keyAt(index).require { asChar } else valueAt(index).require { asChar }
 
     override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String =
-        if (index % 2 == 0) keyAt(index).asString!! else valueAt(index).asString!!
+        if (index % 2 == 0) keyAt(index).require { asString } else valueAt(index).require { asString }
 
     override fun <T : Any?> decodeSerializableElement(
         descriptor: SerialDescriptor,
@@ -250,31 +254,31 @@ private class NebulaArrayDecoder(
     private fun elementAt(index: Int): SerializeElement = array[index]
 
     override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean =
-        elementAt(index).asBoolean!!
+        elementAt(index).require { asBoolean }
 
     override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte =
-        elementAt(index).asByte!!
+        elementAt(index).require { asByte }
 
     override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short =
-        elementAt(index).asShort!!
+        elementAt(index).require { asShort }
 
     override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int =
-        elementAt(index).asInt!!
+        elementAt(index).require { asInt }
 
     override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long =
-        elementAt(index).asLong!!
+        elementAt(index).require { asLong }
 
     override fun decodeFloatElement(descriptor: SerialDescriptor, index: Int): Float =
-        elementAt(index).asFloat!!
+        elementAt(index).require { asFloat }
 
     override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double =
-        elementAt(index).asDouble!!
+        elementAt(index).require { asDouble }
 
     override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char =
-        elementAt(index).asChar!!
+        elementAt(index).require { asChar }
 
     override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String =
-        elementAt(index).asString!!
+        elementAt(index).require { asString }
 
     override fun <T : Any?> decodeSerializableElement(
         descriptor: SerialDescriptor,

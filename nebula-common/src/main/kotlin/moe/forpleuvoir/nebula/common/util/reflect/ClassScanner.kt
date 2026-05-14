@@ -53,8 +53,8 @@ object ClassScanner {
     ) {
         var tmpDirectory: File
         if (directory.exists() && directory.isDirectory) {
-            val files = directory.list()
-            for (file: String in files!!) {
+            val files = directory.list() ?: return
+            for (file: String in files) {
                 if (file.endsWith(".class")) {
                     try {
                         classes.add(Class.forName("$packageName.${file.substring(0, file.length - 6)}"))
@@ -128,7 +128,7 @@ object ClassScanner {
                     connection = url!!.openConnection()
                     if (connection is JarURLConnection) {
                         checkJarFile(connection, packageName, classes)
-                    } else if (connection.javaClass.canonicalName == "sun.net.www.protocol.file.FileURLConnection") {
+                    } else if (connection.url.protocol == "file") {
                         try {
                             checkDirectory(File(URLDecoder.decode(url!!.path, "UTF-8")), packageName, classes)
                         } catch (ex: UnsupportedEncodingException) {
@@ -141,8 +141,6 @@ object ClassScanner {
                     throw ClassNotFoundException(("IOException was thrown when trying to get all resources for $packageName"), ioException)
                 }
             }
-        } catch (ex: NullPointerException) {
-            throw ClassNotFoundException(("$packageName does not appear to be a valid package (Null pointer exception)"), ex)
         } catch (ioException: IOException) {
             throw ClassNotFoundException(("IOException was thrown when trying to get all resources for $packageName"), ioException)
         }

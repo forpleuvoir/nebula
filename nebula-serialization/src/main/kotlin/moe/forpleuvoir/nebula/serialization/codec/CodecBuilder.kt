@@ -2,6 +2,7 @@
 
 package moe.forpleuvoir.nebula.serialization.codec
 
+import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeNull
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
@@ -721,14 +722,15 @@ internal class CodecImpl<T>(
 
     @Suppress("UNCHECKED_CAST")
     override fun deserialization(element: SerializeElement): Result<T> = runCatching {
-        val obj = element.asObject!!
+        val obj = element.asObject ?: throw DeserializationException("Expected object for deserialization, got $element")
         val args = mutableMapOf<String, Any?>()
         for (f in fields) {
             val codec = f.codec as Codec<Any?>
             val hasDefault = f.hasDefault
             val default = f.default
             args[f.name] = if (obj.containsKey(f.name)) {
-                val result = codec.deserialization(obj[f.name]!!)
+                val element = obj[f.name] ?: throw DeserializationException("Missing field '${f.name}'")
+                val result = codec.deserialization(element)
                 if (result.isSuccess) result.getOrThrow()
                 else if (hasDefault) default
                 else throw IllegalArgumentException("failed to deserialize field '${f.name}'")

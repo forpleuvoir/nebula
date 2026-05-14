@@ -166,7 +166,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "kotlin")
     apply(plugin = "signing")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
     apply(plugin = "maven-publish")
     apply(plugin = rootProject.libs.plugins.kotlinSerialization.get().pluginId)
 

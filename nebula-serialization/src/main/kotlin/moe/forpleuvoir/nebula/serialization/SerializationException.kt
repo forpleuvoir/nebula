@@ -19,6 +19,9 @@ class DeserializationException : RuntimeException {
 
     companion object {
 
+        inline fun <T> require(value: T?, lazyMessage: () -> String): T =
+            value ?: throw DeserializationException(lazyMessage())
+
         fun checkType(element: SerializeElement, vararg expectedType: KClass<out SerializeElement>) {
             if (element::class !in expectedType) {
                 illegalType(element::class, *expectedType)

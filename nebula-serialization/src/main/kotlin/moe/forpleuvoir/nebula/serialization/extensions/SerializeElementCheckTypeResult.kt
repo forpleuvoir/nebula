@@ -7,13 +7,11 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
 
-inline fun <reified T : SerializeElement, R : Any> SerializeElement.checkType(block: (T) -> R): Result<R> {
-    return if (this::class == T::class) {
-        Result.success(block(this as T))
-    } else {
-        Result.failure(DeserializationException.illegalType(this::class, T::class))
-    }
+inline fun <reified T : SerializeElement, R : Any> SerializeElement.checkType(block: (T) -> R): Result<R> = runCatching {
+    if (this::class != T::class) throw DeserializationException.illegalType(this::class, T::class)
+    block(this as T)
 }
+
 
 inline fun <reified T : SerializeElement, R> SerializeElement.checkType(type: KClass<T>, block: (T) -> R): R {
     if (this::class == type) {
