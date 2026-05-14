@@ -68,7 +68,7 @@ fun String.replace(origin: Array<String>, new: String): String {
 fun Iterable<CharSequence>.merge(length: Long, ellipsis: String = "...", separator: String = ", ", prefix: String = "", suffix: String = ""): String {
 	val sb = StringBuffer(prefix)
 	for ((index, s) in this.withIndex()) {
-		if (index > length) {
+        if (index >= length) {
 			sb.append(ellipsis)
 			break
 		}

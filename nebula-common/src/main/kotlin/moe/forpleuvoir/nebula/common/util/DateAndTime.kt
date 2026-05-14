@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 
 fun LocalDateTime.toDate(): Date {
     return Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
@@ -20,7 +19,6 @@ fun Date.format(format: String): String {
 }
 
 operator fun Date.plus(time: Long): Date {
-    5.minutes
     return Date(this.time + time)
 }
 

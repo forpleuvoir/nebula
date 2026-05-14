@@ -27,17 +27,12 @@ infix operator fun SerializeArray.contains(target: SerializeElement): Boolean {
 
 infix operator fun SerializeObject.contains(target: SerializeElement): Boolean {
     if (target !is SerializeObject) return false
-    return if (keys.containsAll(target.keys)) {
-        var result = false
-        target.forEach { k, v ->
-            result = if (this[k] is SerializeArray) {
-                (this[k] as SerializeArray) contains v
-            } else if (this[k] is SerializeObject) {
-                (this[k] as SerializeObject) contains v
-            } else this[k] == v
+    if (!keys.containsAll(target.keys)) return false
+    return target.all { (k, v) ->
+        when {
+            this[k] is SerializeArray  -> (this[k] as SerializeArray) contains v
+            this[k] is SerializeObject -> (this[k] as SerializeObject) contains v
+            else                       -> this[k] == v
         }
-        result
-    } else {
-        false
     }
 }

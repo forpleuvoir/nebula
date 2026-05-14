@@ -32,7 +32,7 @@ class ConfigMap<V>(
 
     override fun isDefault(): Boolean = map.toMap() valueEquals defaultValue
 
-    override fun restDefault() {
+    override fun resetDefault() {
         if (isDefault()) return
         map.clear()
         map.putAll(defaultValue)

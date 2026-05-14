@@ -16,7 +16,7 @@ value class Color(val argb: Int) {
         fun hex2Int(hex: String): Int {
             val str = hex.removePrefix("0x").removePrefix("0X").removePrefix("#")
             return when (str.length) {
-                8    -> str.toInt(16)
+                8 -> str.toUInt(16).toInt()
                 6    -> (0xFF000000u or str.toUInt(16)).toInt()
                 else -> throw IllegalArgumentException("Invalid hex color string: $hex")
             }
@@ -63,7 +63,7 @@ value class Color(val argb: Int) {
          * @param alpha float 0-1 ,int 0-255 透明度
          */
         @JvmStatic
-        fun fromHSV(hue: Float, saturation: Float, value: Float, alpha: Number = 255): Color {
+        fun fromHSV(hue: Number, saturation: Number, value: Number, alpha: Number = 255): Color {
             val h = normalizeHSV(hue)
             val s = normalizeHSV(saturation)
             val v = normalizeHSV(value)

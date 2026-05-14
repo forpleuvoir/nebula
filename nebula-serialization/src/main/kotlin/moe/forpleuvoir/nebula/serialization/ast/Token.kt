@@ -38,7 +38,7 @@ internal value class Primitive private constructor(val value: Any?) {
     val asString get() = if (isString) value as String else null
 
     val asSerialize
-        get() = when (value!!) {
+        get() = when (value) {
             is Number  -> SerializePrimitive(value)
             is Char    -> SerializePrimitive(value)
             is Boolean -> SerializePrimitive(value)

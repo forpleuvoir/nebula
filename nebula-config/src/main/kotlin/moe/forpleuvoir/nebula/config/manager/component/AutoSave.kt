@@ -2,6 +2,7 @@
 
 package moe.forpleuvoir.nebula.config.manager.component
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import moe.forpleuvoir.nebula.common.util.ioLaunch
 import moe.forpleuvoir.nebula.config.ConfigManager
@@ -20,8 +21,11 @@ open class AutoSave(
             if (field) finishInit()
         }
 
+    private var job: Job? = null
+
     override fun finishInit() {
-        ioLaunch {
+        job?.cancel()
+        job = ioLaunch {
             delay(initialDelay)
             while (isActive) {
                 delay(period)

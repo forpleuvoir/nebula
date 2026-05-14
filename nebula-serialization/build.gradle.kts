@@ -4,7 +4,7 @@ dependencies {
     implementation(project(":nebula-common"))
     api(libs.kotlinxSerializationCore)
     testImplementation(project(":nebula-serialization-gson"))
-    testImplementation("com.google.code.gson:gson:2.10")
+    testImplementation(libs.gson)
 }
 
 tasks {

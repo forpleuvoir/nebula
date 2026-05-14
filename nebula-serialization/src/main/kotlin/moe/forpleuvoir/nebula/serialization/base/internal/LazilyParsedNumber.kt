@@ -46,7 +46,11 @@ internal class LazilyParsedNumber(private val value: String) : Number() {
     }
 
     override fun toShort(): Short {
-        return value.toShort()
+        return try {
+            value.toShort()
+        } catch (e: NumberFormatException) {
+            BigDecimal(value).toShort()
+        }
     }
 
     override fun toString(): String {

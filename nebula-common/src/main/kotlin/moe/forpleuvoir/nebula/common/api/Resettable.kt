@@ -18,6 +18,6 @@ interface Resettable {
 
 	fun isDefault(): Boolean
 
-	fun restDefault()
+    fun resetDefault()
 
 }

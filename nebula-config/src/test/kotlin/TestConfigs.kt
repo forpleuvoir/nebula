@@ -4,7 +4,7 @@ import moe.forpleuvoir.nebula.config.ConfigManager
 import moe.forpleuvoir.nebula.config.comment
 import moe.forpleuvoir.nebula.config.item.*
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
-import moe.forpleuvoir.nebula.config.persistence.toml
+import moe.forpleuvoir.nebula.config.persistence.yaml
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.minutes
 object TestConfigs : ConfigManager("test") {
 
     init {
-        localConfig(Path.of("./build/config"), toml())
+        localConfig(Path.of("./build/config"), yaml())
     }
 
 

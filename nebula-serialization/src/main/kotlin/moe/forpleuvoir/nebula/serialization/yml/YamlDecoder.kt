@@ -1,13 +1,13 @@
 package moe.forpleuvoir.nebula.serialization.yml
 
-import moe.forpleuvoir.nebula.serialization.base.SerializeArray
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.base.SerializeNull
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
-import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.json.JsonLexer
 
 internal object YamlDecoder {
+
+    private val numberRegex = Regex("-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?")
+    private val trueValues = setOf("true", "yes", "on")
+    private val falseValues = setOf("false", "no", "off")
 
     fun decode(input: String): Result<SerializeElement> = try {
         val lines = preprocessLines(input)
@@ -48,7 +48,7 @@ internal object YamlDecoder {
         while (i < line.length) {
             val c = line[i]
             when {
-                c == '"' && !inSingleQuote -> inDoubleQuote = !inDoubleQuote
+                c == '"' && !inSingleQuote  -> inDoubleQuote = !inDoubleQuote
                 c == '\'' && !inDoubleQuote -> inSingleQuote = !inSingleQuote
                 c == '#' && !inSingleQuote && !inDoubleQuote -> {
                     return line.substring(0, i).trimEnd()
@@ -65,7 +65,7 @@ internal object YamlDecoder {
         for (i in line.indices) {
             val c = line[i]
             when {
-                c == '"' && !inSingleQuote -> inDoubleQuote = !inDoubleQuote
+                c == '"' && !inSingleQuote  -> inDoubleQuote = !inDoubleQuote
                 c == '\'' && !inDoubleQuote -> inSingleQuote = !inSingleQuote
                 c == ':' && !inSingleQuote && !inDoubleQuote -> return i
             }
@@ -268,17 +268,27 @@ internal object YamlDecoder {
         if (trimmed == "[]") return SerializeArray()
 
         return when {
-            trimmed == "true" || trimmed == "True" || trimmed == "TRUE" || trimmed == "yes" || trimmed == "Yes" || trimmed == "YES" || trimmed == "on" || trimmed == "On" || trimmed == "ON" -> SerializePrimitive(true)
-            trimmed == "false" || trimmed == "False" || trimmed == "FALSE" || trimmed == "no" || trimmed == "No" || trimmed == "NO" || trimmed == "off" || trimmed == "Off" || trimmed == "OFF" -> SerializePrimitive(false)
-            trimmed.startsWith("\"") && trimmed.endsWith("\"") && trimmed.length >= 2 -> SerializePrimitive(unescapeDoubleQuoted(trimmed.substring(1, trimmed.length - 1)))
-            trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2 -> SerializePrimitive(trimmed.substring(1, trimmed.length - 1))
-            trimmed.matches(Regex("-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?")) -> try {
+            trimmed.lowercase() in trueValues                                         -> SerializePrimitive(true)
+            trimmed.lowercase() in falseValues                                        -> SerializePrimitive(false)
+
+            trimmed.startsWith("\"") && trimmed.endsWith("\"") && trimmed.length >= 2 -> SerializePrimitive(
+                unescapeDoubleQuoted(trimmed.substring(1, trimmed.length - 1))
+            )
+
+            trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2   -> SerializePrimitive(
+                trimmed.substring(1, trimmed.length - 1)
+            )
+
+            trimmed.matches(numberRegex)                                              -> try {
                 val num = JsonLexer.parseNumber(trimmed)
                 if (num is Number) SerializePrimitive(num as Number) else SerializePrimitive(num.toString())
             } catch (_: Exception) {
                 SerializePrimitive(trimmed)
             }
-            else -> SerializePrimitive(trimmed)
+
+            else                                                                      -> SerializePrimitive(
+                trimmed
+            )
         }
     }
 
@@ -290,17 +300,18 @@ internal object YamlDecoder {
             if (escaped) {
                 when (c) {
                     '"', '\\', '/' -> append(c)
-                    'b' -> append('\b')
-                    'f' -> append('\u000C')
-                    'n' -> append('\n')
-                    'r' -> append('\r')
-                    't' -> append('\t')
-                    'u' -> {
+                    'b'  -> append('\b')
+                    'f'  -> append('\u000C')
+                    'n'  -> append('\n')
+                    'r'  -> append('\r')
+                    't'  -> append('\t')
+                    'u'  -> {
                         if (i + 4 < s.length) {
                             append(Integer.parseInt(s.substring(i + 1, i + 5), 16).toChar())
                             i += 4
                         } else append(c)
                     }
+
                     else -> append(c)
                 }
                 escaped = false

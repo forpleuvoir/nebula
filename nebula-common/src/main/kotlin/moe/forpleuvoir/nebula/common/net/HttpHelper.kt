@@ -3,13 +3,13 @@ package moe.forpleuvoir.nebula.common.net
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpClient.Version
 import java.net.http.HttpRequest.*
 import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandler
 import java.time.Duration
-import java.util.*
 
 @Suppress("KDocUnresolvedReference", "UNUSED", "MemberVisibilityCanBePrivate")
 class HttpHelper<T>(
@@ -86,7 +86,7 @@ class HttpHelper<T>(
         val str = StringBuilder(uri)
         str.append("?")
         params.forEachIndexed { index, pair ->
-            str.append(pair.first, "=", pair.second)
+            str.append(pair.first, "=", URLEncoder.encode(pair.second.toString(), "UTF-8"))
             if (index != params.size - 1) str.append("&")
         }
         requestBuilder.uri(URI.create(str.toString()))

@@ -2,32 +2,21 @@ package moe.forpleuvoir.nebula.serialization.nebula
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialFormat
-import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
-import moe.forpleuvoir.nebula.serialization.codec.CharRangeSerializer
-import moe.forpleuvoir.nebula.serialization.codec.ColorSerializer
-import moe.forpleuvoir.nebula.serialization.codec.DateSerializer
-import moe.forpleuvoir.nebula.serialization.codec.DurationSerializer
-import moe.forpleuvoir.nebula.serialization.codec.IntRangeSerializer
-import moe.forpleuvoir.nebula.serialization.codec.LongRangeSerializer
-import moe.forpleuvoir.nebula.serialization.codec.UIntRangeSerializer
-import moe.forpleuvoir.nebula.serialization.codec.ULongRangeSerializer
-import java.util.Date
-import kotlin.ranges.CharRange
-import kotlin.ranges.IntRange
-import kotlin.ranges.LongRange
-import kotlin.ranges.UIntRange
-import kotlin.ranges.ULongRange
+import moe.forpleuvoir.nebula.serialization.codec.*
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
 object SerializerRegistry {
 
-    private val serializers = mutableMapOf<KClass<*>, KSerializer<*>>()
+    private val serializers = ConcurrentHashMap<KClass<*>, KSerializer<*>>()
 
+    @Volatile
     var version: Int = 0
         private set
 
@@ -54,9 +43,10 @@ open class NebulaFormat(
 
     private var cachedModule: SerializersModule? = null
     private var cachedVersion: Int = -1
+    private val moduleLock = Any()
 
     override val serializersModule: SerializersModule
-        get() = customSerializersModule ?: run {
+        get() = customSerializersModule ?: synchronized(moduleLock) {
             val currentVersion = SerializerRegistry.version
             if (cachedModule == null || currentVersion != cachedVersion) {
                 cachedVersion = currentVersion

@@ -53,7 +53,7 @@ open class ConfigGroup(
     fun restDefault() {
         children.forEach {
             when (it) {
-                is ConfigItem<*> -> it.restDefault()
+                is ConfigItem<*> -> it.resetDefault()
                 is ConfigGroup   -> it.restDefault()
             }
         }
@@ -78,7 +78,6 @@ open class ConfigGroup(
             _children.values.forEach { child ->
                 obj[child.name]?.let { element ->
                     runCatching {
-                        println("deserializing ${child.name}")
                         child.deserialization(element)
                     }.onFailure { e ->
                         root?.markSavable()

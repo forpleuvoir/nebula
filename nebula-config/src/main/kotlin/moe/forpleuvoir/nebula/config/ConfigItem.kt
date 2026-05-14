@@ -43,7 +43,7 @@ abstract class ConfigItem<C>(
 
     override fun isDefault(): Boolean = _value valueEquals defaultValue
 
-    override fun restDefault() {
+    override fun resetDefault() {
         if (isDefault()) return
         _value = defaultValue
         notifyChange()

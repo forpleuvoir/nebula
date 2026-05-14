@@ -214,12 +214,13 @@ internal object HJsonLexer : Lexer {
     private fun isUnquotedCharStart(c: Char): Boolean =
         !c.isISOControl() && c !in " \t\n\r{}[]:,#\"\'"
 
+    val regex = Regex("-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?")
     private fun parseLiteralOrIdentifier(content: String, pos: TokenPos): Token {
         return when {
-            content == "true"                                          -> Literal(Primitive.of(true), pos)
-            content == "false"                                         -> Literal(Primitive.of(false), pos)
-            content == "null"                                          -> Literal(Primitive.of(null), pos)
-            content.matches(Regex("-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?")) -> {
+            content == "true"      -> Literal(Primitive.of(true), pos)
+            content == "false"     -> Literal(Primitive.of(false), pos)
+            content == "null"      -> Literal(Primitive.of(null), pos)
+            content.matches(regex) -> {
                 try {
                     Literal(Primitive.of(JsonLexer.parseNumber(content)), pos)
                 } catch (_: Exception) {
@@ -227,7 +228,7 @@ internal object HJsonLexer : Lexer {
                 }
             }
 
-            else                                                       -> Identifier(content, pos)
+            else                   -> Identifier(content, pos)
         }
     }
 }

@@ -17,7 +17,7 @@ object ConfigUtil {
         File(path.toFile(), configFileName).apply {
             if (!this.exists() && create) {
                 if (!path.toFile().exists()) {
-                    path.toFile().mkdir()
+                    path.toFile().mkdirs()
                 }
                 runCatching {
                     this.createNewFile()

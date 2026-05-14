@@ -177,7 +177,7 @@ open class YamlEncoder(
         val specialChars = setOf(':', '#', '{', '}', '[', ']', ',', '&', '*', '?', '|', '-', '<', '>', '=', '!', '%', '@', '`')
         if (s.any { it in specialChars || it.isWhitespace() }) return true
         val first = s.first()
-        if (first in "0123456789-+?") return true
+        if (first in "0123456789+") return true
         if (s == "true" || s == "false" || s == "yes" || s == "no" || s == "on" || s == "off" || s == "null" || s == "~") return true
         return false
     }

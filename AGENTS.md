@@ -32,6 +32,42 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 
 ### `:nebula-serialization` — 序列化框架
 
+#### 文本格式框架 (`ast/`)
+- **`SyntaxDialect`**: 格式入口接口, `decode(input) -> Result<SerializeElement>`, `encode(element) -> String`
+- **`SyntaxEncoder`**: 内部编码器 fun interface, `SerializeElement -> String`
+- **`SyntaxDecoder`**: 内部解码器 fun interface, `List<Token> -> Result<SerializeElement>`
+- **`Lexer`**: 内部词法分析器 fun interface, `String -> List<Token>`
+- **`Token`**: 词法标记 (sealed interface), 含 `Symbol`/`Literal`/`Identifier`/`EOF` + 格式特定 `Special`(TableHeader, ArrayOfTablesHeader)
+- **`TokenPos`**: 行列偏移三维定位
+- **`Primitive`**: inline value class 包装原始值, 提供 `asSerialize`/`asNull` 转换
+- **`SyntaxReadException`**: 位置感知解析异常
+
+#### JSON (`json/`)
+- **`JsonDialect`**: 标准 JSON 编解码
+- **`JsonEncoder`**: `{ }` 对象 / `[ ]` 数组, 2-space 缩进
+- **`JsonDecoder`**: tailrec 递归下降解析
+- **`JsonLexer`**: 字符流词法分析, 提供 `parseNumber()` 共享数字解析 (BigDecimal/BigInteger 精度保留)
+
+#### TOML (`toml/`)
+- **`TomlDialect`**: TOML v1.0.0 编解码
+- **`TomlEncoder`**: `open class`, `key = value` / `[table]` / `[[array]]` 输出, hook 方法支持注释
+- **`TomlCommentedEncoder`**: `abstract class`, `getComment(path)` 注入 `# comment`
+- **`TomlDecoder`**: 线性 token 遍历, 支持点分隔键、内联表/数组
+- **`TomlLexer`**: 完整 TOML 词法 (基本/字面量/多行字符串, hex/oct/bin 数字, 日期时间)
+
+#### HJSON (`hjson/`)
+- **`HJsonDialect`**: HJSON (Human JSON) 编解码
+- **`HJsonEncoder`**: `abstract class`, 无引号键, 可选根对象 `{}`, `'''` 多行字符串
+- **`HJsonCommentedEncoder`**: `abstract class`, 路径追踪 + `getComment(path)` 注入 `# comment`
+- **`HJsonDecoder`**: tailrec `parseMembers`/`parseElements`, 无根对象自动检测
+- **`HJsonLexer`**: 支持 `#`/`//`/`/* */` 注释, 无引号字符串, 三引号多行
+
+#### YAML (`yml/`)
+- **`YamlDialect`**: YAML 1.1 子集编解码
+- **`YamlEncoder`**: `open class`, `key: value` + 缩进嵌套, `- ` 列表, `|` 多行字符串, indent-aware hook
+- **`YamlCommentedEncoder`**: `abstract class`, 缩进对齐 `# comment`, `getComment(path)` 注入
+- **`YamlDecoder`**: 基于行的递归下降解析器, 缩进感知嵌套, 支持 `{}`/`[]` 内联空容器
+
 #### 核心 AST (`base/`)
 - **`SerializeElement`** (sealed interface) → `SerializePrimitive`, `SerializeObject`, `SerializeArray`, `SerializeNull`
 - **`SerializeObject`**: `LinkedHashMap` 实现, 有序键值对, 委托 `SequencedMap<String, SerializeElement>`
@@ -74,9 +110,6 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 - **`SerializePrimitiveCheckTypeResult`**: 原始值类型匹配
 - **`JavaConversion`**: `SerializeElement.toJava()` → Java 原生类型 (List/Map/原生值)
 - **`HttpHelperExtensions`**: `HttpHelper.params(SerializeObject)` / `.headers(SerializeObject)`
-
-#### 注解 (`annotation/`)
-已有 `@Serializable`/`@Deserializable` 注解 (引用具体 `Serializer<T>`/`Deserializer<T>` 类), 但属于过时设计, 保留兼容。
 
 ### `:nebula-serialization-gson` — Gson 桥接
 - **互转**: `JsonElement ↔ SerializeElement`, `JsonObject ↔ SerializeObject`, `JsonArray ↔ SerializeArray`

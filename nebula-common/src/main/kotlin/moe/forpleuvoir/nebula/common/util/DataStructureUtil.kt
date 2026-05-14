@@ -8,7 +8,7 @@ package moe.forpleuvoir.nebula.common.util
  * @return 返回满足条件的父级对象数量，包括起始对象本身。
  */
 inline fun <T> T.countParents(parentSupplier: (T) -> T?): Int {
-    var count = 0
+    var count = 1
     var current = this
     while (current != null) {
         val parent = parentSupplier(current)

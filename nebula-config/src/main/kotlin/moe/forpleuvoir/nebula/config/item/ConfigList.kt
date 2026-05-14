@@ -31,7 +31,7 @@ class ConfigList<T>(
 
     override fun isDefault(): Boolean = buffer.toList() valueEquals defaultValue
 
-    override fun restDefault() {
+    override fun resetDefault() {
         if (isDefault()) return
         buffer.clear()
         buffer.addAll(defaultValue)
