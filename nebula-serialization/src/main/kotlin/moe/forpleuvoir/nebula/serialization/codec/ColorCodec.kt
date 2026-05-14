@@ -29,8 +29,8 @@ private fun decodeColor(serializeElement: SerializeElement): Result<Color> =
         check<SerializePrimitive> { primitive ->
             if (primitive.isString) {
                 Color.fromHexString(primitive.asString!!)
-            } else if (primitive.isNumber && Color.isValidColor(primitive.asInt!!)) {
-                Color.fromARGB(primitive.asInt!!)
+            } else if (primitive.isNumber) {
+                Color.fromARGB(primitive.asInt ?: throw IllegalArgumentException("Failed to decode the color. Input primitive number is null."))
             } else throw IllegalArgumentException("Failed to decode the color. The input primitive should be a valid color string or number.")
         }
         check<SerializeObject> { obj ->

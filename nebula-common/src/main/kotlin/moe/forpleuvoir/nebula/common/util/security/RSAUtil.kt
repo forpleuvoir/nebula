@@ -21,7 +21,7 @@ object RSAUtil {
         //KeyPairGenerator类用于生成公钥和密钥对，基于RSA算法生成对象
         val keyPairGen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
         //初始化密钥对生成器，密钥大小为96-1024位
-        keyPairGen.initialize(1024, SecureRandom())
+        keyPairGen.initialize(2048)
         //生成一个密钥对，保存在keyPair中
         val keyPair: java.security.KeyPair = keyPairGen.generateKeyPair()
         val privateKey: PrivateKey = keyPair.private //得到私钥
@@ -50,7 +50,7 @@ object RSAUtil {
         val decoded: ByteArray = Base64.getDecoder().decode(publicKey)
         val pubKey: RSAPublicKey = KeyFactory.getInstance("RSA").generatePublic(X509EncodedKeySpec(decoded)) as RSAPublicKey
         //RAS加密
-        val cipher: Cipher = Cipher.getInstance("RSA")
+        val cipher: Cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
         cipher.init(Cipher.ENCRYPT_MODE, pubKey)
         return Base64.getEncoder().encodeToString(cipher.doFinal(str.toByteArray(charset("UTF-8"))))
     }
@@ -74,7 +74,7 @@ object RSAUtil {
         val decoded: ByteArray = Base64.getDecoder().decode(privateKey)
         val priKey: PrivateKey = KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(decoded))
         //RSA解密
-        val cipher: Cipher = Cipher.getInstance("RSA")
+        val cipher: Cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
         cipher.init(Cipher.DECRYPT_MODE, priKey)
         return String(cipher.doFinal(inputByte), Charsets.UTF_8)
     }

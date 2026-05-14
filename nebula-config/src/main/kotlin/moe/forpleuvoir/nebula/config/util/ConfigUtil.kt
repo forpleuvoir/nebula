@@ -11,6 +11,7 @@ import java.util.*
 object ConfigUtil {
 
     @JvmStatic
+    @Volatile
     var charset: Charset = StandardCharsets.UTF_8
 
     suspend fun configFile(configFileName: String, path: Path, create: Boolean = true): File = withContext(Dispatchers.IO) {

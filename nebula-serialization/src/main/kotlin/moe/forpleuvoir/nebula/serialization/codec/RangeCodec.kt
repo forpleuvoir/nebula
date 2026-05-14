@@ -1,10 +1,10 @@
 package moe.forpleuvoir.nebula.serialization.codec
 
 import kotlinx.serialization.KSerializer
+import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.nebula.toKSerializer
-import kotlin.ranges.ClosedRange
 
 context(codec: Codec<T>)
 val <T : Comparable<T>> rangeCodec: Codec<ClosedRange<T>>
@@ -22,7 +22,8 @@ private inline fun <R, T> numberRangeCodec(crossinline conversion: (String) -> T
         SerializePrimitive("${target.start}..${target.endInclusive}")
 
     override fun deserialization(element: SerializeElement): Result<R> = runCatching {
-        element.asString!!.split("..").let {
+        val s = element.asString ?: throw DeserializationException("Expected string for range, got $element")
+        s.split("..").let {
             rangeConversion(conversion(it[0])..conversion(it[1]))
         }
     }

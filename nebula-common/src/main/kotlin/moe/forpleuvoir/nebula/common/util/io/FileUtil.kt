@@ -71,7 +71,7 @@ object FileUtil {
      */
     @Throws(IOException::class)
     fun createFile(file: File): File {
-        file.parentFile.mkdirs()
+        file.parentFile?.mkdirs()
         if (!file.exists()) {
             file.createNewFile()
         }

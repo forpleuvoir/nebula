@@ -97,7 +97,8 @@ internal object JsonDecoder : SyntaxDecoder {
                     when {
                         sep is Symbol && sep.value == "," -> {
                             val afterComma = nextTail.drop(1)
-                            if (afterComma.firstOrNull() is Symbol && (afterComma.first() as Symbol).value == "}") {
+                            val firstToken = afterComma.firstOrNull()
+                            if (firstToken is Symbol && firstToken.value == "}") {
                                 Result.failure(SyntaxReadException("Trailing comma is not allowed in JSON", sep.pos))
                             } else {
                                 parseMembers(afterComma)
@@ -134,7 +135,8 @@ internal object JsonDecoder : SyntaxDecoder {
                     when {
                         sep is Symbol && sep.value == "," -> {
                             val afterComma = nextTail.drop(1)
-                            if (afterComma.firstOrNull() is Symbol && (afterComma.first() as Symbol).value == "]") {
+                            val firstToken = afterComma.firstOrNull()
+                            if (firstToken is Symbol && firstToken.value == "]") {
                                 Result.failure(SyntaxReadException("Trailing comma is not allowed in JSON array", sep.pos))
                             } else {
                                 parseElements(afterComma)

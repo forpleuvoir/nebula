@@ -12,7 +12,7 @@ infix fun SerializeElement.completeEquals(target: SerializeElement): Boolean {
     } else if (this is SerializeArray && this.size == (target as SerializeArray).size) {
         return indices.all { index -> this[index] completeEquals target[index] }
     } else if (this is SerializeObject && this.size == (target as SerializeObject).size && this.keys == target.keys) {
-        return entries.all { (k, v) -> v completeEquals target[k]!! }
+        return entries.all { (k, v) -> val t = target[k] ?: return false; v completeEquals t }
     } else return false
 }
 

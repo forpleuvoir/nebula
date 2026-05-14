@@ -1,6 +1,7 @@
 package moe.forpleuvoir.nebula.serialization.codec
 
 import kotlinx.serialization.KSerializer
+import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
@@ -14,7 +15,7 @@ val Duration.Companion.CODEC: Codec<Duration> by lazy {
         override fun serialization(target: Duration): SerializeElement = SerializePrimitive(target.toString())
 
         override fun deserialization(element: SerializeElement): Result<Duration> =
-            element.checkType<SerializePrimitive, Duration> { parse(it.asString!!) }
+            element.checkType<SerializePrimitive, Duration> { parse(it.asString ?: throw DeserializationException("Expected string for Duration, got $it")) }
 
     }
 }
@@ -28,7 +29,7 @@ val DateCodec: Codec<Date> by lazy {
         override fun serialization(target: Date): SerializeElement = SerializePrimitive(target.time)
 
         override fun deserialization(element: SerializeElement): Result<Date> =
-            element.checkType<SerializePrimitive, Date> { Date(it.asLong!!) }
+            element.checkType<SerializePrimitive, Date> { Date(it.asLong ?: throw DeserializationException("Expected long for Date, got $it")) }
     }
 }
 

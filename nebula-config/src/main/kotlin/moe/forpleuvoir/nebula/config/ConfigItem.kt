@@ -3,16 +3,17 @@
 package moe.forpleuvoir.nebula.config
 
 import kotlinx.serialization.KSerializer
-import moe.forpleuvoir.nebula.common.api.Notifiable
+import moe.forpleuvoir.nebula.common.api.Observable
 import moe.forpleuvoir.nebula.common.api.Resettable
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.codec.Codec
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Consumer
 
 abstract class ConfigItem<C>(
     override val name: String,
     override val defaultValue: C,
-) : ConfigNode, ConfigValued<C>, Resettable, Notifiable<ConfigItem<C>> {
+) : ConfigNode, ConfigValued<C>, Resettable, Observable<ConfigItem<C>> {
 
     protected var _value: C = defaultValue
 
@@ -51,19 +52,19 @@ abstract class ConfigItem<C>(
 
     override fun init() {}
 
-    private var observers: MutableList<Consumer<ConfigItem<C>>> = ArrayList()
+    private val observers: MutableList<Consumer<ConfigItem<C>>> = CopyOnWriteArrayList()
 
-    override fun subscribe(callback: Consumer<ConfigItem<C>>) {
+    override fun observe(callback: Consumer<ConfigItem<C>>) {
         observers.add(callback)
     }
 
-    override fun onChange(value: ConfigItem<C>) {
+    override fun notifyChange(value: ConfigItem<C>) {
         root?.markSavable()
         observers.forEach { it.accept(value) }
     }
 
     protected fun notifyChange() {
-        onChange(this)
+        notifyChange(this)
     }
 
     override fun matched(regex: Regex): Boolean {

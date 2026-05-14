@@ -13,13 +13,14 @@ import moe.forpleuvoir.nebula.serialization.base.*
 internal object HJsonDecoder : SyntaxDecoder {
 
     override fun decode(tokens: List<Token>): Result<SerializeElement> {
+        val first = tokens.firstOrNull()
         return when {
-            tokens.isEmpty() || tokens.first() is EOF                           -> Result.success(SerializeNull)
+            tokens.isEmpty() || first is EOF      -> Result.success(SerializeNull)
 
-            tokens.first() is Symbol && (tokens.first() as Symbol).value == "{" ->
+            first is Symbol && first.value == "{" ->
                 parseObject(tokens.drop(1)).map { it.first }
 
-            tokens.first() is Symbol && (tokens.first() as Symbol).value == "[" ->
+            first is Symbol && first.value == "[" ->
                 parseArray(tokens.drop(1)).map { it.first }
 
             else                                                                -> {

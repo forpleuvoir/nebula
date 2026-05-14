@@ -9,8 +9,10 @@ value class Color(val argb: Int) {
     companion object {
 
         @JvmStatic
-        fun isValidColor(color: Int): Boolean =
-            color.toUInt() <= 0xFFFFFFFFu
+        fun isValidColor(hex: String): Boolean = runCatching {
+            hex2Int(hex)
+            true
+        }.getOrDefault(false)
 
         @JvmStatic
         fun hex2Int(hex: String): Int {

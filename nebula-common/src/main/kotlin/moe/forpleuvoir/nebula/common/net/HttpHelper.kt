@@ -11,14 +11,14 @@ import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandler
 import java.time.Duration
 
+private val CLIENT: HttpClient = HttpClient.newHttpClient()
+
 @Suppress("KDocUnresolvedReference", "UNUSED", "MemberVisibilityCanBePrivate")
 class HttpHelper<T>(
     private val uri: String,
     private val bodyHandler: BodyHandler<T>,
     internal var bodyPublisher: BodyPublisher = BodyPublishers.noBody(),
 ) {
-
-    internal val client = HttpClient.newHttpClient()
 
     internal val requestBuilder: Builder = newBuilder().uri(URI.create(uri)).timeout(Duration.ofSeconds(10))
 
@@ -84,7 +84,7 @@ class HttpHelper<T>(
      */
     fun params(vararg params: Pair<String, Any>): HttpHelper<T> {
         val str = StringBuilder(uri)
-        str.append("?")
+        str.append(if (uri.contains('?')) '&' else '?')
         params.forEachIndexed { index, pair ->
             str.append(pair.first, "=", URLEncoder.encode(pair.second.toString(), "UTF-8"))
             if (index != params.size - 1) str.append("&")
@@ -137,7 +137,7 @@ class HttpHelper<T>(
      * @return HttpResponse<T>
      */
     suspend fun send(): HttpResponse<T> = withContext(Dispatchers.IO) {
-        client.send(requestBuilder.build(), bodyHandler)
+        CLIENT.send(requestBuilder.build(), bodyHandler)
     }
 
     /**
@@ -145,7 +145,7 @@ class HttpHelper<T>(
      * @return T
      */
     suspend fun sendGetBody(): T = withContext(Dispatchers.IO) {
-        client.send(requestBuilder.build(), bodyHandler)
+        CLIENT.send(requestBuilder.build(), bodyHandler)
     }.body()
 
 
@@ -154,17 +154,15 @@ class HttpHelper<T>(
      * @param block Function1<HttpResponse<T>, Unit>
      */
     fun sendAsync(block: (HttpResponse<T>) -> Unit) {
-        client.sendAsync(requestBuilder.build(), bodyHandler)
+        CLIENT.sendAsync(requestBuilder.build(), bodyHandler)
             .thenAcceptAsync(block)
+            .exceptionally { e -> null }
     }
 
-    /**
-     * 发送异步请求
-     * @param block Function1<T, Unit> T ：body
-     */
     fun sendAsyncGetBody(block: (T) -> Unit) {
-        client.sendAsync(requestBuilder.build(), bodyHandler)
+        CLIENT.sendAsync(requestBuilder.build(), bodyHandler)
             .thenAcceptAsync { block(it.body()) }
+            .exceptionally { e -> null }
     }
 }
 

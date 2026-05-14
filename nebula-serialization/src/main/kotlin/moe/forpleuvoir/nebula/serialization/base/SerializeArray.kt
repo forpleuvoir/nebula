@@ -52,112 +52,21 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
         return SerializeArray()
     }
 
-    override val asPrimitive: SerializePrimitive?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asPrimitive
-            }
-            return super.asPrimitive
-        }
-    override val asObject: SerializeObject?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asObject
-            }
-            return super.asObject
-        }
-
-    override val asNull: SerializeNull?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asNull
-            }
-            return super.asNull
-        }
-    override val asChar: Char?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asChar
-            }
-            return super.asChar
-        }
-    override val asString: String?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asString
-            }
-            return super.asString
-        }
-    override val asBoolean: Boolean?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asBoolean
-            }
-            return super.asBoolean
-        }
-    override val asNumber: Number?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asNumber
-            }
-            return super.asNumber
-        }
-    override val asInt: Int?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asInt
-            }
-            return super.asInt
-        }
-    override val asLong: Long?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asLong
-            }
-            return super.asLong
-        }
-    override val asShort: Short?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asShort
-            }
-            return super.asShort
-        }
-    override val asByte: Byte?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asByte
-            }
-            return super.asByte
-        }
-    override val asFloat: Float?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asFloat
-            }
-            return super.asFloat
-        }
-    override val asDouble: Double?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asDouble
-            }
-            return super.asDouble
-        }
-    override val asBigInteger: BigInteger?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asBigInteger
-            }
-            return super.asBigInteger
-        }
-    override val asBigDecimal: BigDecimal?
-        get() {
-            if (this.size == 1) {
-                return this.elements[0].asBigDecimal
-            }
-            return super.asBigDecimal
-        }
+    override val asPrimitive: SerializePrimitive? get() = if (size == 1) elements[0].asPrimitive else null
+    override val asObject: SerializeObject? get() = if (size == 1) elements[0].asObject else null
+    override val asNull: SerializeNull? get() = if (size == 1) elements[0].asNull else null
+    override val asChar: Char? get() = if (size == 1) elements[0].asChar else null
+    override val asString: String? get() = if (size == 1) elements[0].asString else null
+    override val asBoolean: Boolean? get() = if (size == 1) elements[0].asBoolean else null
+    override val asNumber: Number? get() = if (size == 1) elements[0].asNumber else null
+    override val asInt: Int? get() = if (size == 1) elements[0].asInt else null
+    override val asLong: Long? get() = if (size == 1) elements[0].asLong else null
+    override val asShort: Short? get() = if (size == 1) elements[0].asShort else null
+    override val asByte: Byte? get() = if (size == 1) elements[0].asByte else null
+    override val asFloat: Float? get() = if (size == 1) elements[0].asFloat else null
+    override val asDouble: Double? get() = if (size == 1) elements[0].asDouble else null
+    override val asBigInteger: BigInteger? get() = if (size == 1) elements[0].asBigInteger else null
+    override val asBigDecimal: BigDecimal? get() = if (size == 1) elements[0].asBigDecimal else null
 
     fun add(string: String): Boolean {
         return this.add(SerializePrimitive(string))

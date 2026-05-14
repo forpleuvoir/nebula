@@ -3,7 +3,6 @@
 package moe.forpleuvoir.nebula.config
 
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.runBlocking
 import moe.forpleuvoir.nebula.common.util.ioAsync
 import moe.forpleuvoir.nebula.config.manager.component.ConfigManagerComponent
 import kotlin.time.Duration
@@ -33,6 +32,7 @@ open class ConfigManager(
         components.forEach { it.finishInit() }
     }
 
+    @Volatile
     private var shouldSave: Boolean = false
 
     fun markSavable() {
@@ -87,9 +87,7 @@ open class ConfigManager(
     private var onLoadedCallback: suspend (Duration) -> Unit = {}
 }
 
-fun ConfigManager.startup() {
+suspend fun ConfigManager.startup() {
     init()
-    runBlocking {
-        runCatching { load() }.onFailure { forceSave() }
-    }
+    runCatching { load() }.onFailure { forceSave() }
 }

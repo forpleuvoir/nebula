@@ -14,7 +14,6 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 ### `:nebula-common` — 通用工具
 - **颜色** (`moe.forpleuvoir.nebula.common.color`): `Color` (ARGB inline value class), `Colors` 颜色常量, HSV/RGB 转换, 插值 `lerp`/`hsvLerp`, 反色
 - **网络** (`moe.forpleuvoir.nebula.common.net`): `HttpHelper` — 基于 `java.net.http.HttpClient` 的链式 HTTP 请求封装, 支持同步/异步, BodyPublisher, 超时/Header/Params
-- **数据结构** (`moe.forpleuvoir.nebula.common.util.collection`): `NotifiableArrayList`, `NotifiableLinkedHashMap` — 变更通知型集合
 - **安全** (`moe.forpleuvoir.nebula.common.util.security`): `AESUtil`, `RSAUtil` 加解密工具
 - **反射** (`moe.forpleuvoir.nebula.common.util.reflect`): `ClassScanner` — 类路径扫描
 - **IO** (`moe.forpleuvoir.nebula.common.util.io`): `FileUtil`
@@ -110,12 +109,6 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 - **`SerializePrimitiveCheckTypeResult`**: 原始值类型匹配
 - **`JavaConversion`**: `SerializeElement.toJava()` → Java 原生类型 (List/Map/原生值)
 - **`HttpHelperExtensions`**: `HttpHelper.params(SerializeObject)` / `.headers(SerializeObject)`
-
-### `:nebula-serialization-gson` — Gson 桥接
-- **互转**: `JsonElement ↔ SerializeElement`, `JsonObject ↔ SerializeObject`, `JsonArray ↔ SerializeArray`
-- **DSL**: `jsonObject { }`, `jsonArray(...)`, `Any.toJsonObject()`, `Any.toJsonStr()`
-- **工具**: `JsonObject.getOr(key, default)` 类型安全获取, `Json` 接口(反射转JsonObject)
-- **解析扩展**: `String.parseToJsonArray/parseToJsonObject/parseToJsonElement`
 
 ### `:nebula-config` — 配置管理
 - **核心接口** (`config/`):

@@ -3,7 +3,6 @@ import moe.forpleuvoir.nebula.common.color.HSVHelper
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.FileWriter
-import java.util.*
 import kotlin.time.measureTime
 
 class ColorTest {
@@ -20,20 +19,9 @@ class ColorTest {
         println(Color.fromARGB(1f, 1f, 1f) == Color.fromARGB(1f, 1f, 1f))
         HSVHelper.cache.toList().forEach { (k, v) -> println("${k.toString(16)} -> $v -> ${Color.fromHSV(v.hue, v.saturation, v.value)}") }
     }
-
-    @Test
-    fun test() {
-        val randomColor: UInt = ((Math.random() * 0xFFFFFFFFu.toDouble()).toUInt())
-        println("随机生成的颜色值：0x${randomColor.toString(16).uppercase(Locale.getDefault())}")
-
-        val isValid = Color.isValidColor(randomColor.toInt())
-        if (isValid) {
-            println("该颜色值是有效的。${Color.fromARGB(randomColor)}")
-        } else {
-            println("该颜色值是无效的。")
-        }
-    }
 }
+
+
 
 
 fun map() {

@@ -54,9 +54,49 @@ class ConfigMap<V>(
     }
 
     override val size: Int get() = map.size
-    override val entries: MutableSet<MutableMap.MutableEntry<String, V>> get() = map.entries
-    override val keys: MutableSet<String> get() = map.keys
-    override val values: MutableCollection<V> get() = map.values
+    override val entries: MutableSet<MutableMap.MutableEntry<String, V>>
+        get() = object : MutableSet<MutableMap.MutableEntry<String, V>> by map.entries {
+            override fun add(element: MutableMap.MutableEntry<String, V>): Boolean = map.entries.add(element).also { if (it) notifyChange() }
+            override fun addAll(elements: Collection<MutableMap.MutableEntry<String, V>>): Boolean =
+                map.entries.addAll(elements).also { if (it) notifyChange() }
+
+            override fun clear() {
+                map.entries.clear(); notifyChange()
+            }
+
+            override fun remove(element: MutableMap.MutableEntry<String, V>): Boolean = map.entries.remove(element).also { if (it) notifyChange() }
+            override fun removeAll(elements: Collection<MutableMap.MutableEntry<String, V>>): Boolean =
+                map.entries.removeAll(elements).also { if (it) notifyChange() }
+
+            override fun retainAll(elements: Collection<MutableMap.MutableEntry<String, V>>): Boolean =
+                map.entries.retainAll(elements).also { if (it) notifyChange() }
+        }
+
+    override val keys: MutableSet<String>
+        get() = object : MutableSet<String> by map.keys {
+            override fun add(element: String): Boolean = map.keys.add(element).also { if (it) notifyChange() }
+            override fun addAll(elements: Collection<String>): Boolean = map.keys.addAll(elements).also { if (it) notifyChange() }
+            override fun clear() {
+                map.keys.clear(); notifyChange()
+            }
+
+            override fun remove(element: String): Boolean = map.keys.remove(element).also { if (it) notifyChange() }
+            override fun removeAll(elements: Collection<String>): Boolean = map.keys.removeAll(elements).also { if (it) notifyChange() }
+            override fun retainAll(elements: Collection<String>): Boolean = map.keys.retainAll(elements).also { if (it) notifyChange() }
+        }
+
+    override val values: MutableCollection<V>
+        get() = object : MutableCollection<V> by map.values {
+            override fun add(element: V): Boolean = map.values.add(element).also { if (it) notifyChange() }
+            override fun addAll(elements: Collection<V>): Boolean = map.values.addAll(elements).also { if (it) notifyChange() }
+            override fun clear() {
+                map.values.clear(); notifyChange()
+            }
+
+            override fun remove(element: V): Boolean = map.values.remove(element).also { if (it) notifyChange() }
+            override fun removeAll(elements: Collection<V>): Boolean = map.values.removeAll(elements).also { if (it) notifyChange() }
+            override fun retainAll(elements: Collection<V>): Boolean = map.values.retainAll(elements).also { if (it) notifyChange() }
+        }
     override fun isEmpty(): Boolean = map.isEmpty()
     override fun containsKey(key: String): Boolean = map.containsKey(key)
     override fun containsValue(value: V): Boolean = map.containsValue(value)

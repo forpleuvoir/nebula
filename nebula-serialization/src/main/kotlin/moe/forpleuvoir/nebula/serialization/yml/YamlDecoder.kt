@@ -47,10 +47,10 @@ internal object YamlDecoder {
         var i = 0
         while (i < line.length) {
             val c = line[i]
-            when {
-                c == '"' && !inSingleQuote  -> inDoubleQuote = !inDoubleQuote
-                c == '\'' && !inDoubleQuote -> inSingleQuote = !inSingleQuote
-                c == '#' && !inSingleQuote && !inDoubleQuote -> {
+            when (c) {
+                '"' if !inSingleQuote                   -> inDoubleQuote = !inDoubleQuote
+                '\'' if !inDoubleQuote                  -> inSingleQuote = !inSingleQuote
+                '#' if !inSingleQuote && !inDoubleQuote -> {
                     return line.substring(0, i).trimEnd()
                 }
             }
@@ -64,10 +64,10 @@ internal object YamlDecoder {
         var inDoubleQuote = false
         for (i in line.indices) {
             val c = line[i]
-            when {
-                c == '"' && !inSingleQuote  -> inDoubleQuote = !inDoubleQuote
-                c == '\'' && !inDoubleQuote -> inSingleQuote = !inSingleQuote
-                c == ':' && !inSingleQuote && !inDoubleQuote -> return i
+            when (c) {
+                '"' if !inSingleQuote                   -> inDoubleQuote = !inDoubleQuote
+                '\'' if !inDoubleQuote                  -> inSingleQuote = !inSingleQuote
+                ':' if !inSingleQuote && !inDoubleQuote -> return i
             }
         }
         return -1
@@ -102,7 +102,7 @@ internal object YamlDecoder {
     }
 
     /**
-     * Parse a sequence (list) of items starting with "- ".
+     * Parse a sequence (list) of items starting with " - ".
      */
     private fun parseSequence(
         lines: List<YamlLine>,
@@ -137,7 +137,7 @@ internal object YamlDecoder {
                     i++
                 }
             } else if (afterDash.startsWith("- ")) {
-                val (element, consumed) = parseSequence(
+                val (element, _) = parseSequence(
                     listOf(YamlLine(listItemIndent, afterDash, line.lineNumber)),
                     0, 1, parentIndent
                 )
@@ -281,7 +281,7 @@ internal object YamlDecoder {
 
             trimmed.matches(numberRegex)                                              -> try {
                 val num = JsonLexer.parseNumber(trimmed)
-                if (num is Number) SerializePrimitive(num as Number) else SerializePrimitive(num.toString())
+                if (num is Number) SerializePrimitive(num) else SerializePrimitive(num.toString())
             } catch (_: Exception) {
                 SerializePrimitive(trimmed)
             }

@@ -48,7 +48,7 @@ object TestConfigs : ConfigManager("test") {
 
     object Numbers : ConfigGroup("config_numbers", this) {
         val int = configInt("int", 10).apply {
-            subscribe {
+            observe {
                 println("$it, 数值有变!(${it.getValue()})")
             }
         }.comment("这是int的注释")
@@ -59,7 +59,7 @@ object TestConfigs : ConfigManager("test") {
 
         object Numbers : ConfigGroup("config_numbers", this) {
             val int = configInt("int", 10).apply {
-                subscribe {
+                observe {
                     println("$it, 数值有变!(${it.getValue()})")
                 }
             }.comment("这是int的注释")

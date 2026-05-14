@@ -55,9 +55,57 @@ class ConfigList<T>(
     override fun get(index: Int): T = buffer[index]
     override fun indexOf(element: T): Int = buffer.indexOf(element)
     override fun lastIndexOf(element: T): Int = buffer.lastIndexOf(element)
-    override fun iterator(): MutableIterator<T> = buffer.iterator()
-    override fun listIterator(): MutableListIterator<T> = buffer.listIterator()
-    override fun listIterator(index: Int): MutableListIterator<T> = buffer.listIterator(index)
+    override fun iterator(): MutableIterator<T> = object : MutableIterator<T> {
+        val it = buffer.iterator()
+        override fun hasNext() = it.hasNext()
+        override fun next() = it.next()
+        override fun remove() {
+            it.remove(); notifyChange()
+        }
+    }
+
+    override fun listIterator(): MutableListIterator<T> = object : MutableListIterator<T> {
+        val it = buffer.listIterator()
+        override fun hasNext() = it.hasNext()
+        override fun hasPrevious() = it.hasPrevious()
+        override fun next() = it.next()
+        override fun nextIndex() = it.nextIndex()
+        override fun previous() = it.previous()
+        override fun previousIndex() = it.previousIndex()
+        override fun add(element: T) {
+            it.add(element); notifyChange()
+        }
+
+        override fun remove() {
+            it.remove(); notifyChange()
+        }
+
+        override fun set(element: T) {
+            it.set(element); notifyChange()
+        }
+    }
+
+    override fun listIterator(index: Int): MutableListIterator<T> = object : MutableListIterator<T> {
+        val it = buffer.listIterator(index)
+        override fun hasNext() = it.hasNext()
+        override fun hasPrevious() = it.hasPrevious()
+        override fun next() = it.next()
+        override fun nextIndex() = it.nextIndex()
+        override fun previous() = it.previous()
+        override fun previousIndex() = it.previousIndex()
+        override fun add(element: T) {
+            it.add(element); notifyChange()
+        }
+
+        override fun remove() {
+            it.remove(); notifyChange()
+        }
+
+        override fun set(element: T) {
+            it.set(element); notifyChange()
+        }
+    }
+
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> = buffer.subList(fromIndex, toIndex)
 
     override fun add(element: T): Boolean = buffer.add(element).also { if (it) notifyChange() }
