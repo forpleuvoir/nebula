@@ -67,7 +67,6 @@ class MiscTest {
         println(str.applyData(existingRanges))
     }
 
-    @Test
     fun file() {
         println("我要创建一个超长文路径的文件夹")
         val fileName = buildString {

@@ -22,12 +22,14 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 - **类型工具**: `StringUtil`, `FloatUtil`, `BooleanUtil`, `EnumUtil`, `DateAndTime`, `DataStructureUtil`
 - **通用接口**: `Matchable`, `Initializable`, `Notifiable`, `Resettable`, `ExperimentalApi`
 
-### `:nebula-event` — 事件总线
-- **核心**: `EventBus` 接口 + `EventBusImpl` (基于 `ConcurrentHashMap` + `ConcurrentLinkedQueue`)
-- **事件**: `Event` 接口, 支持 `cancellable`/`canceled`, `CancellableEvent`
-- **订阅**: 支持 `priority` 排序 + `greedy` 模式 (向父类传播)
-- **静态入口**: `EventBus.DEFAULT_EVENT_BUS` + `EventBus.registerEventBus(name, bus)` 多总线注册
-- **异常**: `EventException`
+### `:nebula-event` — 事件 API (Array-backed Invoker)
+- **核心模式**: `Event<T>` 抽象类, 通过 `EventFactory.create` 创建, 所有 listener 以 `Array<T>` 形式缓存, 由 `invokerFactory` 合成最终 `invoker`
+- **注册/注销**: `Event.register(listener)` / `Event.register(phase, listener)` → 返回 `Registration` (fun interface), 支持单个 listener 按 phase 精确注销
+- **阶段排序**: 基于 Kahn 拓扑排序, 区分 declared phases (`createWithPhases`) 与 dynamic phases (运行时 `register(phase, ...)`), `addPhaseOrdering(first, second)` 动态声明偏序; declared phases 始终优先于同层级的 dynamic phases
+- **线程安全**: 写操作 (`register`/`unregister`/`addPhaseOrdering`) 由 `synchronized` 保护, `invoker` 以 `@Volatile` 保证读端可见性; 重建 listener 数组后原子发布
+- **默认阶段**: `Event.DEFAULT_PHASE` (`"nebula:default"`), 任何 Event 自动拥有该阶段
+- **实现类**: `ArrayBackedEvent<T>` (internal), 维护 `linkedMapOf<phase, listeners>`, 每次变更触发 `rebuild()` → topological sort → 新数组 + 新 invoker
+- **工厂**: `EventFactory.create` / `create(emptyInvoker, invokerFactory)` / `createWithPhases(vararg defaultPhases, invokerFactory)`, 后者要求显式包含 `Event.DEFAULT_PHASE`
 
 ### `:nebula-serialization` — 序列化框架
 

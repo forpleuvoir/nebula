@@ -1,7 +1,5 @@
 package moe.forpleuvoir.nebula.common.api
 
-import java.util.function.Consumer
-
 /**
  *
 
@@ -18,8 +16,11 @@ import java.util.function.Consumer
  */
 interface Observable<T> {
 
-	fun notifyChange(value: T)
+    fun notifyChange(value: T)
 
-	fun observe(callback: Consumer<T>)
+    fun observe(callback: (T) -> Unit): Disposable
 
+    fun interface Disposable {
+        fun dispose()
+    }
 }

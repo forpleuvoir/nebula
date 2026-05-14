@@ -8,7 +8,6 @@ import moe.forpleuvoir.nebula.common.api.Resettable
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.function.Consumer
 
 abstract class ConfigItem<C>(
     override val name: String,
@@ -52,15 +51,16 @@ abstract class ConfigItem<C>(
 
     override fun init() {}
 
-    private val observers: MutableList<Consumer<ConfigItem<C>>> = CopyOnWriteArrayList()
+    private val observers: MutableList<(ConfigItem<C>) -> Unit> = CopyOnWriteArrayList()
 
-    override fun observe(callback: Consumer<ConfigItem<C>>) {
+    override fun observe(callback: (ConfigItem<C>) -> Unit): Observable.Disposable {
         observers.add(callback)
+        return Observable.Disposable { observers.remove(callback) }
     }
 
     override fun notifyChange(value: ConfigItem<C>) {
         root?.markSavable()
-        observers.forEach { it.accept(value) }
+        observers.forEach { it(value) }
     }
 
     protected fun notifyChange() {
