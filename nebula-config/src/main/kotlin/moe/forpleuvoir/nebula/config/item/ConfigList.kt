@@ -10,6 +10,7 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeArray
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
+import java.util.concurrent.CopyOnWriteArrayList
 
 class ConfigList<T>(
     name: String,
@@ -17,7 +18,7 @@ class ConfigList<T>(
     private val serde: ConfigSerde<T>,
 ) : ConfigItem<List<T>>(name, defaultValue), MutableList<T> {
 
-    private val buffer: MutableList<T> = defaultValue.toMutableList()
+    private val buffer: MutableList<T> = CopyOnWriteArrayList(defaultValue)
 
     override fun getValue(): List<T> = buffer.toList()
 
@@ -106,7 +107,27 @@ class ConfigList<T>(
         }
     }
 
-    override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> = buffer.subList(fromIndex, toIndex)
+    override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> {
+        val sub = buffer.subList(fromIndex, toIndex)
+        return object : MutableList<T> by sub {
+            override fun add(element: T): Boolean = sub.add(element).also { if (it) notifyChange() }
+            override fun add(index: Int, element: T) {
+                sub.add(index, element); notifyChange()
+            }
+
+            override fun addAll(elements: Collection<T>): Boolean = sub.addAll(elements).also { if (it) notifyChange() }
+            override fun addAll(index: Int, elements: Collection<T>): Boolean = sub.addAll(index, elements).also { if (it) notifyChange() }
+            override fun clear() {
+                sub.clear(); notifyChange()
+            }
+
+            override fun remove(element: T): Boolean = sub.remove(element).also { if (it) notifyChange() }
+            override fun removeAll(elements: Collection<T>): Boolean = sub.removeAll(elements).also { if (it) notifyChange() }
+            override fun removeAt(index: Int): T = sub.removeAt(index).also { notifyChange() }
+            override fun retainAll(elements: Collection<T>): Boolean = sub.retainAll(elements).also { if (it) notifyChange() }
+            override fun set(index: Int, element: T): T = sub.set(index, element).also { notifyChange() }
+        }
+    }
 
     override fun add(element: T): Boolean = buffer.add(element).also { if (it) notifyChange() }
     override fun add(index: Int, element: T) {

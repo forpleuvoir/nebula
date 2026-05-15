@@ -14,17 +14,16 @@ internal object HSVHelper {
 
         val hue = when {
             delta == 0f -> 0f
-            max == r   -> ((g - b) / delta) % 6f
-            max == g   -> ((b - r) / delta) + 2f
-            else       -> ((r - g) / delta) + 4f
+            max == r -> ((g - b) / delta) % 6f
+            max == g -> ((b - r) / delta) + 2f
+            else     -> ((r - g) / delta) + 4f
         }.let { (it / 6f).let { h -> if (h < 0f) h + 1f else h } }
 
         val saturation = if (max == 0f) 0f else delta / max
         return HSV(hue, saturation, max)
     }
 
-    @Suppress("NOTHING_TO_INLINE")
-    inline fun hsv2RGB(hue: Float, saturation: Float, value: Float): Int {
+    fun hsv2RGB(hue: Float, saturation: Float, value: Float): Int {
         if (saturation == 0f) {
             val v = (value * 255f + 0.5f).toInt()
             return (0xFF shl 24) or (v shl 16) or (v shl 8) or v

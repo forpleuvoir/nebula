@@ -1,18 +1,16 @@
 @file:OptIn(ExperimentalTypeInference::class)
 
+import moe.forpleuvoir.nebula.common.util.reflect.ClassScanner
 import java.io.File
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.test.Test
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
 
 class MiscTest {
 
 
     @Test
     fun t2() {
-        println(365.days)
-        println(Duration.parse("96d"))
+        ClassScanner.getClassesForPackage("moe.forpleuvoir.nebula").forEach { println(it.name) }
     }
 
     @Test

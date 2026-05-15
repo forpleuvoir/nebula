@@ -152,17 +152,23 @@ class HttpHelper<T>(
     /**
      * 发送异步请求
      * @param block Function1<HttpResponse<T>, Unit>
+     * @param onError 可选，异步失败时的回调
      */
-    fun sendAsync(block: (HttpResponse<T>) -> Unit) {
+    fun sendAsync(block: (HttpResponse<T>) -> Unit, onError: ((Throwable) -> Unit)? = null) {
         CLIENT.sendAsync(requestBuilder.build(), bodyHandler)
             .thenAcceptAsync(block)
-            .exceptionally { e -> null }
+            .exceptionally { e -> onError?.invoke(e); null }
     }
 
-    fun sendAsyncGetBody(block: (T) -> Unit) {
+    /**
+     * 发送异步请求 返回body
+     * @param block Function1<T, Unit>
+     * @param onError 可选，异步失败时的回调
+     */
+    fun sendAsyncGetBody(block: (T) -> Unit, onError: ((Throwable) -> Unit)? = null) {
         CLIENT.sendAsync(requestBuilder.build(), bodyHandler)
             .thenAcceptAsync { block(it.body()) }
-            .exceptionally { e -> null }
+            .exceptionally { e -> onError?.invoke(e); null }
     }
 }
 

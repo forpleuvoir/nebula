@@ -6,7 +6,7 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 
 - **语言**: Kotlin 2.3.21, JVM 21
 - **构建**: Gradle (ShadowJar, Maven Publishing)
-- **序列化**: kotlinx-serialization 1.8.1 (编译器插件)
+- **序列化**: kotlinx-serialization 1.11.0 (编译器插件)
 - **依赖**: kotlinx-coroutines 1.11.0, Gson 2.10
 
 ## 模块结构

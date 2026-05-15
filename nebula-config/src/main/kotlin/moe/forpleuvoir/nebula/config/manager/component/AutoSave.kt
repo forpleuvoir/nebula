@@ -15,6 +15,7 @@ open class AutoSave(
     val saveAction: suspend (needSave: () -> Boolean) -> Unit = { if (it()) manager.save() },
 ) : ConfigManagerComponent {
 
+    @Volatile
     var isActive: Boolean = true
         set(value) {
             field = value
@@ -23,6 +24,7 @@ open class AutoSave(
 
     private var job: Job? = null
 
+    @Synchronized
     override fun finishInit() {
         job?.cancel()
         job = ioLaunch {

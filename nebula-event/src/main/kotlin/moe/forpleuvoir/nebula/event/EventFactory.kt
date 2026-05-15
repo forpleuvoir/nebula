@@ -61,7 +61,7 @@ object EventFactory {
      * @return [Event] 实例。
      */
     inline fun <reified T : Any> create(noinline invokerFactory: (Array<T>) -> T): Event<T> =
-        EventFactoryImpl.create(emptyArray<T>(), invokerFactory)
+        EventFactoryImpl.create(emptyArray(), invokerFactory)
 
 
     /**
@@ -100,7 +100,7 @@ object EventFactory {
     ): Event<T> {
         verifyPhases(defaultPhases)
         val declared = defaultPhases.toSet()
-        return EventFactoryImpl.create(emptyArray<T>(), initializer, declared).apply {
+        return EventFactoryImpl.create(emptyArray(), initializer, declared).apply {
             for (i in 1..<defaultPhases.size) {
                 addPhaseOrdering(defaultPhases[i - 1], defaultPhases[i])
             }

@@ -6,7 +6,7 @@ object Colors {
 
     @Suppress("NOTHING_TO_INLINE")
     private inline fun lazyColor(red: Int, green: Int, blue: Int): Lazy<Color> {
-        return lazy(LazyThreadSafetyMode.NONE) {
+        return lazy {
             Color(0xFF000000.toInt() or (red shl 16) or (green shl 8) or blue)
         }
     }

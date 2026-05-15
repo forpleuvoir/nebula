@@ -6,7 +6,7 @@ import moe.forpleuvoir.nebula.common.api.Initializable
 import moe.forpleuvoir.nebula.common.api.Matchable
 import moe.forpleuvoir.nebula.serialization.Serde
 
-interface ConfigNode : Initializable, Matchable, Serde {
+interface ConfigNode : Initializable, Matchable<Regex>, Serde {
 
     val name: String
 

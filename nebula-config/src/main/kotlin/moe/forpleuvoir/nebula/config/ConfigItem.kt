@@ -14,6 +14,7 @@ abstract class ConfigItem<C>(
     override val defaultValue: C,
 ) : ConfigNode, ConfigValued<C>, Resettable, Observable<ConfigItem<C>> {
 
+    @Volatile
     protected var _value: C = defaultValue
 
     override var parent: ConfigGroup? = null

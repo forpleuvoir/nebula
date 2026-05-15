@@ -66,14 +66,16 @@ fun String.replace(origin: Array<String>, new: String): String {
 }
 
 fun Iterable<CharSequence>.merge(length: Long, ellipsis: String = "...", separator: String = ", ", prefix: String = "", suffix: String = ""): String {
-	val sb = StringBuffer(prefix)
-	for ((index, s) in this.withIndex()) {
+    val list = this.toList()
+    val last = list.lastOrNull()
+    val sb = StringBuilder(prefix)
+    for ((index, s) in list.withIndex()) {
         if (index >= length) {
 			sb.append(ellipsis)
 			break
 		}
 		sb.append(s)
-		if (this.last() != s) sb.append(separator)
+        if (last != null && last != s) sb.append(separator)
 	}
 	sb.append(suffix)
 	return sb.toString()

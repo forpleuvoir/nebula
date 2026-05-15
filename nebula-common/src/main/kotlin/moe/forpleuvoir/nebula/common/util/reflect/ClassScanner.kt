@@ -58,7 +58,7 @@ object ClassScanner {
                 if (file.endsWith(".class")) {
                     try {
                         classes.add(Class.forName("$packageName.${file.substring(0, file.length - 6)}"))
-                    } catch (e: NoClassDefFoundError) {
+                    } catch (_: NoClassDefFoundError) {
                         // do nothing. this class hasn't been found by the
                         // loader, and we don't care.
                     }
@@ -130,12 +130,12 @@ object ClassScanner {
                         checkJarFile(connection, packageName, classes)
                     } else if (connection.url.protocol == "file") {
                         try {
-                            checkDirectory(File(URLDecoder.decode(url!!.path, "UTF-8")), packageName, classes)
+                            checkDirectory(File(URLDecoder.decode(url.path, "UTF-8")), packageName, classes)
                         } catch (ex: UnsupportedEncodingException) {
                             throw ClassNotFoundException(("$packageName does not appear to be a valid package (Unsupported encoding)"), ex)
                         }
                     } else {
-                        throw ClassNotFoundException("$packageName (${url!!.path}) does not appear to be a valid package")
+                        throw ClassNotFoundException("$packageName (${url.path}) does not appear to be a valid package")
                     }
                 } catch (ioException: IOException) {
                     throw ClassNotFoundException(("IOException was thrown when trying to get all resources for $packageName"), ioException)

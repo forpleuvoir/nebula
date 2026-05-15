@@ -24,6 +24,7 @@ private inline fun <R, T> numberRangeCodec(crossinline conversion: (String) -> T
     override fun deserialization(element: SerializeElement): Result<R> = runCatching {
         val s = element.asString ?: throw DeserializationException("Expected string for range, got $element")
         s.split("..").let {
+            if (it.size != 2) throw DeserializationException("Expected number of elements 2 but got ${it.size}.$s")
             rangeConversion(conversion(it[0])..conversion(it[1]))
         }
     }

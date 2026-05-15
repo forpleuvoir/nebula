@@ -5,7 +5,8 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
 
-fun <T : Enum<T>> enumCodec(values: Array<out T>) = object : Codec<T> {
+@PublishedApi
+internal fun <T : Enum<T>> enumCodec(values: Array<out T>) = object : Codec<T> {
     override fun serialization(target: T): SerializeElement = SerializePrimitive(target.name)
     override fun deserialization(element: SerializeElement): Result<T> = element.checkType<SerializePrimitive, T> { primitive ->
         values.firstOrNull { it.name == primitive.asString } ?: throw DeserializationException(

@@ -14,13 +14,13 @@ package moe.forpleuvoir.nebula.common.api
  * @author forpleuvoir
 
  */
-fun interface Matchable {
+fun interface Matchable<T> {
 
 	/**
 	 * 匹配
-	 * @param regex 正则表达式
+	 * @param regex 匹配推对象
 	 * @return 是否匹配成功
 	 */
-	infix fun matched(regex: Regex): Boolean
+	infix fun matched(regex: T): Boolean
 
 }
