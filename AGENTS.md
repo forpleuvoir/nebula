@@ -138,7 +138,14 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 
 ## 开发流程
 
+- **提交**: 生成提交信息后必须先展示给用户确认，用户同意后才能 `git commit`
 - **测试**: JUnit 5 (useJUnitPlatform)
 - **构建**: `./gradlew build`
 - **发布**: `./gradlew publishNebulaToReleases`, `publishNebulaToSnapshots`, `publishNebulaToLocal`
 - **ShadowJar**: 产物合并为 `*-nebula.jar`
+
+## 版本控制
+
+- 版本定义在 `gradle/libs.versions.toml` 的 `nebulaVersion` 中
+- **更新 `nebulaVersion` 时必须同时打 tag**，tag 名称为 `v<nebulaVersion>`（例如 `v0.3.1`）
+- 执行提交前检查 `git diff gradle/libs.versions.toml` 确认版本变化，更新后先提交再 `git tag -a v<版本> -m "v<版本>"`

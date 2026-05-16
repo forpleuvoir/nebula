@@ -1,14 +1,32 @@
+import kotlinx.serialization.Serializable
+import moe.forpleuvoir.nebula.common.api.Matchable
 import moe.forpleuvoir.nebula.common.color.Color
 import moe.forpleuvoir.nebula.config.ConfigGroup
 import moe.forpleuvoir.nebula.config.ConfigManager
 import moe.forpleuvoir.nebula.config.comment
+import moe.forpleuvoir.nebula.config.config
 import moe.forpleuvoir.nebula.config.item.*
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
 import moe.forpleuvoir.nebula.config.persistence.yaml
 import moe.forpleuvoir.nebula.serialization.codec.Codec
+import moe.forpleuvoir.nebula.serialization.nebula.toCodec
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
+
+@Serializable
+data class MTest(val value: String) : Matchable<Regex> {
+    override fun matched(regex: Regex): Boolean {
+        val result = regex.containsMatchIn(this.value)
+        return result
+    }
+
+    companion object {
+        val CODEC = serializer().toCodec()
+
+    }
+
+}
 
 object TestConfigs : ConfigManager("test") {
 
@@ -27,6 +45,8 @@ object TestConfigs : ConfigManager("test") {
         val int = configInt("int", 10).comment("整数配置测试")
         val double = configDouble("double", 10.0).comment("浮点数配置测试")
     }
+
+    val mtest = config("mtest", MTest("default"), MTest.CODEC)
 
     val bool = configBoolean("bool", false)
 

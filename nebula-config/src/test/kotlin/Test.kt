@@ -25,6 +25,7 @@ class ConfigMetaTest {
             TestConfigs.forceSave()
         }
 
+        println(TestConfigs.mtest.matched("\\bdefault\\b".toRegex()))
         println(TestConfigs.pathWithRoot)
         println(TestConfigs.Numbers.double.path)
         println(TestConfigs.Numbers.double.pathWithRoot)

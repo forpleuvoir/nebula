@@ -3,6 +3,7 @@
 package moe.forpleuvoir.nebula.config
 
 import kotlinx.serialization.KSerializer
+import moe.forpleuvoir.nebula.common.api.Matchable
 import moe.forpleuvoir.nebula.common.api.Observable
 import moe.forpleuvoir.nebula.common.api.Resettable
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
@@ -69,11 +70,12 @@ abstract class ConfigItem<C>(
     }
 
     override fun matched(regex: Regex): Boolean {
-        return regex.containsMatchIn(name) || regex.containsMatchIn(getValue().toString())
+        @Suppress("UNCHECKED_CAST")
+        return regex.containsMatchIn(name) || (getValue() as? Matchable<Regex>)?.matched(regex) == true || regex.containsMatchIn(getValue().toString())
     }
 }
 
-open class Config<C>(
+open class Config<C : Any>(
     name: String,
     defaultValue: C,
     private val serde: ConfigSerde<C>,
@@ -87,10 +89,10 @@ open class Config<C>(
 }
 
 context(group: ConfigGroup)
-fun <T> config(name: String, defaultValue: T, serde: ConfigSerde<T>) = group.addConfig(Config(name, defaultValue, serde))
+fun <T : Any> config(name: String, defaultValue: T, serde: ConfigSerde<T>) = group.addConfig(Config(name, defaultValue, serde))
 
 context(group: ConfigGroup)
-fun <T> config(name: String, defaultValue: T, codec: Codec<T>) = config(name, defaultValue, ConfigSerde.of(codec))
+fun <T : Any> config(name: String, defaultValue: T, codec: Codec<T>) = config(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <T> config(name: String, defaultValue: T, serializer: KSerializer<T>) = config(name, defaultValue, ConfigSerde.of(serializer))
+fun <T : Any> config(name: String, defaultValue: T, serializer: KSerializer<T>) = config(name, defaultValue, ConfigSerde.of(serializer))
