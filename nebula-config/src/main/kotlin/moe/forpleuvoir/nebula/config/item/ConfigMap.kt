@@ -12,7 +12,7 @@ import moe.forpleuvoir.nebula.serialization.base.builder.build
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
 
-class ConfigMap<V>(
+class ConfigMap<V : Any>(
     name: String,
     defaultValue: Map<String, V>,
     private val serde: ConfigSerde<V>,
@@ -97,6 +97,7 @@ class ConfigMap<V>(
             override fun removeAll(elements: Collection<V>): Boolean = map.values.removeAll(elements).also { if (it) notifyChange() }
             override fun retainAll(elements: Collection<V>): Boolean = map.values.retainAll(elements).also { if (it) notifyChange() }
         }
+
     override fun isEmpty(): Boolean = map.isEmpty()
     override fun containsKey(key: String): Boolean = map.containsKey(key)
     override fun containsValue(value: V): Boolean = map.containsValue(value)
@@ -114,14 +115,13 @@ class ConfigMap<V>(
 }
 
 context(group: ConfigGroup)
-fun <V> configMap(name: String, defaultValue: Map<String, V>, serde: ConfigSerde<V>) =
+fun <V : Any> configMap(name: String, defaultValue: Map<String, V>, serde: ConfigSerde<V>) =
     group.addConfig(ConfigMap(name, defaultValue, serde))
 
-
 context(group: ConfigGroup)
-fun <V> configMap(name: String, defaultValue: Map<String, V>, codec: Codec<V>) =
+fun <V : Any> configMap(name: String, defaultValue: Map<String, V>, codec: Codec<V>) =
     configMap(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <V> configMap(name: String, defaultValue: Map<String, V>, serializer: KSerializer<V>) =
+fun <V : Any> configMap(name: String, defaultValue: Map<String, V>, serializer: KSerializer<V>) =
     configMap(name, defaultValue, ConfigSerde.of(serializer))

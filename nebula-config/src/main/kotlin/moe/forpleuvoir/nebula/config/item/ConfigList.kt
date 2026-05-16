@@ -12,7 +12,7 @@ import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.extensions.checkType
 import java.util.concurrent.CopyOnWriteArrayList
 
-class ConfigList<T>(
+class ConfigList<T : Any>(
     name: String,
     defaultValue: List<T>,
     private val serde: ConfigSerde<T>,
@@ -148,13 +148,13 @@ class ConfigList<T>(
 }
 
 context(group: ConfigGroup)
-fun <T> configList(name: String, defaultValue: List<T>, serde: ConfigSerde<T>): ConfigList<T> =
+fun <T : Any> configList(name: String, defaultValue: List<T>, serde: ConfigSerde<T>): ConfigList<T> =
     group.addConfig(ConfigList(name, defaultValue, serde))
 
 context(group: ConfigGroup)
-fun <T> configList(name: String, defaultValue: List<T>, codec: Codec<T>): ConfigList<T> =
+fun <T : Any> configList(name: String, defaultValue: List<T>, codec: Codec<T>): ConfigList<T> =
     configList(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <T> configList(name: String, defaultValue: List<T>, serializer: KSerializer<T>): ConfigList<T> =
+fun <T : Any> configList(name: String, defaultValue: List<T>, serializer: KSerializer<T>): ConfigList<T> =
     configList(name, defaultValue, ConfigSerde.of(serializer))
