@@ -7,7 +7,7 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 - **语言**: Kotlin 2.3.21, JVM 21
 - **构建**: Gradle (ShadowJar, Maven Publishing)
 - **序列化**: kotlinx-serialization 1.11.0 (编译器插件)
-- **依赖**: kotlinx-coroutines 1.11.0, Gson 2.10
+- **依赖**: kotlinx-coroutines 1.11.0
 
 ## 模块结构
 
@@ -138,14 +138,26 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 
 ## 开发流程
 
-- **提交**: 生成提交信息后必须先展示给用户确认，用户同意后才能 `git commit`
+### 提交工作流
+
+1. **查看变更**: 并行执行 `git status`、`git diff`、`git log --oneline -10`
+2. **分析变更范围**: 确定涉及的文件和模块
+3. **检查版本变化**: 执行 `git diff gradle/libs.versions.toml` 确认 `nebulaVersion` 是否有变更
+4. **起草提交信息**: 使用中文，1-2 句话，聚焦 "why" 而非 "what"
+5. **展示给用户确认**: 必须将草稿提交信息展示给用户，用户同意后才能执行提交
+6. **提交**: `git add -A` → `git commit -m "<message>"`
+7. **打 tag**: 若版本有变更，执行 `git tag -a v<nebulaVersion> -m "v<nebulaVersion>"`
+8. **提交后验证**: `git status`
+
+### 其他
+
 - **测试**: JUnit 5 (useJUnitPlatform)
 - **构建**: `./gradlew build`
-- **发布**: `./gradlew publishNebulaToReleases`, `publishNebulaToSnapshots`, `publishNebulaToLocal`
-- **ShadowJar**: 产物合并为 `*-nebula.jar`
+- **发布**: `./gradlew publishNebulaToReleases` / `publishNebulaToSnapshots` / `publishNebulaToLocal`
+- **ShadowJar**: 产物合并为 `nebula-<version>.jar`（发布时 `classifier = ""`）
 
 ## 版本控制
 
 - 版本定义在 `gradle/libs.versions.toml` 的 `nebulaVersion` 中
 - **更新 `nebulaVersion` 时必须同时打 tag**，tag 名称为 `v<nebulaVersion>`（例如 `v0.3.1`）
-- 执行提交前检查 `git diff gradle/libs.versions.toml` 确认版本变化，更新后先提交再 `git tag -a v<版本> -m "v<版本>"`
+- tag 在提交完成后执行，先提交再打 tag
