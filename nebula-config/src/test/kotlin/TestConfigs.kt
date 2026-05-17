@@ -7,11 +7,13 @@ import moe.forpleuvoir.nebula.config.comment
 import moe.forpleuvoir.nebula.config.config
 import moe.forpleuvoir.nebula.config.item.*
 import moe.forpleuvoir.nebula.config.manager.component.localConfig
-import moe.forpleuvoir.nebula.config.persistence.yaml
+import moe.forpleuvoir.nebula.config.persistence.json
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.nebula.toCodec
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
@@ -31,9 +33,20 @@ data class MTest(val value: String) : Matchable<Regex> {
 object TestConfigs : ConfigManager("test") {
 
     init {
-        localConfig(Path.of("./build/config"), yaml())
+//        localConfig(Path.of("./build/config"), yaml())
+        localConfig(Path.of("./build/config"), json())
+//        localConfig(Path.of("./build/config"), hjson())
+//        localConfig(Path.of("./build/config"), toml())
     }
 
+    val doubleMap by configMap(
+        "doubleMap", mapOf(
+            10.hours.toString() to 0.95,
+            1.days.toString() to 0.9,
+            7.days.toString() to 0.7,
+            30.days.toString() to 0.6
+        ), Codec.double
+    )
 
     private val numbers2 = Numbers2
 
@@ -87,6 +100,7 @@ object TestConfigs : ConfigManager("test") {
             val double = configDouble("double", 10.0)
         }
     }
+
 
     val map by configMap(
         "map", mapOf(

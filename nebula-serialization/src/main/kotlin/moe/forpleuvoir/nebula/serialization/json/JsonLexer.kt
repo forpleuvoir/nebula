@@ -141,7 +141,7 @@ internal object JsonLexer : Lexer {
     }
 
     internal fun parseNumber(numStr: String): Any {
-        return if (numStr.contains('.') || numStr.any { it == 'e' || it == 'E' }) {
+        return if (numStr.contains('.') || numStr.contains('e') || numStr.contains('E')) {
             val bd = BigDecimal(numStr)
             if (bd.inRangeOfFloat && bd.fitsFloat()) {
                 bd.toFloat()
@@ -179,7 +179,7 @@ internal object JsonLexer : Lexer {
     private fun BigDecimal.fitsFloat(): Boolean {
         val f = this.toFloat()
         return try {
-            this.compareTo(BigDecimal(f.toString())) == 0
+            !f.isInfinite() && !f.isNaN() && this.compareTo(BigDecimal(f.toDouble())) == 0
         } catch (_: NumberFormatException) {
             false
         }
@@ -188,7 +188,7 @@ internal object JsonLexer : Lexer {
     private fun BigDecimal.fitsDouble(): Boolean {
         val d = this.toDouble()
         return try {
-            this.compareTo(BigDecimal(d.toString())) == 0
+            !d.isInfinite() && !d.isNaN() && this.compareTo(BigDecimal(d)) == 0
         } catch (_: NumberFormatException) {
             false
         }

@@ -733,13 +733,15 @@ internal object TomlLexer : Lexer {
         get() = this >= BigDecimal.valueOf(-Double.MAX_VALUE) && this <= BigDecimal.valueOf(Double.MAX_VALUE)
 
     private fun BigDecimal.fitsFloat(): Boolean = try {
-        this.compareTo(BigDecimal(this.toFloat().toString())) == 0
+        val f = this.toFloat()
+        !f.isInfinite() && !f.isNaN() && this.compareTo(BigDecimal(f.toDouble())) == 0
     } catch (_: NumberFormatException) {
         false
     }
 
     private fun BigDecimal.fitsDouble(): Boolean = try {
-        this.compareTo(BigDecimal(this.toDouble().toString())) == 0
+        val d = this.toDouble()
+        !d.isInfinite() && !d.isNaN() && this.compareTo(BigDecimal(d)) == 0
     } catch (_: NumberFormatException) {
         false
     }

@@ -1,10 +1,7 @@
 package moe.forpleuvoir.nebula.serialization.base.builder
 
 import kotlinx.serialization.KSerializer
-import moe.forpleuvoir.nebula.serialization.base.SerializeArray
-import moe.forpleuvoir.nebula.serialization.base.SerializeNull
-import moe.forpleuvoir.nebula.serialization.base.SerializeObject
-import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
+import moe.forpleuvoir.nebula.serialization.base.*
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import moe.forpleuvoir.nebula.serialization.codec.serialization
 import moe.forpleuvoir.nebula.serialization.nebula.NebulaFormat
@@ -91,6 +88,14 @@ class SerializeObjectBuilder {
         obj.put(this, SerializeNull)
     }
     //endregion
+
+    operator fun set(key: String, value: SerializeElement) {
+        obj.put(key, value)
+    }
+
+    infix fun String.to(value: SerializeElement) {
+        obj.put(this, value)
+    }
 
     //region Nullable
     operator fun set(key: String, value: Nothing?) {
