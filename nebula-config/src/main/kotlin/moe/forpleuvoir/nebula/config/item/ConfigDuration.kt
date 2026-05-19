@@ -16,7 +16,7 @@ fun configDuration(name: String, defaultValue: Duration) =
     config(name, defaultValue, ConfigSerde.of(Codec.duration.default(defaultValue)))
 
 context(group: ConfigGroup)
-fun finiteDuration(
+fun configDuration(
     name: String,
     defaultValue: Duration,
     minDuration: Duration = Duration.ZERO,

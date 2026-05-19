@@ -17,7 +17,7 @@ val Color.Companion.CODEC: Codec<Color> by lazy {
         override fun serialization(target: Color): SerializeElement =
             SerializePrimitive(target.hexStr)
 
-        override fun deserialization(element: SerializeElement): Result<Color> = decodeColor(element)
+        override fun deserialization(data: SerializeElement): Result<Color> = decodeColor(data)
     }
 }
 

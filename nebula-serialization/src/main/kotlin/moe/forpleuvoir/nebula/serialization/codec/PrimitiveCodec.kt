@@ -18,8 +18,8 @@ object PrimitiveCodec {
             else       -> throw IllegalArgumentException("Unsupported type: ${target::class.simpleName}")
         }
 
-        override fun deserialization(element: SerializeElement): Result<T> =
-            runCatching { DeserializationException.require(f(element)) { "Expected value for $element" } }
+        override fun deserialization(data: SerializeElement): Result<T> =
+            runCatching { DeserializationException.require(f(data)) { "Expected value for $data" } }
     }
 
     private fun <T : Any> create(default: T, f: (SerializeElement) -> T?): Codec<T> = create {

@@ -5,6 +5,6 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 @Suppress("unused")
 fun interface Deserializable {
 
-	fun deserialization(serializeElement: SerializeElement)
+	fun deserialization(data: SerializeElement)
 
 }

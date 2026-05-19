@@ -8,7 +8,7 @@ import moe.forpleuvoir.nebula.serialization.extensions.checkType
 @PublishedApi
 internal fun <T : Enum<T>> enumCodec(values: Array<out T>) = object : Codec<T> {
     override fun serialization(target: T): SerializeElement = SerializePrimitive(target.name)
-    override fun deserialization(element: SerializeElement): Result<T> = element.checkType<SerializePrimitive, T> { primitive ->
+    override fun deserialization(data: SerializeElement): Result<T> = data.checkType<SerializePrimitive, T> { primitive ->
         values.firstOrNull { it.name == primitive.asString } ?: throw DeserializationException(
             "Unknown enum constant \"${primitive.asString}\", expected one of ${values.map { it.name }}"
         )

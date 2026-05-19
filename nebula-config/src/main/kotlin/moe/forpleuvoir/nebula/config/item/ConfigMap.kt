@@ -43,8 +43,8 @@ class ConfigMap<V : Any>(
         map.forEach { (k, v) -> obj[k] = serde.encode(v) }
     }
 
-    override fun deserialization(serializeElement: SerializeElement) {
-        serializeElement.checkType<SerializeObject, Unit> { obj ->
+    override fun deserialization(data: SerializeElement) {
+        data.checkType<SerializeObject, Unit> { obj ->
             val m = LinkedHashMap<String, V>()
             obj.forEach { (k, v) ->
                 serde.decode(v).onSuccess { m[k] = it }

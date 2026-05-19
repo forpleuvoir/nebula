@@ -83,8 +83,8 @@ open class Config<C : Any>(
 
     override fun serialization(): SerializeElement = serde.encode(getValue())
 
-    override fun deserialization(serializeElement: SerializeElement) {
-        serde.decode(serializeElement).getOrThrow().let { setValue(it) }
+    override fun deserialization(data: SerializeElement) {
+        serde.decode(data).getOrThrow().let { setValue(it) }
     }
 }
 

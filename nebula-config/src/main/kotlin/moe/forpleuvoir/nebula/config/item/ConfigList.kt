@@ -43,8 +43,8 @@ class ConfigList<T : Any>(
         buffer.forEach { add(serde.encode(it)) }
     }
 
-    override fun deserialization(serializeElement: SerializeElement) {
-        serializeElement.checkType<SerializeArray, Unit> { arr ->
+    override fun deserialization(data: SerializeElement) {
+        data.checkType<SerializeArray, Unit> { arr ->
             setValue(arr.mapNotNull { serde.decode(it).getOrNull() })
         }
     }

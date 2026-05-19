@@ -16,8 +16,8 @@ fun <T> KSerializer<T>.toCodec(): Codec<T> = object : Codec<T> {
     override fun serialization(target: T): SerializeElement =
         NebulaFormat.encodeToElement(target, this@toCodec)
 
-    override fun deserialization(element: SerializeElement): Result<T> =
-        runCatching { NebulaFormat.decodeFromElement(element, this@toCodec) }
+    override fun deserialization(data: SerializeElement): Result<T> =
+        runCatching { NebulaFormat.decodeFromElement(data, this@toCodec) }
 }
 
 internal class CodecKSerializer<T : Any>(

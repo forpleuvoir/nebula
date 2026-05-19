@@ -161,15 +161,15 @@ fun <T> Codec<T>.nullable(): Codec<T?> = object : Codec<T?> {
         else -> this@nullable.serialization(target)
     }
 
-    override fun deserialization(element: SerializeElement): Result<T?> = when (element) {
+    override fun deserialization(data: SerializeElement): Result<T?> = when (data) {
         is SerializeNull -> Result.success(null)
-        else             -> this@nullable.deserialization(element).map { it as T? }
+        else             -> this@nullable.deserialization(data).map { it as T? }
     }
 }
 
-fun <T : Any> Codec<T>.default(default: T): Codec<T> = object : Codec<T> {
+fun <T> Codec<T>.default(default: T): Codec<T> = object : Codec<T> {
     override fun serialization(target: T): SerializeElement = this@default.serialization(target)
-    override fun deserialization(element: SerializeElement): Result<T> = Result.success(this@default.deserialization(element, default))
+    override fun deserialization(data: SerializeElement): Result<T> = Result.success(this@default.deserialization(data, default))
 }
 
 fun <T : Comparable<T>> Codec<T>.range(start: T, end: T): Codec<T> = object : Codec<T> {
@@ -178,8 +178,8 @@ fun <T : Comparable<T>> Codec<T>.range(start: T, end: T): Codec<T> = object : Co
     }
 
     override fun serialization(target: T): SerializeElement = this@range.serialization(target.coerceIn(start, end))
-    override fun deserialization(element: SerializeElement): Result<T> = runCatching {
-        this@range.deserialization(element).getOrThrow().coerceIn(start, end)
+    override fun deserialization(data: SerializeElement): Result<T> = runCatching {
+        this@range.deserialization(data).getOrThrow().coerceIn(start, end)
     }
 }
 

@@ -721,8 +721,8 @@ internal class CodecImpl<T>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun deserialization(element: SerializeElement): Result<T> = runCatching {
-        val obj = element.asObject ?: throw DeserializationException("Expected object for deserialization, got $element")
+    override fun deserialization(data: SerializeElement): Result<T> = runCatching {
+        val obj = data.asObject ?: throw DeserializationException("Expected object for deserialization, got $data")
         val args = mutableMapOf<String, Any?>()
         for (f in fields) {
             val codec = f.codec as Codec<Any?>

@@ -25,20 +25,20 @@ open class ConfigGroup(
         metadata[key] = value
     }
 
-    private val _children: MutableMap<String, ConfigNode> = LinkedHashMap()
+    private val _children: MutableList<ConfigNode> = mutableListOf()
 
     override fun init() {
-        _children.values.forEach { it.init() }
+        _children.forEach { it.init() }
     }
 
-    val children: Collection<ConfigNode> get() = _children.values
+    val children: Collection<ConfigNode> get() = _children
 
     fun <T : ConfigNode> addConfig(child: T): T {
-        require(!_children.containsKey(child.name)) {
+        require(!_children.any { it.name == child.name }) {
             "ConfigGroup[$name] already contains a child named \"${child.name}\""
         }
         child.parent = this
-        _children[child.name] = child
+        _children += child
         return child
     }
 
@@ -63,7 +63,7 @@ open class ConfigGroup(
         regex.containsMatchIn(name) || children.any { it.matched(regex) }
 
     override fun serialization(): SerializeElement = SerializeObject.build {
-        _children.values.forEach { child ->
+        _children.forEach { child ->
             runCatching {
                 obj[child.name] = child.serialization()
             }.onFailure { e ->
@@ -73,27 +73,33 @@ open class ConfigGroup(
         }
     }
 
-    override fun deserialization(serializeElement: SerializeElement) {
-        serializeElement.checkType<SerializeObject, Unit> { obj ->
-            _children.values.forEach { child ->
+    override fun deserialization(data: SerializeElement) {
+        data.checkType<SerializeObject, Unit> { obj ->
+            _children.forEach { child ->
                 obj[child.name]?.let { element ->
                     runCatching {
                         child.deserialization(element)
                     }.onFailure { e ->
                         root?.markSavable()
-                        val de = DeserializationException(
-                            "Config[${child.name}] deserialization failed", e
+                        root?.exceptionHandler?.onDeserializationException(
+                            child,
+                            DeserializationException("Config[${child.name} failed to deserialize value: $element", e)
                         )
-                        root?.exceptionHandler?.onDeserializationException(child, de)
                     }
+                } ?: {
+                    root?.markSavable()
+                    root?.exceptionHandler?.onDeserializationException(
+                        child,
+                        DeserializationException("Config[${child.name}] is missing from the deserialization data")
+                    )
                 }
             }
         }.onFailure {
             root?.markSavable()
-            val de = DeserializationException(
-                "Config[$name] deserialization failed: require SerializeObject", it
+            root?.exceptionHandler?.onDeserializationException(
+                this,
+                DeserializationException("Config[$name] deserialization failed: require SerializeObject,but find ${data.javaClass.name}", it)
             )
-            root?.exceptionHandler?.onDeserializationException(this, de)
         }
     }
 }
