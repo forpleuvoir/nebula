@@ -19,7 +19,7 @@ class CodecBuilder<T> internal constructor() {
     }
 }
 
-open class CodecBuilder1<T, A> internal constructor(
+class CodecBuilder1<T, A> internal constructor(
     private val builder: CodecBuilder<T>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -37,7 +37,7 @@ open class CodecBuilder1<T, A> internal constructor(
     }
 }
 
-open class CodecBuilder2<T, A, B> internal constructor(
+class CodecBuilder2<T, A, B> internal constructor(
     private val builder: CodecBuilder1<T, A>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -55,7 +55,7 @@ open class CodecBuilder2<T, A, B> internal constructor(
     }
 }
 
-open class CodecBuilder3<T, A, B, C> internal constructor(
+class CodecBuilder3<T, A, B, C> internal constructor(
     private val builder: CodecBuilder2<T, A, B>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -75,7 +75,7 @@ open class CodecBuilder3<T, A, B, C> internal constructor(
     }
 }
 
-open class CodecBuilder4<T, A, B, C, D> internal constructor(
+class CodecBuilder4<T, A, B, C, D> internal constructor(
     private val builder: CodecBuilder3<T, A, B, C>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -95,10 +95,17 @@ open class CodecBuilder4<T, A, B, C, D> internal constructor(
     }
 }
 
-open class CodecBuilder5<T, A, B, C, D, E> internal constructor(
+class CodecBuilder5<T, A, B, C, D, E> internal constructor(
     private val builder: CodecBuilder4<T, A, B, C, D>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
+
+    fun <Val> field(name: String): FieldBuilder<T, Val, CodecBuilder6<T, A, B, C, D, E, Val>> {
+        return FieldBuilder(name) { def ->
+            fields.add(def)
+            CodecBuilder6(this)
+        }
+    }
 
     fun build(ctor: (A, B, C, D, E) -> T): Codec<T> {
         val f = fields.toList()
@@ -113,7 +120,8 @@ open class CodecBuilder5<T, A, B, C, D, E> internal constructor(
         }
     }
 }
-open class CodecBuilder6<T, A, B, C, D, E, F> internal constructor(
+
+ class CodecBuilder6<T, A, B, C, D, E, F> internal constructor(
     private val builder: CodecBuilder5<T, A, B, C, D, E>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -140,7 +148,7 @@ open class CodecBuilder6<T, A, B, C, D, E, F> internal constructor(
     }
 }
 
-open class CodecBuilder7<T, A, B, C, D, E, F, G> internal constructor(
+class CodecBuilder7<T, A, B, C, D, E, F, G> internal constructor(
     private val builder: CodecBuilder6<T, A, B, C, D, E, F>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -168,7 +176,7 @@ open class CodecBuilder7<T, A, B, C, D, E, F, G> internal constructor(
     }
 }
 
-open class CodecBuilder8<T, A, B, C, D, E, F, G, H> internal constructor(
+class CodecBuilder8<T, A, B, C, D, E, F, G, H> internal constructor(
     private val builder: CodecBuilder7<T, A, B, C, D, E, F, G>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -197,7 +205,7 @@ open class CodecBuilder8<T, A, B, C, D, E, F, G, H> internal constructor(
     }
 }
 
-open class CodecBuilder9<T, A, B, C, D, E, F, G, H, I> internal constructor(
+class CodecBuilder9<T, A, B, C, D, E, F, G, H, I> internal constructor(
     private val builder: CodecBuilder8<T, A, B, C, D, E, F, G, H>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -227,7 +235,7 @@ open class CodecBuilder9<T, A, B, C, D, E, F, G, H, I> internal constructor(
     }
 }
 
-open class CodecBuilder10<T, A, B, C, D, E, F, G, H, I, J> internal constructor(
+class CodecBuilder10<T, A, B, C, D, E, F, G, H, I, J> internal constructor(
     private val builder: CodecBuilder9<T, A, B, C, D, E, F, G, H, I>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -258,7 +266,7 @@ open class CodecBuilder10<T, A, B, C, D, E, F, G, H, I, J> internal constructor(
     }
 }
 
-open class CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, K> internal constructor(
+class CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, K> internal constructor(
     private val builder: CodecBuilder10<T, A, B, C, D, E, F, G, H, I, J>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -290,7 +298,7 @@ open class CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, K> internal construct
     }
 }
 
-open class CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, L> internal constructor(
+class CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, L> internal constructor(
     private val builder: CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, K>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -323,7 +331,7 @@ open class CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, L> internal constr
     }
 }
 
-open class CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, M> internal constructor(
+class CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, M> internal constructor(
     private val builder: CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, L>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -357,7 +365,7 @@ open class CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, M> internal con
     }
 }
 
-open class CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N> internal constructor(
+class CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N> internal constructor(
     private val builder: CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, M>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -392,7 +400,7 @@ open class CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N> internal 
     }
 }
 
-open class CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> internal constructor(
+class CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> internal constructor(
     private val builder: CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -428,7 +436,7 @@ open class CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> intern
     }
 }
 
-open class CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> internal constructor(
+class CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> internal constructor(
     private val builder: CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -465,7 +473,7 @@ open class CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> int
     }
 }
 
-open class CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q> internal constructor(
+class CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q> internal constructor(
     private val builder: CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -503,7 +511,7 @@ open class CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q> 
     }
 }
 
-open class CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R> internal constructor(
+class CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R> internal constructor(
     private val builder: CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -542,7 +550,7 @@ open class CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, 
     }
 }
 
-open class CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S> internal constructor(
+class CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S> internal constructor(
     private val builder: CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -582,7 +590,7 @@ open class CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, 
     }
 }
 
-open class CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U> internal constructor(
+class CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U> internal constructor(
     private val builder: CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -623,7 +631,7 @@ open class CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, 
     }
 }
 
-open class CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V> internal constructor(
+class CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V> internal constructor(
     private val builder: CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -665,7 +673,7 @@ open class CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, 
     }
 }
 
-open class CodecBuilder22<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V, W> internal constructor(
+class CodecBuilder22<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V, W> internal constructor(
     private val builder: CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
