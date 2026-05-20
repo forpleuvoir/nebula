@@ -82,7 +82,7 @@ class YamlTest {
         assertEquals(decoded, reDecoded)
         val products = decoded.asObject?.getAsArray("products")
         assertTrue(products != null && products.size == 2)
-        val first = products?.get(0)?.asObject
+        val first = products[0].asObject
         assertEquals("Hammer", first?.getAsPrimitive("name")?.asString)
     }
 

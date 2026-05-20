@@ -5,6 +5,7 @@ package moe.forpleuvoir.nebula.serialization.base
 import moe.forpleuvoir.nebula.serialization.base.internal.LazilyParsedNumber
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.KClass
 
 /**
  *
@@ -20,7 +21,7 @@ import java.math.BigInteger
  * @author forpleuvoir
 
  */
-class SerializePrimitive private constructor(internal val value: Any) : SerializeElement {
+class SerializePrimitive private constructor(val value: Any) : SerializeElement {
 
     constructor(boolean: Boolean) : this(boolean as Any)
 
@@ -61,6 +62,8 @@ class SerializePrimitive private constructor(internal val value: Any) : Serializ
     val isBigDecimal: Boolean get() = value is BigDecimal
 
     val isChar: Boolean get() = value is Char
+
+    val valueType: KClass<*> get() = value::class
 
     override val asChar: Char?
         get() = when (value) {

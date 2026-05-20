@@ -3,9 +3,9 @@
 package moe.forpleuvoir.nebula.config.manager.component
 
 import moe.forpleuvoir.nebula.config.ConfigManager
-import moe.forpleuvoir.nebula.config.DeserializationException
 import moe.forpleuvoir.nebula.config.persistence.ConfigPersistence
 import moe.forpleuvoir.nebula.config.util.ConfigUtil
+import moe.forpleuvoir.nebula.serialization.DeserializationException
 import java.nio.file.Path
 
 class LocalConfig(

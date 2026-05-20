@@ -3,6 +3,7 @@
 package moe.forpleuvoir.nebula.config.item
 
 import kotlinx.serialization.KSerializer
+import moe.forpleuvoir.nebula.common.util.checkType
 import moe.forpleuvoir.nebula.config.ConfigGroup
 import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
@@ -10,7 +11,6 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.builder.build
 import moe.forpleuvoir.nebula.serialization.codec.Codec
-import moe.forpleuvoir.nebula.serialization.extensions.checkType
 
 class ConfigMap<V : Any>(
     name: String,
@@ -66,10 +66,10 @@ class ConfigMap<V : Any>(
 
             override fun remove(element: MutableMap.MutableEntry<String, V>): Boolean = map.entries.remove(element).also { if (it) notifyChange() }
             override fun removeAll(elements: Collection<MutableMap.MutableEntry<String, V>>): Boolean =
-                map.entries.removeAll(elements).also { if (it) notifyChange() }
+                map.entries.removeAll(elements.toSet()).also { if (it) notifyChange() }
 
             override fun retainAll(elements: Collection<MutableMap.MutableEntry<String, V>>): Boolean =
-                map.entries.retainAll(elements).also { if (it) notifyChange() }
+                map.entries.retainAll(elements.toSet()).also { if (it) notifyChange() }
         }
 
     override val keys: MutableSet<String>
@@ -81,8 +81,8 @@ class ConfigMap<V : Any>(
             }
 
             override fun remove(element: String): Boolean = map.keys.remove(element).also { if (it) notifyChange() }
-            override fun removeAll(elements: Collection<String>): Boolean = map.keys.removeAll(elements).also { if (it) notifyChange() }
-            override fun retainAll(elements: Collection<String>): Boolean = map.keys.retainAll(elements).also { if (it) notifyChange() }
+            override fun removeAll(elements: Collection<String>): Boolean = map.keys.removeAll(elements.toSet()).also { if (it) notifyChange() }
+            override fun retainAll(elements: Collection<String>): Boolean = map.keys.retainAll(elements.toSet()).also { if (it) notifyChange() }
         }
 
     override val values: MutableCollection<V>
@@ -94,8 +94,8 @@ class ConfigMap<V : Any>(
             }
 
             override fun remove(element: V): Boolean = map.values.remove(element).also { if (it) notifyChange() }
-            override fun removeAll(elements: Collection<V>): Boolean = map.values.removeAll(elements).also { if (it) notifyChange() }
-            override fun retainAll(elements: Collection<V>): Boolean = map.values.retainAll(elements).also { if (it) notifyChange() }
+            override fun removeAll(elements: Collection<V>): Boolean = map.values.removeAll(elements.toSet()).also { if (it) notifyChange() }
+            override fun retainAll(elements: Collection<V>): Boolean = map.values.retainAll(elements.toSet()).also { if (it) notifyChange() }
         }
 
     override fun isEmpty(): Boolean = map.isEmpty()

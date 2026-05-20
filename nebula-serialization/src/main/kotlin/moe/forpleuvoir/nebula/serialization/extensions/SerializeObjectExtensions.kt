@@ -1,9 +1,12 @@
-@file:Suppress("UNUSED","NOTHING_TO_INLINE")
+@file:Suppress("UNUSED", "NOTHING_TO_INLINE")
 
 package moe.forpleuvoir.nebula.serialization.extensions
 
+import moe.forpleuvoir.nebula.common.util.fieldMissing
+import moe.forpleuvoir.nebula.common.util.fieldTypeMismatch
 import moe.forpleuvoir.nebula.serialization.base.SerializeNull
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -81,6 +84,76 @@ inline fun SerializeObject.getAsBigDecimal(key: String): BigDecimal? =
 
 inline fun SerializeObject.getAsNull(key: String): SerializeNull? =
     this[key]?.asNull
+
+// endregion
+
+// region — require: throws on missing / type mismatch
+
+fun SerializeObject.requireString(key: String): String {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asString ?: throw fieldTypeMismatch(key, primitive.valueType, String::class)
+}
+
+fun SerializeObject.requireBoolean(key: String): Boolean {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asBoolean ?: throw fieldTypeMismatch(key, primitive.valueType, Boolean::class)
+}
+
+fun SerializeObject.requireByte(key: String): Byte {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asByte ?: throw fieldTypeMismatch(key, primitive.valueType, Byte::class)
+}
+
+fun SerializeObject.requireShort(key: String): Short {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asShort ?: throw fieldTypeMismatch(key, primitive.valueType, Short::class)
+}
+
+fun SerializeObject.requireInt(key: String): Int {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asInt ?: throw fieldTypeMismatch(key, primitive.valueType, Int::class)
+}
+
+fun SerializeObject.requireLong(key: String): Long {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asLong ?: throw fieldTypeMismatch(key, primitive.valueType, Long::class)
+}
+
+fun SerializeObject.requireFloat(key: String): Float {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asFloat ?: throw fieldTypeMismatch(key, primitive.valueType, Float::class)
+}
+
+fun SerializeObject.requireDouble(key: String): Double {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asDouble ?: throw fieldTypeMismatch(key, primitive.valueType, Double::class)
+}
+
+fun SerializeObject.requireChar(key: String): Char {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asChar ?: throw fieldTypeMismatch(key, primitive.valueType, Char::class)
+}
+
+fun SerializeObject.requireBigInteger(key: String): BigInteger {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asBigInteger ?: throw fieldTypeMismatch(key, primitive.valueType, BigInteger::class)
+}
+
+fun SerializeObject.requireBigDecimal(key: String): BigDecimal {
+    val element = this[key] ?: throw fieldMissing(key)
+    val primitive = element.asPrimitive ?: throw fieldTypeMismatch(key, element::class, SerializePrimitive::class)
+    return primitive.asBigDecimal ?: throw fieldTypeMismatch(key, primitive.valueType, BigDecimal::class)
+}
 
 // endregion
 

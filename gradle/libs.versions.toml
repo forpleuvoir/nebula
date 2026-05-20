@@ -1,5 +1,5 @@
 [versions]
-nebulaVersion = "0.3.3"
+nebulaVersion = "0.3.4"
 #depn
 shadow = "9.4.1"
 kotlin = "2.3.21"

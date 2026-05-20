@@ -2,15 +2,19 @@ package moe.forpleuvoir.nebula.serialization.codec
 
 import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.util.requireType
+import moe.forpleuvoir.nebula.common.util.expectedType
+import moe.forpleuvoir.nebula.common.util.letNotNull
+import moe.forpleuvoir.nebula.common.util.requireKeysOrNull
+import moe.forpleuvoir.nebula.common.util.requireTypeOrNull
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
-import moe.forpleuvoir.nebula.serialization.extensions.checkType
-import moe.forpleuvoir.nebula.serialization.extensions.getAsFloat
-import moe.forpleuvoir.nebula.serialization.extensions.getInt
 import moe.forpleuvoir.nebula.serialization.extensions.getOrElse
+import moe.forpleuvoir.nebula.serialization.extensions.requireFloat
 import moe.forpleuvoir.nebula.serialization.nebula.toKSerializer
+import java.math.BigInteger
 
 val Color.Companion.CODEC: Codec<Color> by lazy {
     object : Codec<Color> {
@@ -25,31 +29,31 @@ object ColorSerializer : KSerializer<Color> by Color.CODEC.toKSerializer()
 
 inline val Codec.Companion.color: Codec<Color> get() = Color.CODEC
 
-private fun decodeColor(serializeElement: SerializeElement): Result<Color> =
-    serializeElement.checkType {
-        check<SerializePrimitive> { primitive ->
-            if (primitive.isString) {
-                Color.fromHexString(primitive.asString!!)
-            } else if (primitive.isNumber) {
-                Color.fromARGB(DeserializationException.require(primitive.asInt) { "Failed to decode the color. Input primitive int is null" })
-            } else throw DeserializationException("Failed to decode the color. The input primitive should be a valid color string or number.")
+private fun decodeColor(data: SerializeElement): Result<Color> = DeserializationException.runCatching {
+    data.requireTypeOrNull<SerializePrimitive>().letNotNull { primitive ->
+        if (primitive.isString) {
+            Color.fromHexString(primitive.asString!!)
+        } else if (primitive.isInt || primitive.isLong || primitive.isBigInteger) {
+            Color.fromARGB(primitive.asInt!!)
+        } else throw expectedType(primitive.valueType, String::class, Int::class, Long::class, BigInteger::class, prefix = "Failed to decode the color.")
+    } ?: data.requireTypeOrNull<SerializeObject>().letNotNull { obj ->
+        val alpha = obj.getOrElse("alpha", 255)
+        obj.requireKeysOrNull("red", "green", "blue").letNotNull { obj ->
+            val red = obj["red"]!!.requireType<SerializePrimitive>("Color component red:")
+                .let { it.asInt ?: it.asFloat ?: throw expectedType(it.valueType, Int::class, Float::class, prefix = "Color component red:") }
+            val green = obj["green"]!!.requireType<SerializePrimitive>("Color component green:")
+                .let { it.asInt ?: it.asFloat ?: throw expectedType(it.valueType, Int::class, Float::class, prefix = "Color component green:") }
+            val blue = obj["green"]!!.requireType<SerializePrimitive>("Color component blue:")
+                .let { it.asInt ?: it.asFloat ?: throw expectedType(it.valueType, Int::class, Float::class, prefix = "Color component blue:") }
+            Color.fromARGB(red, green, blue, alpha)
+        } ?: obj.requireKeysOrNull("hue", "saturation", "value").letNotNull {
+            val hue = obj.requireFloat("hue")
+            val saturation = obj.requireFloat("saturation")
+            val value = obj.requireFloat("value")
+            Color.fromHSV(hue, saturation, value, alpha)
         }
-        check<SerializeObject> { obj ->
-            if (obj.containsKey("hue", "saturation", "value")) {
-                val alpha = obj.getOrElse("alpha", 255)
-                val hue = obj.getAsFloat("hue") ?: throw DeserializationException("Failed to decode 'hue' as float from $obj")
-                val saturation = obj.getAsFloat("saturation") ?: throw DeserializationException("Failed to decode 'saturation' as float from $obj")
-                val value = obj.getAsFloat("value") ?: throw DeserializationException("Failed to decode 'value' as float from $obj")
-                Color.fromHSV(hue, saturation, value, alpha)
-            } else if (obj.containsKey("red", "green", "blue")) {
-                val alpha = obj.getOrElse("alpha", 255)
-                val red =
-                    obj.getInt("red") ?: obj.getAsFloat("red") ?: throw DeserializationException("Failed to decode 'red' as int or float from $obj")
-                val green =
-                    obj.getInt("green") ?: obj.getAsFloat("green") ?: throw DeserializationException("Failed to decode 'green' as int or float from $obj")
-                val blue =
-                    obj.getInt("blue") ?: obj.getAsFloat("blue") ?: throw DeserializationException("Failed to decode 'blue' as int or float from $obj")
-                Color.fromARGB(red, green, blue, alpha)
-            } else throw DeserializationException("Invalid input: couldn't find either HSV (hue, saturation, value) or RGB (red, green, blue) color data in the provided object. Please ensure the input object contains the required keys.")
-        }
-    }.toResult()
+    }
+    ?: throw IllegalStateException("Invalid input: couldn't find either HSV (hue, saturation, value) or RGB (red, green, blue) color data in the provided object. Please ensure the input object contains the required keys.")
+}
+
+

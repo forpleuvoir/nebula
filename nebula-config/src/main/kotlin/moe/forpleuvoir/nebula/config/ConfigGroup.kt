@@ -2,10 +2,16 @@
 
 package moe.forpleuvoir.nebula.config
 
+import moe.forpleuvoir.nebula.common.util.expectedType
+import moe.forpleuvoir.nebula.common.util.fieldMissing
+import moe.forpleuvoir.nebula.common.util.letNotNull
+import moe.forpleuvoir.nebula.common.util.requireTypeOrNull
+import moe.forpleuvoir.nebula.config.ExceptionHandler.Companion.onDeserializationException
+import moe.forpleuvoir.nebula.serialization.DeserializationException
+import moe.forpleuvoir.nebula.serialization.SerializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.builder.build
-import moe.forpleuvoir.nebula.serialization.extensions.checkType
 
 open class ConfigGroup(
     override val name: String
@@ -73,8 +79,8 @@ open class ConfigGroup(
         }
     }
 
-    override fun deserialization(data: SerializeElement) {
-        data.checkType<SerializeObject, Unit> { obj ->
+    override fun deserialization(data: SerializeElement): Unit =
+        data.requireTypeOrNull<SerializeObject>().letNotNull { obj ->
             _children.forEach { child ->
                 obj[child.name]?.let { element ->
                     runCatching {
@@ -83,25 +89,25 @@ open class ConfigGroup(
                         root?.markSavable()
                         root?.exceptionHandler?.onDeserializationException(
                             child,
-                            DeserializationException("Config[${child.name} failed to deserialize value: $element", e)
+                            DeserializationException("Config[${child.name} failed to decode, value: $element", e)
                         )
                     }
-                } ?: {
+                } ?: run {
                     root?.markSavable()
                     root?.exceptionHandler?.onDeserializationException(
                         child,
-                        DeserializationException("Config[${child.name}] is missing from the deserialization data")
+                        fieldMissing(child.name, "Config decode failed")
                     )
                 }
             }
-        }.onFailure {
+        } ?: run {
             root?.markSavable()
             root?.exceptionHandler?.onDeserializationException(
                 this,
-                DeserializationException("Config[$name] deserialization failed: require SerializeObject,but find ${data.javaClass.name}", it)
+                expectedType(data::class, SerializeObject::class, prefix = "Config[$name] decode failed,")
             )
         }
-    }
+
 }
 
 val ConfigGroup.items: List<ConfigItem<*>> get() = children.filterIsInstance<ConfigItem<*>>()

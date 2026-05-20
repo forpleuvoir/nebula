@@ -3,13 +3,13 @@
 package moe.forpleuvoir.nebula.config.item
 
 import kotlinx.serialization.KSerializer
+import moe.forpleuvoir.nebula.common.util.checkType
 import moe.forpleuvoir.nebula.config.ConfigGroup
 import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
 import moe.forpleuvoir.nebula.serialization.base.SerializeArray
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.codec.Codec
-import moe.forpleuvoir.nebula.serialization.extensions.checkType
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ConfigList<T : Any>(

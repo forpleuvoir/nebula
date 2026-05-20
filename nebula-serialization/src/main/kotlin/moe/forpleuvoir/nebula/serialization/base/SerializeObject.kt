@@ -78,10 +78,7 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
 
     fun containsKey(vararg keys: String): Boolean {
         if (keys.isEmpty()) return false
-        for (key in keys) {
-            if (!this.members.containsKey(key)) return false
-        }
-        return true
+        return keys.all { this.members.containsKey(it) }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -98,7 +95,7 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
     }
 
     override fun toString(): String {
-        return members.entries.joinToString(", ", "{", "}"){
+        return members.entries.joinToString(", ", "{", "}") {
             "${it.key}: ${it.value}"
         }
     }

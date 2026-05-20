@@ -1,6 +1,5 @@
 package moe.forpleuvoir.nebula.serialization
 
-import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import kotlin.reflect.KClass
 
 class SerializationException : RuntimeException {
@@ -13,28 +12,29 @@ class SerializationException : RuntimeException {
 
     constructor(message: String, cause: Throwable) : super(message, cause)
 
+    companion object{
+        @Suppress("NOTHING_TO_INLINE")
+        inline fun wrap(e: Throwable): SerializationException = e as? SerializationException ?: SerializationException(e)
+    }
 }
 
 class DeserializationException : RuntimeException {
 
     companion object {
 
-        inline fun <T> require(value: T?, lazyMessage: () -> String): T =
-            value ?: throw DeserializationException(lazyMessage())
-
-        fun checkType(element: SerializeElement, vararg expectedType: KClass<out SerializeElement>) {
-            if (element::class !in expectedType) {
-                illegalType(element::class, *expectedType)
-            }
-        }
+        @Suppress("NOTHING_TO_INLINE")
+        inline fun wrap(e: Throwable): DeserializationException = e as? DeserializationException ?: DeserializationException(e)
 
         fun illegalType(element: KClass<*>, vararg expectedType: KClass<*>): DeserializationException {
             return DeserializationException("Deserialize type error, expected to be an ${expectedType.map { it.simpleName }}, but was [${element.simpleName}]")
         }
 
-        fun unknownExpression(clazz: Class<*>, element: SerializeElement, throwable: Throwable): DeserializationException {
-            return DeserializationException("Deserialize as [${clazz.simpleName}] error, serializeElement:[$element] message : ${throwable.message}", throwable)
-        }
+        fun <R> runCatching(block: () -> R): Result<R> =
+            try {
+                Result.success(block())
+            } catch (e: Throwable) {
+                Result.failure(wrap(e))
+            }
 
     }
 

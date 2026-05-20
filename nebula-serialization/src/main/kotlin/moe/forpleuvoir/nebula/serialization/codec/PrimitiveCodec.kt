@@ -15,30 +15,27 @@ object PrimitiveCodec {
             is Boolean -> SerializePrimitive(target)
             is String  -> SerializePrimitive(target)
             is Char    -> SerializePrimitive(target)
-            else       -> throw IllegalArgumentException("Unsupported type: ${target::class.simpleName}")
+            else       -> throw Error("Please check the code for the actually unreachable error.")
         }
 
-        override fun deserialization(data: SerializeElement): Result<T> =
-            runCatching { DeserializationException.require(f(data)) { "Expected value for $data" } }
+        override fun deserialization(data: SerializeElement): Result<T> = DeserializationException.runCatching {
+            f(data) ?: throw IllegalArgumentException("Unable to deserialize value $data")
+        }
     }
 
     private fun <T : Any> create(default: T, f: (SerializeElement) -> T?): Codec<T> = create {
         f(it) ?: default
     }
 
-    private fun <T> create(range: ClosedRange<T>, f: (SerializeElement) -> T?): Codec<T> where  T : Comparable<T> {
-        require(range.start <= range.endInclusive) { "max(${range.start}) must be greater than min(${range.endInclusive})" }
-        return create {
-            DeserializationException.require(f(it)) { "Expected value for $it" }.coerceIn(range)
-        }
+    private fun <T> create(range: ClosedRange<T>, f: (SerializeElement) -> T?): Codec<T> where  T : Comparable<T> = create {
+        f(it)?.coerceIn(range)
     }
 
-    private fun <T> create(default: T, range: ClosedRange<T>, f: (SerializeElement) -> T?): Codec<T> where T : Number, T : Comparable<T> {
-        require(range.start <= range.endInclusive) { "max(${range.start}) must be greater than min(${range.endInclusive})" }
-        return create {
-            (f(it) ?: default).coerceIn(range)
-        }
+
+    private fun <T> create(default: T, range: ClosedRange<T>, f: (SerializeElement) -> T?): Codec<T> where T : Number, T : Comparable<T> = create {
+        (f(it) ?: default).coerceIn(range)
     }
+
 
     private inline fun <T : Comparable<T>> byIntRange(int: IntRange, crossinline f: (Int) -> T): ClosedRange<T> = object : ClosedRange<T> {
         override val start: T get() = f(int.first)

@@ -155,9 +155,3 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 - **构建**: `./gradlew build`
 - **发布**: `./gradlew publishNebulaToReleases` / `publishNebulaToSnapshots` / `publishNebulaToLocal`
 - **ShadowJar**: 产物合并为 `nebula-<version>.jar`（发布时 `classifier = ""`）
-
-## 版本控制
-
-- 版本定义在 `gradle/libs.versions.toml` 的 `nebulaVersion` 中
-- **更新 `nebulaVersion` 时必须同时打 tag**，tag 名称为 `v<nebulaVersion>`（例如 `v0.3.1`）
-- tag 在提交完成后执行，先提交再打 tag
