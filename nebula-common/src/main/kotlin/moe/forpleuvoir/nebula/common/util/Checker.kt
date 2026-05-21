@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalContracts::class)
-@file:Suppress("NOTHING_TO_INLINE","UNUSED")
+@file:Suppress("NOTHING_TO_INLINE", "UNUSED")
 
 package moe.forpleuvoir.nebula.common.util
 
@@ -51,6 +51,21 @@ internal inline fun prefix(prefix: String?): String = if (prefix != null) "$pref
 @PublishedApi
 internal fun expected(expected: Array<out KClass<*>>, separator: CharSequence = ", "): String = expected.joinToString(separator, "[", "]")
 //endregion
+
+/**
+ * 检查 Map 中是否包含指定的键，包含则返回对应的值。
+ *
+ * 如果 Map 中包含指定键 [key] 则返回对应的值；否则抛出 [IllegalStateException]。
+ * 该函数委托 [requireKeys] 进行键检查，验证通过后直接返回对应的值。
+ *
+ * @param K 键的类型
+ * @param V 值的类型
+ * @param M Map 的具体类型
+ * @param key 需要检查的键
+ * @return [key] 对应的值
+ * @throws IllegalStateException 如果 Map 中不包含 [key]
+ */
+fun <K, V, M : Map<K, V>> M.requireKey(key: K): V = requireKeys(key)[key]!!
 
 /**
  * 检查 Map 中是否包含所有指定的键，不包含则抛出异常。

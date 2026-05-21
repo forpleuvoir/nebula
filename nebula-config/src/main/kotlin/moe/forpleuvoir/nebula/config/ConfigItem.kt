@@ -16,6 +16,7 @@ abstract class ConfigItem<C>(
 ) : ConfigNode, ConfigValued<C>, Resettable, Observable<ConfigItem<C>> {
 
     @Volatile
+    @Suppress("PropertyName")
     protected var _value: C = defaultValue
 
     override var parent: ConfigGroup? = null
@@ -69,9 +70,9 @@ abstract class ConfigItem<C>(
         notifyChange(this)
     }
 
-    override fun matched(regex: Regex): Boolean {
+    override fun matched(target: Regex): Boolean {
         @Suppress("UNCHECKED_CAST")
-        return regex.containsMatchIn(name) || (getValue() as? Matchable<Regex>)?.matched(regex) == true || regex.containsMatchIn(getValue().toString())
+        return target.containsMatchIn(name) || (getValue() as? Matchable<Regex>)?.matched(target) == true || target.containsMatchIn(getValue().toString())
     }
 }
 

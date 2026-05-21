@@ -65,8 +65,8 @@ open class ConfigGroup(
         }
     }
 
-    override fun matched(regex: Regex): Boolean =
-        regex.containsMatchIn(name) || children.any { it.matched(regex) }
+    override fun matched(target: Regex): Boolean =
+        target.containsMatchIn(name) || children.any { it.matched(target) }
 
     override fun serialization(): SerializeElement = SerializeObject.build {
         _children.forEach { child ->

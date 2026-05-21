@@ -18,8 +18,8 @@ import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 data class MTest(val value: String) : Matchable<Regex> {
-    override fun matched(regex: Regex): Boolean {
-        val result = regex.containsMatchIn(this.value)
+    override fun matched(target: Regex): Boolean {
+        val result = target.containsMatchIn(this.value)
         return result
     }
 

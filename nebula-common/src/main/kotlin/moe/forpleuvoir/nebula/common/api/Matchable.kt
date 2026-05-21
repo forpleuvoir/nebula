@@ -18,9 +18,9 @@ fun interface Matchable<T> {
 
 	/**
 	 * 匹配
-	 * @param regex 匹配推对象
+	 * @param target 匹配推对象
 	 * @return 是否匹配成功
 	 */
-	infix fun matched(regex: T): Boolean
+	infix fun matched(target: T): Boolean
 
 }
