@@ -13,11 +13,11 @@ import java.util.concurrent.CopyOnWriteArrayList
 abstract class ConfigItem<C>(
     override val name: String,
     override val defaultValue: C,
-) : ConfigNode, ConfigValued<C>, Resettable, Observable<ConfigItem<C>> {
+) : ConfigNode, ConfigValued<C>, Observable<ConfigItem<C>> {
 
     @Volatile
     @Suppress("PropertyName")
-    protected var _value: C = defaultValue
+    protected open var _value: C = defaultValue
 
     override var parent: ConfigGroup? = null
 
@@ -38,11 +38,9 @@ abstract class ConfigItem<C>(
         }
     }
 
-    @Suppress("NOTHING_TO_INLINE")
-    protected inline infix fun C.valueEquals(b: C) = this == b
+    protected open infix fun C.valueEquals(b: C) = this == b
 
-    @Suppress("NOTHING_TO_INLINE")
-    protected inline infix fun C.valueNotEquals(b: C) = !this.valueEquals(b)
+    protected open infix fun C.valueNotEquals(b: C) = !this.valueEquals(b)
 
     override fun isDefault(): Boolean = _value valueEquals defaultValue
 

@@ -25,13 +25,6 @@ dependencies {
     }
 }
 
-val subprojectsOrder = listOf(
-    project("nebula-common"),
-    project("nebula-event"),
-    project("nebula-serialization"),
-    project("nebula-config")
-)
-
 sourceSets {
     getByName("test") {
         kotlin.srcDir("src/test/kotlin")
@@ -159,11 +152,14 @@ publishing {
 
 subprojects {
 
-    apply(plugin = "java")
-    apply(plugin = "kotlin")
-    apply(plugin = rootProject.libs.plugins.shadow.get().pluginId)
-    apply(plugin = "maven-publish")
-    apply(plugin = rootProject.libs.plugins.kotlinSerialization.get().pluginId)
+    apply {
+        plugin("java")
+        plugin("kotlin")
+        plugin(rootProject.libs.plugins.shadow.get().pluginId)
+        plugin("maven-publish")
+        plugin(rootProject.libs.plugins.kotlinSerialization.get().pluginId)
+    }
+
 
     group = rootProject.group
     version = rootProject.version

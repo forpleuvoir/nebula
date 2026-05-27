@@ -4,9 +4,10 @@ package moe.forpleuvoir.nebula.config
 
 import moe.forpleuvoir.nebula.common.api.Initializable
 import moe.forpleuvoir.nebula.common.api.Matchable
+import moe.forpleuvoir.nebula.common.api.Resettable
 import moe.forpleuvoir.nebula.serialization.Serde
 
-interface ConfigNode : Initializable, Matchable<Regex>, Serde {
+interface ConfigNode : Initializable, Resettable, Matchable<Regex>, Serde {
 
     val name: String
 

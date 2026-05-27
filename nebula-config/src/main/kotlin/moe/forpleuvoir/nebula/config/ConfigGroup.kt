@@ -48,7 +48,7 @@ open class ConfigGroup(
         return child
     }
 
-    fun isDefault(): Boolean = children.all {
+    override fun isDefault(): Boolean = children.all {
         when (it) {
             is ConfigItem<*> -> it.isDefault()
             is ConfigGroup   -> it.isDefault()
@@ -56,13 +56,8 @@ open class ConfigGroup(
         }
     }
 
-    fun restDefault() {
-        children.forEach {
-            when (it) {
-                is ConfigItem<*> -> it.resetDefault()
-                is ConfigGroup   -> it.restDefault()
-            }
-        }
+    override fun resetDefault() {
+        children.forEach(ConfigNode::resetDefault)
     }
 
     override fun matched(target: Regex): Boolean =
