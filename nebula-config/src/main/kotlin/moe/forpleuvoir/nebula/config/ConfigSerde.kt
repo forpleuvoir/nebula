@@ -7,7 +7,7 @@ import moe.forpleuvoir.nebula.serialization.nebula.NebulaFormat
 import moe.forpleuvoir.nebula.serialization.nebula.toCodec
 import moe.forpleuvoir.nebula.serialization.nebula.toKSerializer
 
-sealed interface ConfigSerde<C : Any> {
+sealed interface ConfigSerde<C> {
 
     fun encode(value: C): SerializeElement
 

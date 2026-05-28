@@ -1,7 +1,7 @@
 package moe.forpleuvoir.nebula.config.item
 
-import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
+import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
 
 class ConfigRange<T>(
@@ -10,11 +10,11 @@ class ConfigRange<T>(
     val minValue: T,
     val maxValue: T,
     serde: ConfigSerde<T>,
-) : Config<T>(name, defaultValue, serde) where T : Comparable<T> {
+) : ConfigItem<T>(name, defaultValue, serde) where T : Comparable<T> {
 
     init {
         require(minValue <= maxValue) { "minValue[$minValue] must be <= maxValue[$maxValue]" }
-        _value = clamp(defaultValue)
+        configValue = clamp(defaultValue)
     }
 
     private fun clamp(value: T): T = when {

@@ -4,21 +4,30 @@ package moe.forpleuvoir.nebula.config.item
 
 import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.util.checkType
+import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
-import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
 import moe.forpleuvoir.nebula.serialization.base.SerializeArray
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.reflect.KClass
 
 class ConfigList<T : Any>(
     name: String,
     defaultValue: List<T>,
     private val serde: ConfigSerde<T>,
-) : ConfigItem<List<T>>(name, defaultValue), MutableList<T> {
+) : Config<List<T>>(name, defaultValue), MutableList<T> {
 
     private val buffer: MutableList<T> = CopyOnWriteArrayList(defaultValue)
+
+    override var configValue: List<T>
+        get() = buffer
+        set(value) {
+            setValue(value)
+        }
+
+    override val valueType: KClass<*> = MutableList::class
 
     override fun getValue(): List<T> = buffer.toList()
 
@@ -30,7 +39,7 @@ class ConfigList<T : Any>(
         }
     }
 
-    override fun isDefault(): Boolean = buffer.toList() valueEquals defaultValue
+    override fun isDefault(): Boolean = buffer valueEquals defaultValue
 
     override fun resetDefault() {
         if (isDefault()) return

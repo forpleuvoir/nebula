@@ -2,11 +2,14 @@
 
 package moe.forpleuvoir.nebula.config
 
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 interface ConfigValued<C> {
 
     val defaultValue: C
+
+    val valueType: KClass<*>?
 
     fun getValue(): C
 

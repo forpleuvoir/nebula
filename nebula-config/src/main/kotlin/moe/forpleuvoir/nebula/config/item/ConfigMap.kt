@@ -4,6 +4,7 @@ package moe.forpleuvoir.nebula.config.item
 
 import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.util.checkType
+import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
 import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
@@ -11,14 +12,23 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.builder.build
 import moe.forpleuvoir.nebula.serialization.codec.Codec
+import kotlin.reflect.KClass
 
 class ConfigMap<V : Any>(
     name: String,
     defaultValue: Map<String, V>,
     private val serde: ConfigSerde<V>,
-) : ConfigItem<Map<String, V>>(name, defaultValue), MutableMap<String, V> {
+) : Config<Map<String, V>>(name, defaultValue), MutableMap<String, V> {
 
     private val map: MutableMap<String, V> = LinkedHashMap(defaultValue)
+
+    override val valueType: KClass<*>? by lazy { map::class }
+
+    override var configValue: Map<String, V>
+        get() = map
+        set(value) {
+            setValue(value)
+        }
 
     override fun getValue(): Map<String, V> = map.toMap()
 
@@ -30,7 +40,7 @@ class ConfigMap<V : Any>(
         }
     }
 
-    override fun isDefault(): Boolean = map.toMap() valueEquals defaultValue
+    override fun isDefault(): Boolean = map valueEquals defaultValue
 
     override fun resetDefault() {
         if (isDefault()) return

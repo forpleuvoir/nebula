@@ -4,6 +4,7 @@ package moe.forpleuvoir.nebula.config.item
 
 import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
+import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
 import moe.forpleuvoir.nebula.config.config
 import moe.forpleuvoir.nebula.serialization.codec.Codec
@@ -17,7 +18,7 @@ fun configChar(name: String, defaultValue: Char) = config(name, defaultValue, Co
 class ConfigBoolean(
     name: String,
     defaultValue: Boolean,
-) : Config<Boolean>(name, defaultValue, ConfigSerde.of(Codec.boolean(defaultValue))) {
+) : ConfigItem<Boolean>(name, defaultValue, ConfigSerde.of(Codec.boolean(defaultValue))) {
     fun toggle(): ConfigBoolean {
         setValue(!getValue())
         return this

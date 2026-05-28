@@ -5,19 +5,20 @@ package moe.forpleuvoir.nebula.config
 import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.api.Matchable
 import moe.forpleuvoir.nebula.common.api.Observable
-import moe.forpleuvoir.nebula.common.api.Resettable
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.reflect.KClass
 
-abstract class ConfigItem<C>(
+abstract class Config<C>(
     override val name: String,
     override val defaultValue: C,
-) : ConfigNode, ConfigValued<C>, Observable<ConfigItem<C>> {
+) : ConfigNode, ConfigValued<C>, Observable<Config<C>> {
 
     @Volatile
-    @Suppress("PropertyName")
-    protected open var _value: C = defaultValue
+    protected open var configValue: C = defaultValue
+
+    override val valueType: KClass<*>? by lazy { configValue?.let { it::class } }
 
     override var parent: ConfigGroup? = null
 
@@ -29,11 +30,11 @@ abstract class ConfigItem<C>(
         metadata[key] = value
     }
 
-    override fun getValue(): C = _value
+    override fun getValue(): C = configValue
 
     override fun setValue(value: C) {
-        if (value valueNotEquals _value) {
-            _value = value
+        if (value valueNotEquals configValue) {
+            configValue = value
             notifyChange()
         }
     }
@@ -42,24 +43,24 @@ abstract class ConfigItem<C>(
 
     protected open infix fun C.valueNotEquals(b: C) = !this.valueEquals(b)
 
-    override fun isDefault(): Boolean = _value valueEquals defaultValue
+    override fun isDefault(): Boolean = configValue valueEquals defaultValue
 
     override fun resetDefault() {
         if (isDefault()) return
-        _value = defaultValue
+        configValue = defaultValue
         notifyChange()
     }
 
     override fun init() {}
 
-    private val observers: MutableList<(ConfigItem<C>) -> Unit> = CopyOnWriteArrayList()
+    private val observers: MutableList<(Config<C>) -> Unit> = CopyOnWriteArrayList()
 
-    override fun observe(callback: (ConfigItem<C>) -> Unit): Observable.Disposable {
+    override fun observe(callback: (Config<C>) -> Unit): Observable.Disposable {
         observers.add(callback)
         return Observable.Disposable { observers.remove(callback) }
     }
 
-    override fun notifyChange(value: ConfigItem<C>) {
+    override fun notifyChange(value: Config<C>) {
         root?.markSavable()
         observers.forEach { it(value) }
     }
@@ -74,11 +75,11 @@ abstract class ConfigItem<C>(
     }
 }
 
-open class Config<C : Any>(
+open class ConfigItem<C : Any>(
     name: String,
     defaultValue: C,
     private val serde: ConfigSerde<C>,
-) : ConfigItem<C>(name, defaultValue) {
+) : Config<C>(name, defaultValue) {
 
     override fun serialization(): SerializeElement = serde.encode(getValue())
 
@@ -88,10 +89,12 @@ open class Config<C : Any>(
 }
 
 context(group: ConfigGroup)
-fun <T : Any> config(name: String, defaultValue: T, serde: ConfigSerde<T>) = group.addConfig(Config(name, defaultValue, serde))
+fun <T : Any> config(name: String, defaultValue: T, serde: ConfigSerde<T>) = group.addConfig(ConfigItem(name, defaultValue, serde))
 
+@Suppress("NOTHING_TO_INLINE")
 context(group: ConfigGroup)
-fun <T : Any> config(name: String, defaultValue: T, codec: Codec<T>) = config(name, defaultValue, ConfigSerde.of(codec))
+inline fun <T : Any> config(name: String, defaultValue: T, codec: Codec<T>) = config(name, defaultValue, ConfigSerde.of(codec))
 
+@Suppress("NOTHING_TO_INLINE")
 context(group: ConfigGroup)
-fun <T : Any> config(name: String, defaultValue: T, serializer: KSerializer<T>) = config(name, defaultValue, ConfigSerde.of(serializer))
+inline fun <T : Any> config(name: String, defaultValue: T, serializer: KSerializer<T>) = config(name, defaultValue, ConfigSerde.of(serializer))
