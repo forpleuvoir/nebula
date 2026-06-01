@@ -2,7 +2,6 @@
 
 package moe.forpleuvoir.nebula.config.item
 
-import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
 import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
