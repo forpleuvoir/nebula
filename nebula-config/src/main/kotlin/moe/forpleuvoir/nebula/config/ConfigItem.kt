@@ -47,8 +47,7 @@ abstract class Config<C>(
 
     override fun resetDefault() {
         if (isDefault()) return
-        configValue = defaultValue
-        notifyChange()
+        setValue(defaultValue)
     }
 
     override fun init() {}

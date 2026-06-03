@@ -16,6 +16,7 @@ import kotlin.reflect.KClass
 class ConfigList<T : Any>(
     name: String,
     defaultValue: List<T>,
+    val elementType: KClass<T>,
     private val serde: ConfigSerde<T>,
 ) : Config<List<T>>(name, defaultValue), MutableList<T> {
 
@@ -157,13 +158,13 @@ class ConfigList<T : Any>(
 }
 
 context(group: ConfigGroup)
-fun <T : Any> configList(name: String, defaultValue: List<T>, serde: ConfigSerde<T>): ConfigList<T> =
-    group.addConfig(ConfigList(name, defaultValue, serde))
+inline fun <reified T : Any> configList(name: String, defaultValue: List<T>, serde: ConfigSerde<T>): ConfigList<T> =
+    group.addConfig(ConfigList(name, defaultValue, T::class, serde))
 
 context(group: ConfigGroup)
-fun <T : Any> configList(name: String, defaultValue: List<T>, codec: Codec<T>): ConfigList<T> =
+inline fun <reified T : Any> configList(name: String, defaultValue: List<T>, codec: Codec<T>): ConfigList<T> =
     configList(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <T : Any> configList(name: String, defaultValue: List<T>, serializer: KSerializer<T>): ConfigList<T> =
+inline fun <reified T : Any> configList(name: String, defaultValue: List<T>, serializer: KSerializer<T>): ConfigList<T> =
     configList(name, defaultValue, ConfigSerde.of(serializer))

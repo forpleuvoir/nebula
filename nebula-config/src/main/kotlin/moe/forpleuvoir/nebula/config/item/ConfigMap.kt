@@ -17,6 +17,7 @@ import kotlin.reflect.KClass
 class ConfigMap<V : Any>(
     name: String,
     defaultValue: Map<String, V>,
+    val entryValueType: KClass<V>,
     private val serde: ConfigSerde<V>,
 ) : Config<Map<String, V>>(name, defaultValue), MutableMap<String, V> {
 
@@ -125,13 +126,13 @@ class ConfigMap<V : Any>(
 }
 
 context(group: ConfigGroup)
-fun <V : Any> configMap(name: String, defaultValue: Map<String, V>, serde: ConfigSerde<V>) =
-    group.addConfig(ConfigMap(name, defaultValue, serde))
+inline fun <reified V : Any> configMap(name: String, defaultValue: Map<String, V>, serde: ConfigSerde<V>) =
+    group.addConfig(ConfigMap(name, defaultValue, V::class, serde))
 
 context(group: ConfigGroup)
-fun <V : Any> configMap(name: String, defaultValue: Map<String, V>, codec: Codec<V>) =
+inline fun <reified V : Any> configMap(name: String, defaultValue: Map<String, V>, codec: Codec<V>) =
     configMap(name, defaultValue, ConfigSerde.of(codec))
 
 context(group: ConfigGroup)
-fun <V : Any> configMap(name: String, defaultValue: Map<String, V>, serializer: KSerializer<V>) =
+inline fun <reified V : Any> configMap(name: String, defaultValue: Map<String, V>, serializer: KSerializer<V>) =
     configMap(name, defaultValue, ConfigSerde.of(serializer))
