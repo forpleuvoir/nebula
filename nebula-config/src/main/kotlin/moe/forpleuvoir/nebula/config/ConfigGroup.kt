@@ -105,7 +105,7 @@ open class ConfigGroup(
 
 }
 
-val ConfigGroup.items: List<ConfigItem<*>> get() = children.filterIsInstance<ConfigItem<*>>()
+val ConfigGroup.items: List<Config<*>> get() = children.filterIsInstance<Config<*>>()
 
 val ConfigGroup.groups: List<ConfigGroup> get() = children.filterIsInstance<ConfigGroup>()
 
