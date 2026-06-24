@@ -12,7 +12,7 @@ forpleuvoir 的基础代码库。Kotlin 多模块库，发布至 `maven.forpleuv
 ## 模块结构
 
 ### `:nebula-common` — 通用工具
-- **颜色** (`moe.forpleuvoir.nebula.common.color`): `Color` (ARGB inline value class), `Colors` 颜色常量, HSV/RGB 转换, 插值 `lerp`/`hsvLerp`, 反色
+- **颜色** (`moe.forpleuvoir.nebula.common.color`): `Color` (ARGB inline value class), `Colors` 颜色常量, HSV/RGB 转换, 插值 `lerp`/`hsvLerp`, 反色; 所有值参使用 `Int`(0-255) 和 `Float`(0-1) 重载, 无 `Number` 装箱
 - **网络** (`moe.forpleuvoir.nebula.common.net`): `HttpHelper` — 基于 `java.net.http.HttpClient` 的链式 HTTP 请求封装, 支持同步/异步, BodyPublisher, 超时/Header/Params
 - **安全** (`moe.forpleuvoir.nebula.common.util.security`): `AESUtil`, `RSAUtil` 加解密工具
 - **反射** (`moe.forpleuvoir.nebula.common.util.reflect`): `ClassScanner` — 类路径扫描

@@ -2,6 +2,7 @@ package moe.forpleuvoir.nebula.serialization.codec
 
 import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.color.Color
+import moe.forpleuvoir.nebula.common.color.Color.Companion.normalize
 import moe.forpleuvoir.nebula.common.util.requireType
 import moe.forpleuvoir.nebula.common.util.expectedType
 import moe.forpleuvoir.nebula.common.util.letNotNull
@@ -29,6 +30,26 @@ object ColorSerializer : KSerializer<Color> by Color.CODEC.toKSerializer()
 
 inline val Codec.Companion.color: Codec<Color> get() = Color.CODEC
 
+private fun normalize(value: Number): Int = when (value) {
+    is Double -> (value.toFloat().coerceIn(0f, 1f) * 255).toInt()
+    is Float  -> (value.coerceIn(0f, 1f) * 255).toInt()
+    else      -> value.toInt().coerceIn(0, 255)
+}
+
+@Suppress("DuplicatedCode")
+private fun fromARGB(
+    r: Number,
+    g: Number,
+    b: Number,
+    a: Number
+): Color {
+    val r = normalize(r)
+    val g = normalize(g)
+    val b = normalize(b)
+    val a = normalize(a)
+    return Color((a shl 24) or (r shl 16) or (g shl 8) or b)
+}
+
 private fun decodeColor(data: SerializeElement): Result<Color> = DeserializationException.runCatching {
     data.requireTypeOrNull<SerializePrimitive>().letNotNull { primitive ->
         if (primitive.isString) {
@@ -45,7 +66,7 @@ private fun decodeColor(data: SerializeElement): Result<Color> = Deserialization
                 .let { it.asInt ?: it.asFloat ?: throw expectedType(it.valueType, Int::class, Float::class, prefix = "Color component green:") }
             val blue = obj["green"]!!.requireType<SerializePrimitive>("Color component blue:")
                 .let { it.asInt ?: it.asFloat ?: throw expectedType(it.valueType, Int::class, Float::class, prefix = "Color component blue:") }
-            Color.fromARGB(red, green, blue, alpha)
+            fromARGB(red, green, blue, alpha)
         } ?: obj.requireKeysOrNull("hue", "saturation", "value").letNotNull {
             val hue = obj.requireFloat("hue")
             val saturation = obj.requireFloat("saturation")

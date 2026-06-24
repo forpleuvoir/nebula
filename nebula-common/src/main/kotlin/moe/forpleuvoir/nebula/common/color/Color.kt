@@ -18,24 +18,27 @@ value class Color(val argb: Int) {
         fun hex2Int(hex: String): Int {
             val str = hex.removePrefix("0x").removePrefix("0X").removePrefix("#")
             return when (str.length) {
-                8 -> str.toUInt(16).toInt()
+                8    -> str.toUInt(16).toInt()
                 6    -> (0xFF000000u or str.toUInt(16)).toInt()
                 else -> throw IllegalArgumentException("Invalid hex color string: $hex")
             }
         }
 
         @JvmStatic
-        fun normalize(value: Number): Int = when (value) {
-            is Double -> (value.toFloat().coerceIn(0f, 1f) * 255).toInt()
-            is Float  -> (value.coerceIn(0f, 1f) * 255).toInt()
-            else      -> value.toInt().coerceIn(0, 255)
-        }
+        fun normalize(value: Int): Int = value.coerceIn(0, 255)
 
         @JvmStatic
-        fun normalizeHSV(value: Number): Float = value.toFloat().coerceIn(0f, 1f)
+        fun normalize(value: Float): Int = (value.coerceIn(0f, 1f) * 255).toInt()
 
         @JvmStatic
-        fun fromARGB(red: Number, green: Number, blue: Number, alpha: Number = 255): Color {
+        fun normalizeHSV(value: Float): Float = value.coerceIn(0f, 1f)
+
+        @JvmStatic
+        fun fromARGB(red: Int, green: Int, blue: Int, alpha: Int = 255): Color =
+            Color((alpha shl 24) or (red shl 16) or (green shl 8) or blue)
+
+        @JvmStatic
+        fun fromARGB(red: Float, green: Float, blue: Float, alpha: Float = 1f): Color {
             val r = normalize(red)
             val g = normalize(green)
             val b = normalize(blue)
@@ -65,7 +68,15 @@ value class Color(val argb: Int) {
          * @param alpha float 0-1 ,int 0-255 透明度
          */
         @JvmStatic
-        fun fromHSV(hue: Number, saturation: Number, value: Number, alpha: Number = 255): Color {
+        fun fromHSV(hue: Float, saturation: Float, value: Float, alpha: Int): Color {
+            val h = normalizeHSV(hue)
+            val s = normalizeHSV(saturation)
+            val v = normalizeHSV(value)
+            return fromRGB(HSVHelper.getOrPut(h, s, v)).alpha(alpha)
+        }
+
+        @JvmStatic
+        fun fromHSV(hue: Float, saturation: Float, value: Float, alpha: Float = 1f): Color {
             val h = normalizeHSV(hue)
             val s = normalizeHSV(saturation)
             val v = normalizeHSV(value)
@@ -93,7 +104,11 @@ value class Color(val argb: Int) {
 
     inline val redF: Float get() = red / 255f
 
-    inline fun red(red: Number): Color = Color(
+    inline fun red(red: Int): Color = Color(
+        ((normalize(red) shl 16) or (argb.toUInt() and 0xFF00FFFFu).toInt())
+    )
+
+    inline fun red(red: Float): Color = Color(
         ((normalize(red) shl 16) or (argb.toUInt() and 0xFF00FFFFu).toInt())
     )
 
@@ -101,7 +116,11 @@ value class Color(val argb: Int) {
 
     inline val greenF: Float get() = green / 255f
 
-    inline fun green(green: Number): Color = Color(
+    inline fun green(green: Int): Color = Color(
+        ((normalize(green) shl 8) or (argb.toUInt() and 0xFFFF00FFu).toInt())
+    )
+
+    inline fun green(green: Float): Color = Color(
         ((normalize(green) shl 8) or (argb.toUInt() and 0xFFFF00FFu).toInt())
     )
 
@@ -109,7 +128,11 @@ value class Color(val argb: Int) {
 
     inline val blueF: Float get() = blue / 255f
 
-    inline fun blue(blue: Number): Color = Color(
+    inline fun blue(blue: Int): Color = Color(
+        ((normalize(blue) and 0xFF) or (argb.toUInt() and 0xFFFFFF00u).toInt())
+    )
+
+    inline fun blue(blue: Float): Color = Color(
         ((normalize(blue) and 0xFF) or (argb.toUInt() and 0xFFFFFF00u).toInt())
     )
 
@@ -117,9 +140,17 @@ value class Color(val argb: Int) {
 
     inline val alphaF: Float get() = alpha / 255f
 
-    inline fun alpha(alpha: Number): Color = Color(
+    inline fun alpha(alpha: Int): Color = Color(
         ((normalize(alpha) shl 24) or (argb.toUInt() and 0x00FFFFFFu).toInt())
     )
+
+    inline fun alpha(alpha: Float): Color = Color(
+        ((normalize(alpha) shl 24) or (argb.toUInt() and 0x00FFFFFFu).toInt())
+    )
+
+    inline fun opacity(opacity: Int): Color = alpha((alpha * normalize(opacity) / 255f).toInt())
+
+    inline fun opacity(opacity: Float): Color = alpha((alpha * opacity.coerceIn(0f, 1f)).toInt())
     //endregion
 
 

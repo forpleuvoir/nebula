@@ -12,6 +12,9 @@ object Colors {
     }
 
     @JvmStatic
+    val TRANSPARENT: Color by lazy { Color.fromARGB(0) }
+
+    @JvmStatic
     val BLACK: Color by lazyColor(0, 0, 0)
 
     @JvmStatic
