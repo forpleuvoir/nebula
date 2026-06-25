@@ -24,7 +24,7 @@ open class YamlEncoder(
         when (element) {
             is SerializeObject -> encodeObject(element, 0, emptyList(), sb)
             is SerializeArray  -> encodeArray(element, 0, emptyList(), sb)
-            is SerializePrimitive -> sb.append(encodePrimitive(element))
+            is SerializePrimitive -> sb.append(encodePrimitive(element, 0))
             is SerializeNull   -> sb.append("null")
         }
     }
@@ -84,7 +84,7 @@ open class YamlEncoder(
                 }
             }
 
-            is SerializePrimitive -> sb.append(encodePrimitive(element))
+            is SerializePrimitive -> sb.append(encodePrimitive(element, nextIndent))
             is SerializeNull      -> sb.append("null")
         }
     }
@@ -140,34 +140,34 @@ open class YamlEncoder(
                 }
             }
 
-            is SerializePrimitive -> sb.append(encodePrimitive(element))
+            is SerializePrimitive -> sb.append(encodePrimitive(element, nextIndent))
             is SerializeNull      -> sb.append("null")
         }
     }
 
     // ── Primitive encoding ──────────────────────────────────────────
 
-    protected open fun encodePrimitive(primitive: SerializePrimitive): String {
+    protected open fun encodePrimitive(primitive: SerializePrimitive, indent: Int): String {
         val value = primitive.value
         return when (value) {
-            is String  -> encodeString(value)
-            is Char    -> encodeString(value.toString())
+            is String  -> encodeString(value, indent)
+            is Char    -> encodeString(value.toString(), indent)
             is Boolean -> value.toString()
             is Number  -> value.toString()
             else       -> value.toString()
         }
     }
 
-    protected open fun encodeString(s: String): String {
+    protected open fun encodeString(s: String, indent: Int): String {
         if (s.isEmpty()) return "''"
-        if (s.contains('\n')) return encodeMultilineString(s)
+        if (s.contains('\n')) return encodeMultilineString(s, indent)
         if (needsQuoting(s)) return "\"${escapeDoubleQuoted(s)}\""
         return s
     }
 
-    protected open fun encodeMultilineString(s: String): String {
+    protected open fun encodeMultilineString(s: String, indent: Int): String {
         val indented = s.lines().joinToString("\n") { line ->
-            if (line.isEmpty()) "" else "  $line"
+            if (line.isEmpty()) "" else " ".repeat(indent) + line
         }
         return "|\n$indented"
     }

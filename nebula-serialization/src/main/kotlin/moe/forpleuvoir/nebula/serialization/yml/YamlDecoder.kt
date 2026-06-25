@@ -31,7 +31,10 @@ internal object YamlDecoder {
         for (rawLine in input.split("\n", "\r\n")) {
             lineNumber++
             val line = rawLine.trimEnd { it == '\n' || it == '\r' }
-            if (line.isBlank()) continue
+            if (line.isBlank()) {
+                result.add(YamlLine(-1, "", lineNumber))
+                continue
+            }
             val trimmedContent = line.trimStart()
             if (trimmedContent.isEmpty() || trimmedContent.startsWith("#")) continue
             if (trimmedContent.startsWith("---") || trimmedContent.startsWith("...")) continue
@@ -83,22 +86,26 @@ internal object YamlDecoder {
         end: Int,
         parentIndent: Int,
     ): Pair<SerializeElement, Int> {
-        if (start >= end) return SerializeNull to start
+        var s = start
+        while (s < end && lines[s].indent == -1) s++
+        if (s >= end) return SerializeNull to s
 
-        val firstLine = lines[start]
+        val firstLine = lines[s]
 
         if (firstLine.raw.trimStart().startsWith("- ")) {
-            return parseSequence(lines, start, end, parentIndent)
+            val (element, i) = parseSequence(lines, s, end, parentIndent)
+            return element to i
         }
 
         val content = stripComment(firstLine.raw)
         val colonIdx = findUnquotedColon(content)
         if (colonIdx >= 0) {
-            return parseMapping(lines, start, end, parentIndent)
+            val (element, i) = parseMapping(lines, s, end, parentIndent)
+            return element to i
         }
 
         val value = parseScalar(content)
-        return value to (start + 1)
+        return value to (s + 1)
     }
 
     /**
@@ -115,6 +122,7 @@ internal object YamlDecoder {
 
         while (i < end) {
             val line = lines[i]
+            if (line.indent == -1) { i++; continue }
             if (line.indent < parentIndent) break
             val trimmed = line.raw.trimStart()
             if (!trimmed.startsWith("- ")) {
@@ -152,6 +160,10 @@ internal object YamlDecoder {
                 val (element, _) = parseMapping(combinedLines, 0, combinedLines.size, parentIndent)
                 arr.add(element)
                 i = nextEnd
+            } else if (isBlockScalarIndicator(afterDash)) {
+                val (element, newIdx) = parseBlockScalar(lines, i, end, line.indent, afterDash)
+                arr.add(element)
+                i = newIdx
             } else {
                 arr.add(parseScalar(afterDash))
                 i++
@@ -175,6 +187,7 @@ internal object YamlDecoder {
 
         while (i < end) {
             val line = lines[i]
+            if (line.indent == -1) { i++; continue }
             if (line.indent < parentIndent) break
 
             val content = stripComment(line.raw)
@@ -205,6 +218,10 @@ internal object YamlDecoder {
                     obj[keyStr] = SerializeNull
                 }
                 i = nextEnd
+            } else if (isBlockScalarIndicator(afterColon)) {
+                val (element, newIdx) = parseBlockScalar(lines, i, end, line.indent, afterColon)
+                obj[keyStr] = element
+                i = newIdx
             } else if (afterColon == "{}") {
                 obj[keyStr] = SerializeObject()
                 i++
@@ -244,10 +261,80 @@ internal object YamlDecoder {
         var i = start
         while (i < end) {
             val line = lines[i]
+            if (line.indent == -1) { i++; continue }
             if (line.indent < minIndent) break
             i++
         }
         return i
+    }
+
+    private fun isBlockScalarIndicator(s: String): Boolean {
+        if (s.isEmpty() || (s[0] != '|' && s[0] != '>')) return false
+        val rest = s.drop(1)
+        return rest.isEmpty() || rest.all { it == '-' || it == '+' || it.isDigit() }
+    }
+
+    /**
+     * Parse a block scalar (| or >) starting at [start].
+     * Collects following indented lines and joins them into a string.
+     */
+    private fun parseBlockScalar(
+        lines: List<YamlLine>,
+        start: Int,
+        end: Int,
+        parentIndent: Int,
+        indicator: String,
+    ): Pair<SerializePrimitive, Int> {
+        val isLiteral = indicator.startsWith('|')
+
+        var contentIndent = -1
+        var i = start + 1
+        while (i < end) {
+            val line = lines[i]
+            if (line.indent == -1) { i++; continue }
+            if (line.indent > parentIndent) {
+                contentIndent = line.indent
+                break
+            }
+            i++
+        }
+        if (contentIndent < 0) return SerializePrimitive("") to (start + 1)
+
+        val contentLines = mutableListOf<String>()
+        i = start + 1
+        while (i < end) {
+            val line = lines[i]
+            if (line.indent == -1) {
+                // Include blank line only if followed by more content at contentIndent
+                var lookahead = i + 1
+                while (lookahead < end && lines[lookahead].indent == -1) lookahead++
+                if (lookahead < end && lines[lookahead].indent >= contentIndent) {
+                    contentLines.add("")
+                    i++
+                    continue
+                }
+                break
+            }
+            if (line.indent < contentIndent) break
+            val text = if (line.indent > contentIndent) {
+                " ".repeat(line.indent - contentIndent) + line.raw
+            } else {
+                line.raw
+            }
+            contentLines.add(text)
+            i++
+        }
+
+        val result = if (isLiteral) contentLines.joinToString("\n") else contentLines.joinToString(" ")
+
+        val chomp = indicator.drop(1).firstOrNull { it == '-' || it == '+' }
+        val finalResult = when (chomp) {
+            '-' -> result.trimEnd('\n')
+            '+' -> result
+            else -> result
+        }
+
+        return SerializePrimitive(finalResult) to i
     }
 
     private fun parseKeyValueString(s: String): String {

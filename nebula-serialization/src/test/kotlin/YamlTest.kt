@@ -15,6 +15,11 @@ class YamlTest {
         enabled: true
         count: 42
         score: 3.14
+        multi_text: |
+          //example
+          //if(itemStack.getCount()<16){
+          //  renderState["count"] = false;
+          //}
     """.trimIndent()
 
     val nested = """
