@@ -6,8 +6,9 @@ import kotlinx.serialization.KSerializer
 import moe.forpleuvoir.nebula.common.util.checkType
 import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
-import moe.forpleuvoir.nebula.config.ConfigItem
 import moe.forpleuvoir.nebula.config.ConfigSerde
+import moe.forpleuvoir.nebula.config.ExceptionHandler.Companion.onDeserializationException
+import moe.forpleuvoir.nebula.config.ExceptionHandler.Companion.onSerializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
 import moe.forpleuvoir.nebula.serialization.base.builder.build
@@ -41,7 +42,7 @@ class ConfigMap<V : Any>(
         }
     }
 
-    override fun isDefault(): Boolean = map valueEquals defaultValue
+    override fun isDefault(): Boolean = map.entries.toList() == defaultValue.entries.toList()
 
     override fun resetDefault() {
         if (isDefault()) return
@@ -51,14 +52,24 @@ class ConfigMap<V : Any>(
     }
 
     override fun serialization(): SerializeElement = SerializeObject.build {
-        map.forEach { (k, v) -> obj[k] = serde.encode(v) }
+        map.forEach { (k, v) ->
+            runCatching {
+                obj[k] = serde.encode(v)
+            }.onFailure {
+                root?.exceptionHandler?.onSerializationException(this@ConfigMap, it)
+            }
+        }
     }
 
     override fun deserialization(data: SerializeElement) {
         data.checkType<SerializeObject, Unit> { obj ->
             val m = LinkedHashMap<String, V>()
             obj.forEach { (k, v) ->
-                serde.decode(v).onSuccess { m[k] = it }
+                serde.decode(v)
+                    .onSuccess { m[k] = it }
+                    .onFailure {
+                        root?.exceptionHandler?.onDeserializationException(this@ConfigMap, it)
+                    }
             }
             setValue(m)
         }

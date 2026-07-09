@@ -7,11 +7,15 @@ import moe.forpleuvoir.nebula.common.util.checkType
 import moe.forpleuvoir.nebula.config.Config
 import moe.forpleuvoir.nebula.config.ConfigGroup
 import moe.forpleuvoir.nebula.config.ConfigSerde
+import moe.forpleuvoir.nebula.config.ExceptionHandler.Companion.onDeserializationException
+import moe.forpleuvoir.nebula.config.ExceptionHandler.Companion.onSerializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeArray
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
+import moe.forpleuvoir.nebula.serialization.base.SerializeNull
 import moe.forpleuvoir.nebula.serialization.codec.Codec
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.KClass
+import kotlin.runCatching
 
 class ConfigList<T : Any>(
     name: String,
@@ -50,12 +54,29 @@ class ConfigList<T : Any>(
     }
 
     override fun serialization(): SerializeElement = SerializeArray().apply {
-        buffer.forEach { add(serde.encode(it)) }
+        buffer.forEach {
+            runCatching {
+                add(serde.encode(it))
+            }.onFailure {
+                root?.exceptionHandler?.onSerializationException(this@ConfigList, it)
+            }
+        }
     }
 
     override fun deserialization(data: SerializeElement) {
         data.checkType<SerializeArray, Unit> { arr ->
-            setValue(arr.mapNotNull { serde.decode(it).getOrNull() })
+            val newList = buildList {
+                arr.forEach { element ->
+                    if (element != SerializeNull) {
+                        runCatching {
+                            add(serde.decode(element).getOrThrow())
+                        }.onFailure {
+                            root?.exceptionHandler?.onDeserializationException(this@ConfigList, it)
+                        }
+                    }
+                }
+            }
+            setValue(newList)
         }
     }
 
