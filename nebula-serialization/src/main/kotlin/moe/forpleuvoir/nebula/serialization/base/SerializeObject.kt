@@ -2,6 +2,7 @@
 
 package moe.forpleuvoir.nebula.serialization.base
 
+import moe.forpleuvoir.nebula.serialization.Serializable
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -64,6 +65,10 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
         return this.put(key, SerializePrimitive(value))?.asBigDecimal
     }
 
+    operator fun <T : Serializable> set(key: String, value: T) {
+        this.put(key, value.serialization())
+    }
+
     fun getAsPrimitive(key: String): SerializePrimitive? {
         return this[key]?.asPrimitive
     }
@@ -77,8 +82,7 @@ internal constructor(private val members: LinkedHashMap<String, SerializeElement
     }
 
     fun containsKey(vararg keys: String): Boolean {
-        if (keys.isEmpty()) return false
-        return keys.all { this.members.containsKey(it) }
+        return keys.isNotEmpty() && keys.all { this.members.containsKey(it) }
     }
 
     override fun equals(other: Any?): Boolean {

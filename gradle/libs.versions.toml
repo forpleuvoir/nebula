@@ -1,8 +1,8 @@
 [versions]
-nebulaVersion = "0.3.13"
+nebulaVersion = "0.3.14"
 #depn
 shadow = "9.4.1"
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 kotlinCoroutines = "1.11.0"
 kotlinxSerialization = "1.11.0"
 

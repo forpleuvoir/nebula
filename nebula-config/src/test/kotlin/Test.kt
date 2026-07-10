@@ -35,8 +35,8 @@ class ConfigMetaTest {
     @Test
     fun testSerializeObjectBuilder() {
         val obj = SerializeObject.build {
-            "key" to "value"
-            "num" to 42
+            "key"("value")
+            "num"(42)
             "bool" to true
         }
         println(JsonConfigPersistence.encode(obj))

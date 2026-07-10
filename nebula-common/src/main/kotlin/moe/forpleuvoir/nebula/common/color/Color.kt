@@ -18,8 +18,8 @@ value class Color(val argb: Int) {
         fun hex2Int(hex: String): Int {
             val str = hex.removePrefix("0x").removePrefix("0X").removePrefix("#")
             return when (str.length) {
-                8    -> str.toUInt(16).toInt()
-                6    -> (0xFF000000u or str.toUInt(16)).toInt()
+                8 -> str.toUInt(16).toInt()
+                6 -> (0xFF000000u or str.toUInt(16)).toInt()
                 else -> throw IllegalArgumentException("Invalid hex color string: $hex")
             }
         }
@@ -36,6 +36,14 @@ value class Color(val argb: Int) {
         @JvmStatic
         fun fromARGB(red: Int, green: Int, blue: Int, alpha: Int = 255): Color =
             Color((alpha shl 24) or (red shl 16) or (green shl 8) or blue)
+
+        operator fun of(vararg values: Int): Color =
+            fromARGB(
+                values.getOrElse(0) { 255 },
+                values.getOrElse(1) { 255 },
+                values.getOrElse(2) { 255 },
+                values.getOrElse(3) { 255 }
+            )
 
         @JvmStatic
         fun fromARGB(red: Float, green: Float, blue: Float, alpha: Float = 1f): Color {

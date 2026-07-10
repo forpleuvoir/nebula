@@ -2,6 +2,7 @@
 
 package moe.forpleuvoir.nebula.serialization.base
 
+import moe.forpleuvoir.nebula.serialization.Serializable
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.function.IntFunction
@@ -32,7 +33,13 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
             }
         else ArrayList())
 
-    companion object;
+    companion object {
+
+        operator fun of(vararg elements: Serializable): SerializeArray {
+            return SerializeArray(elements.map { it.serialization() }.toMutableList())
+        }
+
+    }
 
     override fun deepCopy(): SerializeArray {
         if (this.isNotEmpty()) {
@@ -92,8 +99,16 @@ class SerializeArray private constructor(private val elements: MutableList<Seria
         return this.add(SerializePrimitive(bigDecimal))
     }
 
+    fun add(value: Serializable): Boolean {
+        return this.add(value.serialization())
+    }
+
     fun addAll(array: SerializeArray): Boolean {
         return this.addAll(array.elements)
+    }
+
+    fun addAll(elements: Iterable<Serializable>): Boolean {
+        return this.addAll(elements.map { it.serialization() })
     }
 
     override fun hashCode(): Int {

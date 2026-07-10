@@ -1,5 +1,6 @@
 package moe.forpleuvoir.nebula.serialization.base
 
+import moe.forpleuvoir.nebula.serialization.Serializable
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -17,13 +18,15 @@ import java.math.BigInteger
  * @author forpleuvoir
 
  */
-sealed interface SerializeElement {
+sealed interface SerializeElement : Serializable {
 
     companion object;
 
     fun deepCopy(): SerializeElement
 
     fun copy(): SerializeElement
+
+    override fun serialization(): SerializeElement = this
 
     /**
      * 是否为原始类型

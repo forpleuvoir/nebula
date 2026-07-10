@@ -33,7 +33,7 @@ sourceSets {
 
 java {
     withSourcesJar()
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 tasks {
@@ -62,13 +62,13 @@ tasks {
     withType<JavaCompile>().configureEach {
         this.options.release
         this.options.encoding = "UTF-8"
-        targetCompatibility = JavaVersion.VERSION_21.toString()
-        sourceCompatibility = JavaVersion.VERSION_21.toString()
+        targetCompatibility = JavaVersion.VERSION_25.toString()
+        sourceCompatibility = JavaVersion.VERSION_25.toString()
     }
 
     withType<KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
             freeCompilerArgs.addAll("-jvm-default=enable", "-Xcontext-parameters")
         }
     }
@@ -183,28 +183,30 @@ subprojects {
         withType<JavaCompile>().configureEach {
             this.options.release
             this.options.encoding = "UTF-8"
-            targetCompatibility = JavaVersion.VERSION_21.toString()
-            sourceCompatibility = JavaVersion.VERSION_21.toString()
+            targetCompatibility = JavaVersion.VERSION_25.toString()
+            sourceCompatibility = JavaVersion.VERSION_25.toString()
         }
 
         withType<KotlinCompile>().configureEach {
             compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_21)
+                jvmTarget.set(JvmTarget.JVM_25)
                 freeCompilerArgs.addAll(
                     "-jvm-default=enable",
-                    "-Xcontext-parameters"
+                    "-Xcollection-literals",
+                    "-Xexplicit-context-arguments"
                 )
             }
         }
 
     }
 
-    val sourcesJar by tasks.registering(Jar::class) {
+    val sourcesJar = tasks.register<Jar>("sources") {
+        description = "sources"
         archiveClassifier.set("sources")
         from(project.sourceSets["main"].allSource)
     }
 
-    val jar by tasks.named<Jar>("jar")
+    val jar = tasks.named<Jar>("jar")
 
     sourceSets {
         getByName("test") {
@@ -214,7 +216,7 @@ subprojects {
 
     java {
         withSourcesJar()
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
     }
 
     publishing {
@@ -243,7 +245,7 @@ subprojects {
                 groupId = project.group.toString()
                 artifactId = project.name
                 version = project.version.toString()
-                artifact(jar)
+                artifact(jar.get())
                 artifact(sourcesJar.get())
                 pom {
                     name.set(project.name)

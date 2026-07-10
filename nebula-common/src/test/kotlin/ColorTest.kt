@@ -16,12 +16,12 @@ class ColorTest {
         println(a.rgb)
         print(b)
         println(b.rgb)
+        val color: Color = [16, 16, 32]
+        print(color)
         println(Color.fromARGB(1f, 1f, 1f) == Color.fromARGB(1f, 1f, 1f))
         HSVHelper.cache.toList().forEach { (k, v) -> println("${k.toString(16)} -> $v -> ${Color.fromHSV(v.hue, v.saturation, v.value)}") }
     }
 }
-
-
 
 
 fun map() {
