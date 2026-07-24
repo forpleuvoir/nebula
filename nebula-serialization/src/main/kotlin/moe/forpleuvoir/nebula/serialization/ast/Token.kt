@@ -5,7 +5,7 @@ import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 
 data class TokenPos(val line: Int, val column: Int, val offset: Int)
 
-internal sealed interface Token {
+sealed interface Token {
     val pos: TokenPos
 
     companion object {
@@ -27,7 +27,7 @@ internal sealed interface Token {
 }
 
 @JvmInline
-internal value class Primitive private constructor(val value: Any?) {
+value class Primitive private constructor(val value: Any?) {
 
     companion object {
         fun of(value: Any?): Primitive = Primitive(value)
