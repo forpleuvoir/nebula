@@ -17,7 +17,7 @@ internal object JsonDecoder : SyntaxDecoder {
             tokens.isEmpty() || tokens.first() is EOF ->
                 Result.failure(IllegalArgumentException("Empty token stream"))
 
-            else                                      -> parseElement(tokens).map { (element, remaining) ->
+            else                                      -> parseElement(tokens).mapCatching { (element, remaining) ->
                 when {
                     remaining.isEmpty() || remaining.first() is EOF -> element
                     else                                            -> throw SyntaxReadException(
