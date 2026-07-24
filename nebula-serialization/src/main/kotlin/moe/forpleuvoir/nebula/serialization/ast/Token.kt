@@ -3,7 +3,7 @@ package moe.forpleuvoir.nebula.serialization.ast
 import moe.forpleuvoir.nebula.serialization.base.SerializeNull
 import moe.forpleuvoir.nebula.serialization.base.SerializePrimitive
 
-internal data class TokenPos(val line: Int, val column: Int, val offset: Int)
+data class TokenPos(val line: Int, val column: Int, val offset: Int)
 
 internal sealed interface Token {
     val pos: TokenPos

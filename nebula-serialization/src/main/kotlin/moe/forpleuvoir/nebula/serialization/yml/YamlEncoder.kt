@@ -148,8 +148,7 @@ open class YamlEncoder(
     // ── Primitive encoding ──────────────────────────────────────────
 
     protected open fun encodePrimitive(primitive: SerializePrimitive, indent: Int): String {
-        val value = primitive.value
-        return when (value) {
+        return when (val value = primitive.value) {
             is String  -> encodeString(value, indent)
             is Char    -> encodeString(value.toString(), indent)
             is Boolean -> value.toString()

@@ -6,7 +6,10 @@ import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 class TomlDialect : SyntaxDialect {
 
     override fun decode(input: String): Result<SerializeElement> =
-        TomlDecoder.decode(TomlLexer.tokenize(input))
+        TomlLexer.tokenize(input).fold(
+            onSuccess = { TomlDecoder.decode(it) },
+            onFailure = { Result.failure(it) }
+        )
 
     override fun encode(element: SerializeElement): String =
         TomlEncoder.encode(element)

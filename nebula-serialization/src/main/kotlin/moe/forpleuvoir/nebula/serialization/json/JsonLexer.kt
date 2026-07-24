@@ -10,10 +10,10 @@ import java.math.BigInteger
 
 internal object JsonLexer : Lexer {
 
-    override fun tokenize(input: String): List<Token> {
+    override fun tokenize(input: String): Result<List<Token>> = runCatching {
         val tokens = mutableListOf<Token>()
         scan(input, 0, 1, 1, tokens)
-        return tokens
+        tokens
     }
 
     private tailrec fun scan(

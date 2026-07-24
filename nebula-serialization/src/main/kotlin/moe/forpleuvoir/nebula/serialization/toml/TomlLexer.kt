@@ -15,28 +15,25 @@ import java.math.BigInteger
 
 internal object TomlLexer : Lexer {
 
-    override fun tokenize(input: String): List<Token> {
+    override fun tokenize(input: String): Result<List<Token>> = runCatching {
         val tokens = mutableListOf<Token>()
-        var i = 0;
-        var line = 1;
+        var i = 0
+        var line = 1
         var col = 1
 
         while (i < input.length) {
             val c = input[i]
-            when {
-                c == '\n'                          -> {
+            when (c) {
+                '\n'            -> {
                     i++; line++; col = 1
                 }
-
-                c == ' ' || c == '\t' || c == '\r' -> {
+                ' ', '\t', '\r' -> {
                     i++; col++
                 }
-
-                c == '#'                           -> {
+                '#'             -> {
                     i = skipToEndOfLine(input, i)
                 }
-
-                c == '['                           -> {
+                '['             -> {
                     val pos = TokenPos(line, col, i)
                     if (i + 1 < input.length && input[i + 1] == '[') {
                         val r = readArrayOfTablesHeader(input, i + 2, line, col + 2)
@@ -48,8 +45,7 @@ internal object TomlLexer : Lexer {
                         i = r.i; line = r.line; col = r.col
                     }
                 }
-
-                else                               -> {
+                else            -> {
                     val keyResult = readKey(input, i, line, col)
                     tokens.addAll(keyResult.tokens)
                     i = keyResult.i; line = keyResult.line; col = keyResult.col
@@ -75,7 +71,7 @@ internal object TomlLexer : Lexer {
         }
 
         tokens.add(EOF(TokenPos(line, col, i)))
-        return tokens
+        tokens
     }
 
     // ── helpers ──────────────────────────────────────────────────
@@ -85,7 +81,7 @@ internal object TomlLexer : Lexer {
     }
 
     private fun skipWhitespaceInline(input: String, cursor: Int): SimplePos {
-        var i = cursor;
+        var i = cursor
         var d = 0
         while (i < input.length && (input[i] == ' ' || input[i] == '\t')) {
             i++; d++
@@ -118,8 +114,8 @@ internal object TomlLexer : Lexer {
 
     private fun readTableHeader(input: String, start: Int, startLine: Int, startCol: Int): HeaderResult {
         val parts = mutableListOf<String>()
-        var i = start;
-        var line = startLine;
+        var i = start
+        var line = startLine
         var col = startCol
 
         while (i < input.length) {
@@ -159,8 +155,8 @@ internal object TomlLexer : Lexer {
 
     private fun readArrayOfTablesHeader(input: String, start: Int, startLine: Int, startCol: Int): HeaderResult {
         val parts = mutableListOf<String>()
-        var i = start;
-        var line = startLine;
+        var i = start
+        var line = startLine
         var col = startCol
 
         while (i < input.length) {
@@ -219,8 +215,8 @@ internal object TomlLexer : Lexer {
 
     private fun readKey(input: String, start: Int, startLine: Int, startCol: Int): ReadKeyResult {
         val tokens = mutableListOf<Token>()
-        var i = start;
-        var line = startLine;
+        var i = start
+        var line = startLine
         var col = startCol
 
         while (i < input.length) {
@@ -238,32 +234,28 @@ internal object TomlLexer : Lexer {
             }
 
             val pos = TokenPos(line, col, i)
-            when {
-                c == '"' && isMultiStart(input, i)  -> {
+            when (c) {
+                '"' if isMultiStart(input, i)  -> {
                     val r = readMultilineBasicString(input, i)
                     tokens.add(Literal(Primitive.of(r.value), pos))
                     i = r.i; line = r.line; col = r.col
                 }
-
-                c == '\'' && isMultiStart(input, i) -> {
+                '\'' if isMultiStart(input, i) -> {
                     val r = readMultilineLiteralString(input, i)
                     tokens.add(Literal(Primitive.of(r.value), pos))
                     i = r.i; line = r.line; col = r.col
                 }
-
-                c == '"'                            -> {
+                '"'                            -> {
                     val r = readBasicString(input, i)
                     tokens.add(Literal(Primitive.of(r.value), pos))
                     i = r.i; line = r.line; col = r.col
                 }
-
-                c == '\''                           -> {
+                '\''                           -> {
                     val r = readLiteralString(input, i)
                     tokens.add(Literal(Primitive.of(r.value), pos))
                     i = r.i; line = r.line; col = r.col
                 }
-
-                else                                -> {
+                else                           -> {
                     val r = readBareKey(input, i, line, col)
                     tokens.add(Identifier(r.value, pos))
                     i = r.i; line = r.line; col = r.col
@@ -276,13 +268,12 @@ internal object TomlLexer : Lexer {
 
     private fun readBareKey(input: String, start: Int, startLine: Int, startCol: Int): KeyPartResult {
         val sb = StringBuilder()
-        var i = start;
-        var line = startLine;
+        var i = start
         var col = startCol
         while (i < input.length && input[i].isBareKeyChar()) {
             sb.append(input[i]); i++; col++
         }
-        return KeyPartResult(sb.toString(), i, line, col)
+        return KeyPartResult(sb.toString(), i, startLine, col)
     }
 
     private fun Char.isBareKeyChar(): Boolean = this in 'A'..'Z' || this in 'a'..'z' ||
@@ -292,7 +283,7 @@ internal object TomlLexer : Lexer {
 
     private fun readValue(input: String, start: Int, startLine: Int, startCol: Int): ReadValueResult {
         if (start >= input.length) throw IllegalArgumentException("Unexpected end of input")
-        val c = input[start];
+        val c = input[start]
         val pos = TokenPos(startLine, startCol, start)
 
         return when {
@@ -452,8 +443,8 @@ internal object TomlLexer : Lexer {
     }
 
     private fun readMultilineBasicString(input: String, start: Int): ReadStringResult {
-        var i = start + 3;
-        var line = 1;
+        var i = start + 3
+        var line = 1
         var col = 1
         if (i < input.length && input[i] == '\n') {
             i++; line++; col = 1
@@ -533,8 +524,8 @@ internal object TomlLexer : Lexer {
     }
 
     private fun readMultilineLiteralString(input: String, start: Int): ReadStringResult {
-        var i = start + 3;
-        var line = 1;
+        var i = start + 3
+        var line = 1
         var col = 1
         if (i < input.length && input[i] == '\n') {
             i++; line++; col = 1
@@ -566,8 +557,8 @@ internal object TomlLexer : Lexer {
     private fun readArray(input: String, start: Int, startLine: Int, startCol: Int): ReadValueResult {
         val tokens = mutableListOf<Token>()
         tokens.add(Symbol("[", TokenPos(startLine, startCol, start)))
-        var i = start + 1;
-        var line = startLine;
+        var i = start + 1
+        var line = startLine
         var col = startCol + 1
 
         while (i < input.length) {
@@ -608,8 +599,8 @@ internal object TomlLexer : Lexer {
     private fun readInlineTable(input: String, start: Int, startLine: Int, startCol: Int): ReadValueResult {
         val tokens = mutableListOf<Token>()
         tokens.add(Symbol("{", TokenPos(startLine, startCol, start)))
-        var i = start + 1;
-        var line = startLine;
+        var i = start + 1
+        var line = startLine
         var col = startCol + 1
 
         while (i < input.length) {

@@ -10,7 +10,10 @@ class JsonDialect(
 
     private val encoder = JsonEncoder(useIndent, indentSize)
 
-    override fun decode(input: String) = JsonDecoder.decode(JsonLexer.tokenize(input))
+    override fun decode(input: String) = JsonLexer.tokenize(input).fold(
+            onSuccess = { JsonDecoder.decode(it) },
+            onFailure = { Result.failure(it) }
+        )
 
     override fun encode(element: SerializeElement) = encoder.encode(element)
 

@@ -12,10 +12,10 @@ import moe.forpleuvoir.nebula.serialization.json.JsonLexer
 
 internal object HJsonLexer : Lexer {
 
-    override fun tokenize(input: String): List<Token> {
+    override fun tokenize(input: String): Result<List<Token>> = runCatching {
         val tokens = mutableListOf<Token>()
         scan(input, 0, 1, 1, tokens)
-        return tokens
+        tokens
     }
 
     private tailrec fun scan(input: String, cursor: Int, line: Int, col: Int, acc: MutableList<Token>) {
