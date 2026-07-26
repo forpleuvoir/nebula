@@ -10,7 +10,7 @@ import moe.forpleuvoir.nebula.serialization.ast.Token.Companion.Symbol
 import moe.forpleuvoir.nebula.serialization.ast.TokenPos
 import moe.forpleuvoir.nebula.serialization.base.*
 
-internal object HJsonDecoder : SyntaxDecoder {
+object HJsonDecoder : SyntaxDecoder {
 
     override fun decode(tokens: List<Token>): Result<SerializeElement> {
         val first = tokens.firstOrNull()

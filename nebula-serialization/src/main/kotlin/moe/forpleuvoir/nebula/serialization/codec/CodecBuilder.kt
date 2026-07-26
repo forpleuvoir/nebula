@@ -2,10 +2,12 @@
 
 package moe.forpleuvoir.nebula.serialization.codec
 
+import moe.forpleuvoir.nebula.common.util.primitive.toSnakeCase
 import moe.forpleuvoir.nebula.serialization.DeserializationException
 import moe.forpleuvoir.nebula.serialization.base.SerializeElement
 import moe.forpleuvoir.nebula.serialization.base.SerializeNull
 import moe.forpleuvoir.nebula.serialization.base.SerializeObject
+import kotlin.reflect.KProperty1
 
 class CodecBuilder<T> internal constructor() {
 
@@ -15,6 +17,17 @@ class CodecBuilder<T> internal constructor() {
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder1(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder1<T, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder1<T, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder1(this)
+        }.apply {
+            getter(property::get)
         }
     }
 }
@@ -28,6 +41,17 @@ class CodecBuilder1<T, A> internal constructor(
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder2(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder2<T, A, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder2<T, A, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder2(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -49,6 +73,17 @@ class CodecBuilder2<T, A, B> internal constructor(
         }
     }
 
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder3<T, A, B, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder3<T, A, B, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder3(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args -> ctor(args[f[0].name] as A, args[f[1].name] as B) }
@@ -64,6 +99,17 @@ class CodecBuilder3<T, A, B, C> internal constructor(
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder4(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder4<T, A, B, C, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder4<T, A, B, C, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder4(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -87,6 +133,17 @@ class CodecBuilder4<T, A, B, C, D> internal constructor(
         }
     }
 
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder5<T, A, B, C, D, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder5<T, A, B, C, D, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder5(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -107,6 +164,17 @@ class CodecBuilder5<T, A, B, C, D, E> internal constructor(
         }
     }
 
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder6<T, A, B, C, D, E, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder6<T, A, B, C, D, E, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder6(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -121,7 +189,7 @@ class CodecBuilder5<T, A, B, C, D, E> internal constructor(
     }
 }
 
- class CodecBuilder6<T, A, B, C, D, E, F> internal constructor(
+class CodecBuilder6<T, A, B, C, D, E, F> internal constructor(
     private val builder: CodecBuilder5<T, A, B, C, D, E>
 ) {
     internal val fields: MutableList<FieldDef<T, *>> get() = builder.fields
@@ -130,6 +198,17 @@ class CodecBuilder5<T, A, B, C, D, E> internal constructor(
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder7(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder7<T, A, B, C, D, E, F, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder7<T, A, B, C, D, E, F, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder7(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -157,6 +236,17 @@ class CodecBuilder7<T, A, B, C, D, E, F, G> internal constructor(
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder8(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder8<T, A, B, C, D, E, F, G, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder8<T, A, B, C, D, E, F, G, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder8(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -188,6 +278,17 @@ class CodecBuilder8<T, A, B, C, D, E, F, G, H> internal constructor(
         }
     }
 
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder9<T, A, B, C, D, E, F, G, H, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder9<T, A, B, C, D, E, F, G, H, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder9(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -214,6 +315,17 @@ class CodecBuilder9<T, A, B, C, D, E, F, G, H, I> internal constructor(
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder10(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder10<T, A, B, C, D, E, F, G, H, I, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder10<T, A, B, C, D, E, F, G, H, I, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder10(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -247,6 +359,17 @@ class CodecBuilder10<T, A, B, C, D, E, F, G, H, I, J> internal constructor(
         }
     }
 
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder11(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H, I, J) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -275,6 +398,17 @@ class CodecBuilder11<T, A, B, C, D, E, F, G, H, I, J, K> internal constructor(
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder12(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder12(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -310,6 +444,17 @@ class CodecBuilder12<T, A, B, C, D, E, F, G, H, I, J, K, L> internal constructor
         }
     }
 
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder13(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H, I, J, K, L) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -340,6 +485,17 @@ class CodecBuilder13<T, A, B, C, D, E, F, G, H, I, J, K, L, M> internal construc
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder14(this)
+        }
+    }
+
+    fun <Val> field(property: KProperty1<T, Val>, name: String? = null): FieldBuilder<T, Val, CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder14(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -377,6 +533,20 @@ class CodecBuilder14<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N> internal const
         }
     }
 
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder15(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H, I, J, K, L, M, N) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -409,6 +579,20 @@ class CodecBuilder15<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O> internal co
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder16(this)
+        }
+    }
+
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder16(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -448,6 +632,20 @@ class CodecBuilder16<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P> internal
         }
     }
 
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder17(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -482,6 +680,20 @@ class CodecBuilder17<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q> inter
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder18(this)
+        }
+    }
+
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder18(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -523,6 +735,20 @@ class CodecBuilder18<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R> in
         }
     }
 
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder19(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -559,6 +785,20 @@ class CodecBuilder19<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S>
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder20(this)
+        }
+    }
+
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder20(this)
+        }.apply {
+            getter(property::get)
         }
     }
 
@@ -602,6 +842,20 @@ class CodecBuilder20<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S,
         }
     }
 
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder21(this)
+        }.apply {
+            getter(property::get)
+        }
+    }
+
     fun build(ctor: (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U) -> T): Codec<T> {
         val f = fields.toList()
         return CodecImpl(f) { args ->
@@ -640,6 +894,20 @@ class CodecBuilder21<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S,
         return FieldBuilder(name) { def ->
             fields.add(def)
             CodecBuilder22(this)
+        }
+    }
+
+    fun <Val> field(
+        property: KProperty1<T, Val>,
+        name: String? = null
+    ): FieldBuilder<T, Val, CodecBuilder22<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V, Val>> {
+        return FieldBuilder<T, Val, CodecBuilder22<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, U, V, Val>>(
+            name ?: property.name.toSnakeCase()
+        ) { def ->
+            fields.add(def)
+            CodecBuilder22(this)
+        }.apply {
+            getter(property::get)
         }
     }
 

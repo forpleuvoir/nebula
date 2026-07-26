@@ -13,7 +13,7 @@ import moe.forpleuvoir.nebula.serialization.ast.TokenPos
 import java.math.BigDecimal
 import java.math.BigInteger
 
-internal object TomlLexer : Lexer {
+object TomlLexer : Lexer {
 
     override fun tokenize(input: String): Result<List<Token>> = runCatching {
         val tokens = mutableListOf<Token>()

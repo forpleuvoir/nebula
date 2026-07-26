@@ -8,7 +8,7 @@ import moe.forpleuvoir.nebula.serialization.ast.Token.Companion.Symbol
 import java.math.BigDecimal
 import java.math.BigInteger
 
-internal object JsonLexer : Lexer {
+object JsonLexer : Lexer {
 
     override fun tokenize(input: String): Result<List<Token>> = runCatching {
         val tokens = mutableListOf<Token>()
@@ -140,7 +140,7 @@ internal object JsonLexer : Lexer {
         return input.substring(start, i) to i
     }
 
-    internal fun parseNumber(numStr: String): Any {
+    fun parseNumber(numStr: String): Any {
         return if (numStr.contains('.') || numStr.contains('e') || numStr.contains('E')) {
             val bd = BigDecimal(numStr)
             if (bd.inRangeOfFloat && bd.fitsFloat()) {

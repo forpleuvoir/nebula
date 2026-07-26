@@ -12,7 +12,7 @@ import moe.forpleuvoir.nebula.serialization.ast.Token.Companion.TableHeader
 import moe.forpleuvoir.nebula.serialization.ast.TokenPos
 import moe.forpleuvoir.nebula.serialization.base.*
 
-internal object TomlDecoder : SyntaxDecoder {
+object TomlDecoder : SyntaxDecoder {
 
     override fun decode(tokens: List<Token>): Result<SerializeElement> = try {
         val root = SerializeObject()

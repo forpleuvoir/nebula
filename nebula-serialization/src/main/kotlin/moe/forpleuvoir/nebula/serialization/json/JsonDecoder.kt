@@ -10,7 +10,7 @@ import moe.forpleuvoir.nebula.serialization.ast.Token.Companion.Symbol
 import moe.forpleuvoir.nebula.serialization.ast.TokenPos
 import moe.forpleuvoir.nebula.serialization.base.*
 
-internal object JsonDecoder : SyntaxDecoder {
+object JsonDecoder : SyntaxDecoder {
 
     override fun decode(tokens: List<Token>): Result<SerializeElement> {
         return when {

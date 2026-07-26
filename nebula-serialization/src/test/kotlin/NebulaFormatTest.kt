@@ -59,9 +59,9 @@ data class WithNullableColor(val name: String, @Contextual val color: Color? = n
 data class TestStudent(val name: String, val age: Int, @Contextual val color: Color) {
     companion object {
         val CODEC = Codec.create<TestStudent>()
-            .field<String>("name").getter(TestStudent::name).default("name").codec(Codec.string)
-            .field<Int>("age").getter(TestStudent::age).skipDefault().default(22).codec(Codec.int)
-            .field<Color>("color").getter(TestStudent::color).default(Colors.RED).codec(Codec.color)
+            .field(TestStudent::name).default("name").codec(Codec.string)
+            .field(TestStudent::age).skipDefault().default(22).codec(Codec.int)
+            .field(TestStudent::color).default(Colors.RED).codec(Codec.color)
             .build(::TestStudent)
     }
 }
@@ -69,6 +69,17 @@ data class TestStudent(val name: String, val age: Int, @Contextual val color: Co
 // endregion
 
 class NebulaFormatTest {
+
+
+    @Test
+    fun test1() {
+        val student = TestStudent("forpleuvoir", 36, Colors.ARMY_GREEN)
+        val result = TestStudent.CODEC.serialization(student)
+        println(result)
+        TestStudent.CODEC.deserialization(result).onSuccess {
+            println(it)
+        }
+    }
 
     // region — basic round-trip
 
@@ -304,7 +315,6 @@ class NebulaFormatTest {
     }
 
     // endregion
-
 
 
     companion object {

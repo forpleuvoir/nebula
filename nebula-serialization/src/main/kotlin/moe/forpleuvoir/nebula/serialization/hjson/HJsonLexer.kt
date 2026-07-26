@@ -10,7 +10,7 @@ import moe.forpleuvoir.nebula.serialization.ast.Token.Companion.Symbol
 import moe.forpleuvoir.nebula.serialization.ast.TokenPos
 import moe.forpleuvoir.nebula.serialization.json.JsonLexer
 
-internal object HJsonLexer : Lexer {
+object HJsonLexer : Lexer {
 
     override fun tokenize(input: String): Result<List<Token>> = runCatching {
         val tokens = mutableListOf<Token>()

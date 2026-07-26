@@ -88,3 +88,9 @@ fun CharArray.subSequence(startIndex: Int, endIndex: Int): String {
         }
     }
 }
+
+
+fun String.toSnakeCase(): String =
+	replace(Regex("([a-z0-9])([A-Z])"), "$1_$2")
+		.replace(Regex("[\\s-]+"), "_")
+		.lowercase()
