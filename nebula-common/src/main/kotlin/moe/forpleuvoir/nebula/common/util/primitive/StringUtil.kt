@@ -90,7 +90,144 @@ fun CharArray.subSequence(startIndex: Int, endIndex: Int): String {
 }
 
 
+/**
+ * 将字符串拆分为命名单词。
+ *
+ * 支持识别：
+ * - camelCase
+ * - PascalCase
+ * - 连续大写缩写，例如 HTTPServer
+ * - snake_case
+ * - kebab-case
+ * - dot.case
+ * - 空格分隔
+ *
+ * 示例：
+ * - "helloWorld"  -> ["hello", "world"]
+ * - "HTTPServer"  -> ["http", "server"]
+ * - "hello_world" -> ["hello", "world"]
+ */
+private fun String.toNamingWords(): List<String> =
+	trim()
+		// HTTPServer -> HTTP_Server
+		.replace(Regex("([A-Z]+)([A-Z][a-z])"), "$1_$2")
+		// helloWorld -> hello_World
+		.replace(Regex("([a-z0-9])([A-Z])"), "$1_$2")
+		// 将常见分隔符统一视为单词边界
+		.split(Regex("[\\s._-]+"))
+		.filter(String::isNotEmpty)
+		.map(String::lowercase)
+
+/**
+ * 将字符串转换为小驼峰命名。
+ *
+ * 示例：
+ * - "hello_world" -> "helloWorld"
+ * - "Hello World" -> "helloWorld"
+ * - "HTTPServer"  -> "httpServer"
+ */
+fun String.toCamelCase(): String {
+	val words = toNamingWords()
+	if (words.isEmpty()) return ""
+
+	return buildString {
+		append(words.first())
+
+		words.drop(1).forEach { word ->
+			append(word.replaceFirstChar { it.uppercaseChar() })
+		}
+	}
+}
+
+/**
+ * 将字符串转换为大驼峰命名（PascalCase）。
+ *
+ * 示例：
+ * - "hello_world" -> "HelloWorld"
+ * - "hello-world" -> "HelloWorld"
+ * - "http_server" -> "HttpServer"
+ */
+fun String.toPascalCase(): String =
+	toNamingWords().joinToString("") { word ->
+		word.replaceFirstChar { it.uppercaseChar() }
+	}
+
+/**
+ * 将字符串转换为小写下划线命名（snake_case）。
+ *
+ * 示例：
+ * - "helloWorld" -> "hello_world"
+ * - "HTTPServer" -> "http_server"
+ * - "Hello World" -> "hello_world"
+ */
 fun String.toSnakeCase(): String =
-	replace(Regex("([a-z0-9])([A-Z])"), "$1_$2")
-		.replace(Regex("[\\s-]+"), "_")
-		.lowercase()
+	toNamingWords().joinToString("_")
+
+/**
+ * 将字符串转换为大写下划线命名（SCREAMING_SNAKE_CASE）。
+ *
+ * 通常用于常量名称。
+ *
+ * 示例：
+ * - "helloWorld" -> "HELLO_WORLD"
+ * - "http_server" -> "HTTP_SERVER"
+ */
+fun String.toScreamingSnakeCase(): String =
+	toNamingWords().joinToString("_").uppercase()
+
+/**
+ * 将字符串转换为小写短横线命名（kebab-case）。
+ *
+ * 示例：
+ * - "helloWorld" -> "hello-world"
+ * - "HTTPServer" -> "http-server"
+ * - "hello_world" -> "hello-world"
+ */
+fun String.toKebabCase(): String =
+	toNamingWords().joinToString("-")
+
+/**
+ * 将字符串转换为大写短横线命名（SCREAMING-KEBAB-CASE）。
+ *
+ * 示例：
+ * - "helloWorld" -> "HELLO-WORLD"
+ * - "http_server" -> "HTTP-SERVER"
+ */
+fun String.toScreamingKebabCase(): String =
+	toNamingWords().joinToString("-").uppercase()
+
+/**
+ * 将字符串转换为点分隔命名（dot.case）。
+ *
+ * 常用于配置键、包路径或属性名称。
+ *
+ * 示例：
+ * - "helloWorld" -> "hello.world"
+ * - "HTTPServer" -> "http.server"
+ */
+fun String.toDotCase(): String =
+	toNamingWords().joinToString(".")
+
+/**
+ * 将字符串转换为标题格式（Title Case）。
+ *
+ * 示例：
+ * - "hello_world" -> "Hello World"
+ * - "httpServer"  -> "Http Server"
+ */
+fun String.toTitleCase(): String =
+	toNamingWords().joinToString(" ") { word ->
+		word.replaceFirstChar { it.uppercaseChar() }
+	}
+
+/**
+ * 将字符串转换为火车命名（Train-Case）。
+ *
+ * 示例：
+ * - "hello_world" -> "Hello-World"
+ * - "httpServer"  -> "Http-Server"
+ */
+fun String.toTrainCase(): String =
+	toNamingWords().joinToString("-") { word ->
+		word.replaceFirstChar { it.uppercaseChar() }
+	}
